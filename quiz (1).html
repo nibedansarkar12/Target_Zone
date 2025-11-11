@@ -845,6 +845,7 @@ setInterval(() => {
 
       // show result with pie chart
       showResultChart({correct, wrong, unattempted, attempted, total, percent});
+      showDetailedResultTable(questions, answers);
     }
 
     function showResultChart(data){
@@ -888,6 +889,45 @@ setInterval(() => {
       });
 
       try { history.pushState({section:'result'}, ''); } catch(e){}
+    }
+    function showDetailedResultTable(questions, answers) {
+  const resultSec = document.getElementById('result-section');
+  const div = document.createElement('div');
+  div.innerHTML = `
+    <h4 style="margin-top:20px; font-weight:800;">📋 বিস্তারিত বিশ্লেষণ</h4>
+    <table style="width:100%; border-collapse:collapse; margin-top:10px; font-size:0.95rem;">
+      <thead>
+        <tr style="background:rgba(255,255,255,0.08);">
+          <th style="padding:8px; border:1px solid rgba(255,255,255,0.1); text-align:left;">#</th>
+          <th style="padding:8px; border:1px solid rgba(255,255,255,0.1); text-align:left;">প্রশ্ন</th>
+          <th style="padding:8px; border:1px solid rgba(255,255,255,0.1); text-align:left;">তোমার উত্তর</th>
+          <th style="padding:8px; border:1px solid rgba(255,255,255,0.1); text-align:left;">সঠিক উত্তর</th>
+          <th style="padding:8px; border:1px solid rgba(255,255,255,0.1); text-align:center;">ফলাফল</th>
+        </tr>
+      </thead>
+      <tbody id="result-details-body"></tbody>
+    </table>
+  `;
+
+  const tbody = div.querySelector('#result-details-body');
+  questions.forEach((q, i) => {
+    const given = answers[i] || '—';
+    const correct = q.answer || '—';
+    const norm = v => (typeof v === 'string' ? v.trim().toLowerCase() : v);
+    const isCorrect = norm(given) === norm(correct);
+
+    const tr = document.createElement('tr');
+    tr.style.borderBottom = '1px solid rgba(255,255,255,0.05)';
+    tr.innerHTML = `
+      <td style="padding:6px; vertical-align:top;">${i + 1}</td>
+      <td style="padding:6px; vertical-align:top;">${q.question}</td>
+      <td style="padding:6px; color:${isCorrect ? '#10b981' : '#ef4444'}; vertical-align:top;">${given}</td>
+      <td style="padding:6px; color:#22d3ee; vertical-align:top;">${correct}</td>
+      <td style="padding:6px; text-align:center; vertical-align:top;">${isCorrect ? '✅' : '❌'}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+  resultSec.appendChild(div);
     }
 
     document.getElementById('close-result').onclick = ()=> {
