@@ -910,26 +910,40 @@ setInterval(() => {
   `;
 
   const tbody = div.querySelector('#result-details-body');
+
   questions.forEach((q, i) => {
-    const given = answers[i] || '—';
+    const given = answers[i];
     const correct = q.answer || '—';
     const norm = v => (typeof v === 'string' ? v.trim().toLowerCase() : v);
-    const isCorrect = norm(given) === norm(correct);
+
+    let statusIcon = '';
+    let givenDisplay = '';
+
+    if (!given || given.trim() === '') {
+      statusIcon = '⚪';  // উত্তর দেয়নি
+      givenDisplay = 'উত্তর দেয়নি';
+    } else if (norm(given) === norm(correct)) {
+      statusIcon = '✅';  // সঠিক
+      givenDisplay = given;
+    } else {
+      statusIcon = '❌';  // ভুল
+      givenDisplay = given;
+    }
 
     const tr = document.createElement('tr');
     tr.style.borderBottom = '1px solid rgba(255,255,255,0.05)';
     tr.innerHTML = `
       <td style="padding:6px; vertical-align:top;">${i + 1}</td>
       <td style="padding:6px; vertical-align:top;">${q.question}</td>
-      <td style="padding:6px; color:${isCorrect ? '#10b981' : '#ef4444'}; vertical-align:top;">${given}</td>
+      <td style="padding:6px; color:${statusIcon==='✅' ? '#10b981' : (statusIcon==='❌' ? '#ef4444' : '#9ca3af')}; vertical-align:top;">${givenDisplay}</td>
       <td style="padding:6px; color:#22d3ee; vertical-align:top;">${correct}</td>
-      <td style="padding:6px; text-align:center; vertical-align:top;">${isCorrect ? '✅' : '❌'}</td>
+      <td style="padding:6px; text-align:center; vertical-align:top;">${statusIcon}</td>
     `;
     tbody.appendChild(tr);
   });
+
   resultSec.appendChild(div);
     }
-
     document.getElementById('close-result').onclick = ()=> {
       resultSection.classList.add('hidden');
       dashboard.classList.remove('hidden');
