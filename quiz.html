@@ -1073,6 +1073,27 @@ let autoSaveInterval = null;
 
     // initial UI
     renderAuthUI();
+    // 🔄 Handle mobile/system back to fully reset state
+window.onpopstate = function(event) {
+  if (event.state && event.state.section === 'dashboard') {
+    currentExam = null;
+    answers = {};
+    reviewed = {};
+    timeLeft = 0;
+    if (autoSaveInterval) {
+      clearInterval(autoSaveInterval);
+      autoSaveInterval = null;
+    }
+    try {
+      if (auth.currentUser && currentExam) {
+        localStorage.removeItem(`${currentExam}_answers_${auth.currentUser.uid}`);
+        localStorage.removeItem(`${currentExam}_review_${auth.currentUser.uid}`);
+        localStorage.removeItem(`${currentExam}_time_${auth.currentUser.uid}`);
+      }
+    } catch(e){ console.warn("back-reset failed", e); }
+    console.log("✅ State reset due to back navigation");
+  }
+};
 
   </script>
 </body>
