@@ -169,7 +169,7 @@ document.getElementById("googleBtn").addEventListener("click", async () => {
       title: 'Google Login Successful!',
       timer: 2000,
       showConfirmButton: false
-    }).then(() => location.href = "quiz.html");
+    }).then(() => location.href = "student-dashboard.html");
 
   } catch (err) {
     Swal.fire({ icon: 'error', title: 'Google Login Failed', text: err.message });
