@@ -1,120 +1,175 @@
-
 <!DOCTYPE html>
 <html lang="bn">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Student Dashboard – Ultra Modern</title>
+<title>Ultra Student Dashboard – Target Zone</title>
 <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+
 <style>
-  body {
-    background: linear-gradient(135deg, #0f172a, #1e293b, #0f172a);
-    font-family: 'Segoe UI', sans-serif;
-    color: #e2e8f0;
-    min-height: 100vh;
-  }
-  .glass {
-    background: rgba(255,255,255,0.08);
-    backdrop-filter: blur(14px);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 1.5rem;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
-    transition: 0.3s ease;
-  }
-  .glass:hover {
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: 0 12px 45px rgba(0,0,0,0.55);
-  }
-  .glow-text { 
-    text-shadow: 0 0 18px rgba(255,255,255,0.4); 
-  }
-  .pay-button {
-    transition: .3s;
-  }
-  .pay-button:hover {
-    transform: scale(1.05);
-    opacity: 0.9;
-  }
+ body { background: linear-gradient(135deg,#0f172a,#1e293b,#0f172a); color:#e2e8f0; font-family:'Segoe UI',sans-serif; }
+ .glass{background:rgba(255,255,255,.08);backdrop-filter:blur(14px);border-radius:1.5rem;padding:20px;transition:.3s;}
+ .glass:hover{transform:translateY(-4px) scale(1.02);}
+ img{filter:brightness(0.9);}
+ a.btn { display:inline-block; text-decoration:none; padding:10px 12px; border-radius:10px; font-weight:700; }
 </style>
 </head>
 
 <body>
 
-<!-- Header -->
 <header class="flex items-center justify-between p-6">
-  <h1 class="text-3xl font-bold glow-text">🎓 Student Dashboard</h1>
-  <button class="px-4 py-2 bg-red-500 hover:bg-red-600 rounded-xl">Logout</button>
+  <h1 class="text-3xl font-bold">🎓 Student Dashboard</h1>
+  <button id="logoutBtn" class="px-4 py-2 bg-red-500 hover:bg-red-600 rounded-xl">Logout</button>
 </header>
 
-<!-- Dashboard Grid -->
-<main class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 p-6">
+<main class="p-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6" style="padding-top:90px;">
 
-  <!-- Profile -->
-  <section class="glass p-6">
-    <h2 class="text-xl font-semibold mb-4">👤 My Profile</h2>
-    <p><strong>Name:</strong> Student Name</p>
-    <p><strong>Class:</strong> 10</p>
-    <p><strong>Phone:</strong> 0123456789</p>
-  </section>
+<!-- Profile -->
+<section class="glass">
+  <h2 class="text-xl font-semibold mb-4">👤 My Profile</h2>
+  <p><strong>Name:</strong> <span id="stdName">Loading…</span></p>
+  <p><strong>Email:</strong> <span id="stdEmail">Loading…</span></p>
+  <p><strong>Phone:</strong> <span id="stdPhone">Loading…</span></p>
+  <p><strong>Course:</strong> <span id="stdCourse">Loading…</span></p>
+</section>
 
-  <!-- Payment History -->
-  <section class="glass p-6">
-    <h2 class="text-xl font-semibold mb-4">💳 Payment History</h2>
-    <div class="h-48 overflow-y-auto space-y-1 text-gray-300">
-      <p>Jan: <span class="text-red-400">Unpaid</span></p>
-      <p>Feb: <span class="text-green-400">Paid</span></p>
-      <p>Mar: <span class="text-red-400">Unpaid</span></p>
+<!-- Payment History -->
+<section class="glass">
+  <h2 class="text-xl font-semibold mb-4">💳 Payment History</h2>
+  <div id="paymentHistory" class="space-y-1 text-gray-300">Loading…</div>
+</section>
+
+<!-- Exams -->
+<section class="glass">
+  <h2 class="text-xl font-semibold mb-4">📝 Exams</h2>
+  <button onclick="location.href='quiz.html'" class="w-full py-3 bg-indigo-500 hover:bg-indigo-600 rounded-xl">
+    Start Exam
+  </button>
+</section>
+
+<!-- Online Payment Section -->
+<section class="glass col-span-1 md:col-span-2 xl:col-span-3">
+  <h2 class="text-2xl font-semibold mb-4">⚡ Online Payment</h2>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+    <!-- GPay -->
+    <div class="glass p-4 text-center">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Google_Pay_Logo.svg/512px-Google_Pay_Logo.svg.png" 
+        class="mx-auto mb-3" width="80" alt="GPay">
+      <a href="intent://pay?pa=rajnitirgalpokotha@oksbi&pn=Target%20Zone&tn=Fees%20Payment&cu=INR#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;end;"
+         class="btn" style="background:#1a73e8;color:white;">
+        Pay with GPay
+      </a>
+      <div style="margin-top:8px;font-size:0.9rem;opacity:0.9">VPA: <strong>rajnitirgalpokotha@oksbi</strong></div>
     </div>
-  </section>
 
-  <!-- Exam Start -->
-  <section class="glass p-6">
-    <h2 class="text-xl font-semibold mb-4">📝 Exams</h2>
-    <button onclick="location.href='quiz.html'" 
-      class="w-full py-3 bg-indigo-500 hover:bg-indigo-600 rounded-xl text-white">
-      Start / Retake Exam
-    </button>
-  </section>
-
-  <!-- Payment Section -->
-  <section class="glass p-6 col-span-1 md:col-span-2 xl:col-span-3">
-    <h2 class="text-2xl font-semibold mb-4 glow-text">⚡ Online Payment</h2>
-
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-      <!-- GPay -->
-      <div class="glass p-4 text-center">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Google_Pay_Logo.svg/512px-Google_Pay_Logo.svg.png" 
-          class="mx-auto mb-3" width="80">
-        <a href="intent://pay?pa=rajnitirgalpokotha@oksbi&pn=Target%20Zone&tn=Fees%20Payment&cu=INR#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;end;"
-           class="block pay-button bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-xl">
-          Pay with GPay
-        </a>
-      </div>
-
-      <!-- PhonePe -->
-      <div class="glass p-4 text-center">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/f/fc/PhonePe_Logo.svg" 
-          class="mx-auto mb-3" width="80">
-        <a href="intent://pay?pa=7679262362@axl&pn=Target%20Zone&tn=Fees%20Payment&cu=INR#Intent;scheme=upi;package=com.phonepe.app;end;"
-           class="block pay-button bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-xl">
-          Pay with PhonePe
-        </a>
-      </div>
-
-      <!-- Paytm -->
-      <div class="glass p-4 text-center">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/5/55/Paytm_logo.png" 
-          class="mx-auto mb-3" width="80">
-        <a href="intent://pay?pa=7679262362@ptaxis&pn=Target%20Zone&tn=Fees%20Payment&cu=INR#Intent;scheme=upi;package=net.one97.paytm;end;"
-           class="block pay-button bg-cyan-500 hover:bg-cyan-600 text-white py-2 rounded-xl">
-          Pay with Paytm
-        </a>
-      </div>
-
+    <!-- PhonePe -->
+    <div class="glass p-4 text-center">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/f/fc/PhonePe_Logo.svg" 
+        class="mx-auto mb-3" width="80" alt="PhonePe">
+      <a href="intent://pay?pa=7679262362@axl&pn=Target%20Zone&tn=Fees%20Payment&cu=INR#Intent;scheme=upi;package=com.phonepe.app;end;"
+         class="btn" style="background:#6b21a8;color:white;">
+        Pay with PhonePe
+      </a>
+      <div style="margin-top:8px;font-size:0.9rem;opacity:0.9">VPA / Number: <strong>7679262362</strong></div>
     </div>
-  </section>
+
+    <!-- Paytm -->
+    <div class="glass p-4 text-center">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/5/55/Paytm_logo.png" 
+        class="mx-auto mb-3" width="80" alt="Paytm">
+      <a href="intent://pay?pa=7679262362@ptaxis&pn=Target%20Zone&tn=Fees%20Payment&cu=INR#Intent;scheme=upi;package=net.one97.paytm;end;"
+         class="btn" style="background:#00bcd4;color:white;">
+        Pay with Paytm
+      </a>
+      <div style="margin-top:8px;font-size:0.9rem;opacity:0.9">VPA: <strong>7679262362@ptaxis</strong></div>
+    </div>
+
+  </div>
+</section>
+
 </main>
 
+<script type="module">
+/* --------------------------
+  Firebase + Dynamic loader
+   (Dashboard expects the user
+    to be already logged in
+    by your existing login page)
+   -------------------------- */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, getDoc, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCR5rqthBh0vX0yLOcOG3b9xJiKbYtzdxU",
+  authDomain: "target-zone-8fffd.firebaseapp.com",
+  projectId: "target-zone-8fffd",
+  storageBucket: "target-zone-8fffd.appspot.com",
+  messagingSenderId: "667579216123",
+  appId: "1:667579216123:web:37bb1fcc724743073d005e"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// Auth check & load user data
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    // Not logged in — redirect your login page if you want
+    console.warn('No user logged in.');
+    return;
+  }
+
+  // load profile
+  try {
+    const u = await getDoc(doc(db, "users", user.uid));
+    if (u.exists()) {
+      const d = u.data();
+      document.getElementById("stdName").textContent = d.name || "N/A";
+      document.getElementById("stdEmail").textContent = d.email || "N/A";
+      document.getElementById("stdPhone").textContent = d.phone || "N/A";
+      document.getElementById("stdCourse").textContent = d.course || "N/A";
+    } else {
+      document.getElementById("stdName").textContent = user.displayName || user.email || "Student";
+      document.getElementById("stdEmail").textContent = user.email || "N/A";
+    }
+
+    // load payments (collection: users/{uid}/payments)
+    const payCol = collection(db, "users", user.uid, "payments");
+    const q = query(payCol, orderBy("createdAt","desc"));
+    const paySnap = await getDocs(q);
+    if (!paySnap.empty) {
+      let html = "";
+      paySnap.forEach(ps => {
+        const p = ps.data();
+        const statusClass = (p.status && p.status.toLowerCase()=="paid") ? "color: #86efac;" : "color:#fb7185;";
+        const amt = p.amount ? ` — ₹${p.amount}` : "";
+        const dt = p.createdAt && p.createdAt.toDate ? p.createdAt.toDate().toLocaleDateString() : (p.date || "");
+        html += `<div style="padding:8px;border-radius:8px;background:rgba(255,255,255,0.02);margin-bottom:8px;">
+                  <div style="font-weight:800">${ps.id}${amt}</div>
+                  <div style="font-size:0.9rem;opacity:0.9">${dt}</div>
+                  <div style="${statusClass};font-weight:700;margin-top:6px">${p.status || 'Unknown'}</div>
+                </div>`;
+      });
+      document.getElementById("paymentHistory").innerHTML = html;
+    } else {
+      document.getElementById("paymentHistory").textContent = "No payment history found.";
+    }
+
+  } catch (err) {
+    console.error("Error loading user data:", err);
+    document.getElementById("paymentHistory").textContent = "Error loading data.";
+  }
+});
+
+// logout
+document.getElementById("logoutBtn").addEventListener("click", () => {
+  signOut(auth).then(()=> location.href = "login.html").catch(()=> location.href = "login.html");
+});
+</script>
+
 </body>
-</html>
+                      </html>
