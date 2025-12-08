@@ -12,28 +12,69 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <style>
-/* Premium Glass Background */
+/* Floating Background Glow */
 body {
-    background: linear-gradient(180deg,#c7f0ff,#eaf7ff,#ffffff);
-    min-height: 100vh;
+    margin: 0;
     padding: 20px;
+    background: radial-gradient(circle at top, #dbeafe, #e0f2fe, #ffffff);
     font-family: "Inter", sans-serif;
+    overflow-x: hidden;
 }
 
+.light {
+    position: fixed;
+    width: 350px;
+    height: 350px;
+    filter: blur(120px);
+    border-radius: 50%;
+    z-index: -1;
+    animation: float 8s infinite alternate ease-in-out;
+}
+.light1 { background: rgba(99,102,241,0.25); top:10%; left:5%; }
+.light2 { background: rgba(236,72,153,0.25); top:30%; left:60%; }
+.light3 { background: rgba(14,165,233,0.25); top:70%; left:20%; }
+
+@keyframes float {
+    from { transform: translateY(0px); }
+    to { transform: translateY(40px); }
+}
+
+/* Glass Card */
 .glass-card {
     background: rgba(255,255,255,0.7);
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(15px);
     border-radius: 20px;
     padding: 25px;
     box-shadow: 0 12px 40px rgba(0,0,0,0.15);
 }
 
-.table-box { overflow-x: auto; }
+.sec-title {
+    font-size: 26px;
+    font-weight: 800;
+    margin-bottom: 12px;
+    background: linear-gradient(90deg,#4f46e5,#9333ea);
+    -webkit-background-clip: text;
+    color: transparent;
+}
 
+/* Exam Button */
+.examBtn {
+    background: linear-gradient(90deg,#4f46e5,#9333ea);
+    color: white;
+    padding: 12px;
+    width: 100%;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 18px;
+    box-shadow: 0 8px 18px rgba(99,102,241,0.3);
+}
+
+/* Payment Table */
+.table-box { overflow-x: auto; }
 th {
+    padding: 10px;
     background: #4f46e5;
     color: white;
-    padding: 10px;
     font-weight: 700;
 }
 td {
@@ -41,38 +82,47 @@ td {
     border-bottom: 1px solid #e5e7eb;
 }
 
-/* Linking Box */
+/* Email-linking box */
 #linkBox {
-    background: #ffffffaa;
-    border-radius: 15px;
-    padding: 20px;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    background: rgba(255,255,255,0.85);
+    padding: 25px;
+    border-radius: 22px;
+    box-shadow: 0 15px 28px rgba(0,0,0,0.15);
 }
 </style>
 
 </head>
 <body>
 
+<!-- BG Lights -->
+<div class="light light1"></div>
+<div class="light light2"></div>
+<div class="light light3"></div>
+
 <div class="max-w-5xl mx-auto">
 
-<h1 class="text-4xl font-bold text-indigo-700 text-center mb-6">🎓 Student Dashboard</h1>
+<h1 class="text-4xl font-extrabold mb-6 text-center"
+ style="background:linear-gradient(90deg,#4f46e5,#9333ea);-webkit-background-clip:text;color:transparent;">
+ 🎓 Student Dashboard
+</h1>
 
-<!-- UID Linking Box (for Email Login Users) -->
-<div id="linkBox" class="hidden mb-5">
-    <h2 class="text-2xl font-semibold mb-3">🔗 প্রথমবার আপনার অ্যাকাউন্ট লিংক করুন</h2>
-    <p class="mb-3 text-gray-700">আপনার মোবাইল নম্বর এবং জন্মতারিখ দিন (Phone + DOB)</p>
+<!-- *******************************
+     EMAIL LOGIN — LINK BOX
+******************************** -->
+<div id="linkBox" class="hidden mb-6">
+    <h2 class="text-2xl font-bold mb-3 text-indigo-700">🔗 প্রথমবার Phone + DOB দিয়ে লিংক করুন</h2>
 
-    <input id="linkPhone" type="text" placeholder="ফোন নম্বর" class="w-full mb-3 p-3 border rounded-lg">
-    <input id="linkDob" type="text" placeholder="জন্মতারিখ (YYYY-MM-DD)" class="w-full mb-3 p-3 border rounded-lg">
+    <input id="linkPhone" class="w-full p-3 border rounded-lg mb-3" placeholder="Phone Number">
+    <input id="linkDob" class="w-full p-3 border rounded-lg mb-3" placeholder="DOB (YYYY-MM-DD)">
 
-    <button id="linkSubmit" class="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold">
-        Submit & Link Account
-    </button>
+    <button id="submitLink" class="examBtn">Link Account</button>
 </div>
 
-<!-- Student Info -->
-<div id="infoSection" class="glass-card mb-6 hidden">
-    <h2 class="text-2xl font-bold mb-4 text-gray-800">ব্যক্তিগত তথ্য</h2>
+<!-- *******************************
+     STUDENT INFO
+******************************** -->
+<div id="infoSection" class="glass-card hidden mb-6">
+    <h2 class="sec-title">📌 ব্যক্তিগত তথ্য</h2>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <p><strong>নাম:</strong> <span id="name"></span></p>
@@ -84,12 +134,14 @@ td {
     </div>
 </div>
 
-<!-- Payments -->
-<div id="paymentSection" class="glass-card hidden">
-    <h2 class="text-2xl font-bold mb-4 text-gray-800">💰 পেমেন্ট হিস্টরি</h2>
+<!-- *******************************
+     PAYMENT HISTORY
+******************************** -->
+<div id="paymentSection" class="glass-card hidden mb-6">
+    <h2 class="sec-title">💰 পেমেন্ট হিস্ট্রি</h2>
 
     <div class="table-box">
-        <table class="w-full text-left">
+        <table class="w-full">
             <thead>
                 <tr>
                     <th>তারিখ</th>
@@ -102,14 +154,25 @@ td {
     </div>
 </div>
 
+<!-- *******************************
+     EXAM SECTION → quiz.html Redirect
+******************************** -->
+<div id="examSection" class="glass-card hidden mb-6">
+    <h2 class="sec-title">📝 Exam</h2>
+
+    <a href="quiz.html">
+        <button class="examBtn">Go to Exam Page</button>
+    </a>
 </div>
 
-<!-- Firebase -->
+</div>
+
+<!-- Firebase + JS -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { 
-    getFirestore, doc, getDoc, collection, getDocs, updateDoc, query, where 
+import {
+    getFirestore, doc, getDoc, collection, getDocs, updateDoc, query, where
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -125,43 +188,43 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// CHECK LOGIN METHOD
+
+/* ------------------------------
+   CHECK LOGIN STATE
+-------------------------------- */
 onAuthStateChanged(auth, async (user) => {
 
-    const localId = localStorage.getItem("studentId");
+    const sid = localStorage.getItem("studentId");
 
-    if (localId) {
-        // PHONE LOGIN
-        loadDashboard(localId);
+    // PHONE LOGIN → Already have studentId
+    if (sid) {
+        loadDashboard(sid);
         return;
     }
 
+    // EMAIL LOGIN → Need linking
     if (!user) return;
 
-    // Email Login → Check if Linked
     const q = query(collection(db, "students"), where("linkedEmail", "==", user.email));
     const snap = await getDocs(q);
 
     if (!snap.empty) {
-        const docId = snap.docs[0].id;
-        localStorage.setItem("studentId", docId);
-        loadDashboard(docId);
+        const id = snap.docs[0].id;
+        localStorage.setItem("studentId", id);
+        loadDashboard(id);
     } else {
-        // Show linking box
         document.getElementById("linkBox").classList.remove("hidden");
     }
 });
 
-// Linking System for Email Login
-document.getElementById("linkSubmit").onclick = async () => {
+/* ------------------------------
+   LINK EMAIL → PHONE + DOB
+-------------------------------- */
+document.getElementById("submitLink").onclick = async () => {
+
     const phone = linkPhone.value.trim();
     const dob = linkDob.value.trim();
     const user = auth.currentUser;
-
-    if (!phone || !dob) {
-        Swal.fire("Error", "ফোন এবং জন্মতারিখ দিন", "error");
-        return;
-    }
 
     const q = query(
         collection(db, "students"),
@@ -172,42 +235,41 @@ document.getElementById("linkSubmit").onclick = async () => {
     const snap = await getDocs(q);
 
     if (snap.empty) {
-        Swal.fire("Error", "মিল পাওয়া যায়নি!", "error");
+        Swal.fire("Error", "স্টুডেন্ট পাওয়া যায়নি!", "error");
         return;
     }
 
-    // update doc with email link
     const ref = snap.docs[0].ref;
     await updateDoc(ref, { linkedEmail: user.email });
 
     localStorage.setItem("studentId", snap.docs[0].id);
 
-    Swal.fire("Success", "অ্যাকাউন্ট লিংক সফল!", "success");
-    setTimeout(() => location.reload(), 800);
+    Swal.fire("Success", "অ্যাকাউন্ট লিংক সম্পন্ন!", "success");
+    setTimeout(()=> location.reload(), 800);
 };
 
-
-// LOAD DASHBOARD
+/* ------------------------------
+   LOAD DASHBOARD
+-------------------------------- */
 async function loadDashboard(id) {
 
-    // load student info
     const ref = doc(db, "students", id);
     const snap = await getDoc(ref);
 
-    if (!snap.exists()) return;
-
     const d = snap.data();
 
-    document.getElementById("name").textContent = d.name;
-    document.getElementById("phone").textContent = d.phone;
-    document.getElementById("dob").textContent = d.dob;
-    document.getElementById("father").textContent = d.father;
-    document.getElementById("batch").textContent = d.batch;
-    document.getElementById("whatsapp").textContent = d.whatsapp;
+    name.textContent = d.name;
+    phone.textContent = d.phone;
+    dob.textContent = d.dob;
+    father.textContent = d.father;
+    batch.textContent = d.batch;
+    whatsapp.textContent = d.whatsapp;
 
-    document.getElementById("infoSection").classList.remove("hidden");
+    infoSection.classList.remove("hidden");
+    paymentSection.classList.remove("hidden");
+    examSection.classList.remove("hidden");
 
-    // load payments
+    // Load Payments
     const payRef = collection(db, "students", id, "payments");
     const paySnap = await getDocs(payRef);
 
@@ -215,16 +277,15 @@ async function loadDashboard(id) {
     paySnap.forEach(doc => {
         let p = doc.data();
         html += `
-            <tr>
-                <td>${p.date || "-"}</td>
-                <td>${p.month || "-"}</td>
-                <td>${p.amount || 0} টাকা</td>
-            </tr>
+        <tr>
+            <td>${p.date}</td>
+            <td>${p.month}</td>
+            <td>${p.amount} টাকা</td>
+        </tr>
         `;
     });
 
     document.getElementById("paymentTable").innerHTML = html;
-    document.getElementById("paymentSection").classList.remove("hidden");
 }
 </script>
 
