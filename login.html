@@ -1,279 +1,153 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="bn">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Target Zone — Login</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Target Zone – Login</title>
 
-  <!-- Tailwind -->
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-  <!-- SweetAlert -->
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-  <style>
-    :root{
-      --accent1:#6d28d9;
-      --accent2:#8b5cf6;
-    }
-    body{
-      font-family:"Inter",sans-serif;
-      background:linear-gradient(180deg,#c7f0ff,#eaf7ff,#f6fbff);
-      min-height:100vh;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      padding:30px;
-    }
-
-    .sun{
-      position:fixed;
-      top:5%; left:50%;
-      transform:translateX(-50%);
-      width:130px; height:130px;
-      border-radius:50%;
-      background:radial-gradient(circle,#fff7b5,#ffd24f,#ffb445);
-      box-shadow:0 10px 60px rgba(255,180,60,0.25);
-      z-index:0;
-    }
-
-    .cloud{
-      position:fixed;
-      background:white;
-      border-radius:999px;
-      opacity:.8;
-      filter:blur(3px);
-      z-index:0;
-    }
-    .c1{width:240px;height:70px;top:18%;left:8%;}
-    .c2{width:200px;height:60px;top:28%;right:6%;}
-    .c3{width:280px;height:80px;top:35%;left:12%;opacity:.55;}
-
-    .card{
-      width:100%;
-      max-width:900px;
-      display:flex;
-      gap:30px;
-      padding:30px;
-      background:rgba(255,255,255,0.85);
-      backdrop-filter:blur(10px);
-      box-shadow:0 20px 40px rgba(0,0,0,0.12);
-      border-radius:20px;
-      z-index:10;
-    }
-
-    .logo-img{
-      max-width:180px;
-      max-height:180px;
-      object-fit:contain;
-      border-radius:12px;
-    }
-
-    @media(max-width:850px){
-      .card{flex-direction:column;align-items:center;text-align:center;}
-    }
-
-    .pill{
-      padding:8px 15px;
-      border-radius:999px;
-      cursor:pointer;
-      font-weight:600;
-    }
-    .pill.active{
-      background:linear-gradient(90deg,var(--accent1),var(--accent2));
-      color:white;
-      box-shadow:0 8px 20px rgba(99,102,241,0.18);
-    }
-
-    .input{
-      width:100%;
-      padding:12px 14px;
-      border-radius:12px;
-      border:1px solid rgba(0,0,0,0.15);
-      background:white;
-      font-size:15px;
-    }
-
-    .action-btn{
-      width:100%;
-      padding:12px;
-      border-radius:12px;
-      color:white;
-      font-size:16px;
-      background:linear-gradient(90deg,var(--accent1),var(--accent2));
-      font-weight:700;
-    }
-  </style>
+<style>
+body {
+    background: linear-gradient(180deg,#dbeafe,#f5f3ff,#fff);
+    font-family: 'Inter', sans-serif;
+}
+.card {
+    background: rgba(255,255,255,0.75);
+    backdrop-filter: blur(12px);
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+.tab-btn-active {
+    background: #6d28d9;
+    color: white;
+}
+</style>
 
 </head>
-<body>
+<body class="p-5">
 
-  <div class="sun"></div>
-  <div class="cloud c1"></div>
-  <div class="cloud c2"></div>
-  <div class="cloud c3"></div>
+<div class="max-w-md mx-auto card mt-10">
 
-  <div class="card">
+    <img src="target-zone-high-resolution-logo-black.png" class="w-40 mx-auto mb-5">
 
-    <!-- LEFT LOGO -->
-    <div class="flex justify-center items-center w-full">
-      <img class="logo-img"
-        src="https://raw.githubusercontent.com/nibedansarkar12/Target_Zone/main/target-zone-high-resolution-logo-black.png">
+    <h2 class="text-3xl font-bold mb-5 text-center text-purple-700">Target Zone — Login</h2>
+
+    <!-- TAB BUTTONS -->
+    <div class="flex mb-4">
+        <button id="uidTab" class="flex-1 p-2 rounded-l-full tab-btn-active">UID Login</button>
+        <button id="emailTab" class="flex-1 p-2 rounded-r-full bg-gray-200">Email Login</button>
     </div>
 
-    <!-- RIGHT FORM -->
-    <div class="w-full">
-
-      <h2 class="text-2xl font-bold text-gray-800 mb-3">Target Zone — Login</h2>
-
-      <!-- TOGGLE -->
-      <div class="flex gap-3 mb-4">
-        <div id="pillUID" class="pill active">Phone Login</div>
-        <div id="pillEmail" class="pill">Email Login</div>
-      </div>
-
-      <!-- PHONE + DOB LOGIN -->
-      <div id="form-uid">
-
-        <input id="inputPhone" class="input mb-3" placeholder="ফোন নম্বর লিখুন">
-
-        <div class="relative mb-3">
-          <input id="inputDob" class="input pr-10" type="password" placeholder="জন্মতারিখ (YYYY-MM-DD)">
-          <span id="toggleDob" class="absolute right-4 top-3 cursor-pointer">👁️</span>
-        </div>
-
-        <button id="btnPhoneLogin" class="action-btn mb-2">Login</button>
-      </div>
-
-      <!-- EMAIL LOGIN -->
-      <div id="form-email" class="hidden">
-
-        <input id="inputEmail" class="input mb-3" type="email" placeholder="Email লিখুন">
-
-        <div class="relative mb-3">
-          <input id="inputEmailPass" class="input pr-10" type="password" placeholder="Password">
-          <span id="toggleEmailPass" class="absolute right-4 top-3 cursor-pointer">👁️</span>
-        </div>
-
-        <button id="btnEmailLogin" class="action-btn mb-2">Login with Email</button>
-      </div>
-
-      <div class="my-4">
-        <button id="btnGoogle"
-          class="w-full flex items-center justify-center gap-3 py-2 border rounded-lg bg-white">
-          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
-          Sign in with Google
-        </button>
-      </div>
-
-      <div class="flex justify-between mt-2">
-        <a href="signup.html" class="text-indigo-600 text-sm">সাইন আপ করুন</a>
-        <a href="admin-login.html" class="text-gray-600 text-sm">অ্যাডমিন লগইন</a>
-      </div>
-
+    <!-- UID LOGIN FORM -->
+    <div id="uidLoginBox">
+        <input id="uidPhone" class="w-full p-3 border rounded-lg mb-3" placeholder="Phone Number">
+        <input id="uidDob" class="w-full p-3 border rounded-lg mb-3" placeholder="DOB (YYYY-MM-DD)">
+        <button id="uidLoginBtn" class="w-full bg-purple-700 text-white p-3 rounded-lg">Login</button>
     </div>
-  </div>
 
-  <!-- FIREBASE -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup }
-      from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, collection, query, where, getDocs }
-      from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    <!-- EMAIL LOGIN FORM -->
+    <div id="emailLoginBox" class="hidden">
+        <input id="email" class="w-full p-3 border rounded-lg mb-3" placeholder="Email">
+        <input id="emailPass" class="w-full p-3 border rounded-lg mb-3" placeholder="Password" type="password">
+        <button id="emailLoginBtn" class="w-full bg-purple-700 text-white p-3 rounded-lg">Login with Email</button>
+    </div>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCR5rqthBh0vX0yLOcOG3b9xJiKbYtzdxU",
-      authDomain: "target-zone-8fffd.firebaseapp.com",
-      projectId: "target-zone-8fffd",
-      storageBucket: "target-zone-8fffd.appspot.com",
-      messagingSenderId: "667579216123",
-      appId: "1:667579216123:web:37bb1fcc724743073d005e"
-    };
+</div>
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { 
+    getAuth, signInWithEmailAndPassword 
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { 
+    getFirestore, collection, query, where, getDocs 
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    // Toggle buttons
-    pillUID.onclick = () => {
-      pillUID.classList.add("active");
-      pillEmail.classList.remove("active");
-      form-uid.classList.remove("hidden");
-      form-email.classList.add("hidden");
-    };
-    pillEmail.onclick = () => {
-      pillEmail.classList.add("active");
-      pillUID.classList.remove("active");
-      form-email.classList.remove("hidden");
-      form-uid.classList.add("hidden");
-    };
+const firebaseConfig = {
+    apiKey: "AIzaSyCR5rqthBh0vX0yLOcOG3b9xJiKbYtzdxU",
+    authDomain: "target-zone-8fffd.firebaseapp.com",
+    projectId: "target-zone-8fffd",
+    storageBucket: "target-zone-8fffd.appspot.com",
+    messagingSenderId: "667579216123",
+    appId: "1:667579216123:web:37bb1fcc724743073d005e"
+};
 
-    // Eye toggles
-    toggleDob.onclick = () => {
-      inputDob.type = inputDob.type === "password" ? "text" : "password";
-    };
-    toggleEmailPass.onclick = () => {
-      inputEmailPass.type = inputEmailPass.type === "password" ? "text" : "password";
-    };
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
 
-    // PHONE + DOB LOGIN
-    btnPhoneLogin.onclick = async () => {
-      const phone = inputPhone.value.trim();
-      const dob = inputDob.value.trim();
+/* ------------------------------
+   TAB SWITCHING
+------------------------------ */
+emailTab.onclick = () => {
+    uidLoginBox.classList.add("hidden");
+    emailLoginBox.classList.remove("hidden");
+    uidTab.classList.remove("tab-btn-active");
+    emailTab.classList.add("tab-btn-active");
+};
+uidTab.onclick = () => {
+    uidLoginBox.classList.remove("hidden");
+    emailLoginBox.classList.add("hidden");
+    emailTab.classList.remove("tab-btn-active");
+    uidTab.classList.add("tab-btn-active");
+};
 
-      if (!phone || !dob) {
-        Swal.fire("Error", "ফোন নম্বর ও জন্মতারিখ দিন", "error");
+/* ------------------------------
+   UID LOGIN
+------------------------------ */
+uidLoginBtn.onclick = async () => {
+    let phone = uidPhone.value.trim();
+    let dob = uidDob.value.trim();
+
+    const q = query(
+        collection(db, "students"),
+        where("phone", "==", phone),
+        where("dob", "==", dob)
+    );
+
+    const snap = await getDocs(q);
+
+    if (snap.empty) {
+        Swal.fire("ভুল!", "Phone বা DOB ভুল!", "error");
         return;
-      }
+    }
 
-      try {
-        const q = query(
-          collection(db, "students"),
-          where("phone", "==", phone),
-          where("dob", "==", dob)
-        );
+    let sid = snap.docs[0].id;
+
+    // REDIRECT WITH SID
+    window.location.href = "student-dashboard.html?sid=" + sid;
+};
+
+/* ------------------------------
+   EMAIL LOGIN
+------------------------------ */
+emailLoginBtn.onclick = async () => {
+    try {
+        const user = await signInWithEmailAndPassword(auth, email.value, emailPass.value);
+
+        // Check linking
+        const q = query(collection(db, "students"), where("linkedEmail", "==", user.user.email));
         const snap = await getDocs(q);
 
         if (snap.empty) {
-          Swal.fire("Login Failed", "ভুল ফোন নম্বর বা জন্মতারিখ", "error");
-          return;
+            Swal.fire("লিংক করুন", "Dashboard-এ প্রথমবার Phone + DOB লিংক করতে হবে", "info");
+            window.location.href = "student-dashboard.html";
+            return;
         }
 
-        const id = snap.docs[0].id;
-        localStorage.setItem("studentId", id);
+        let sid = snap.docs[0].id;
+        window.location.href = "student-dashboard.html?sid=" + sid;
 
-        Swal.fire("Success", "Login Successful!", "success");
-        setTimeout(() => location.href = "student-dashboard.html", 900);
+    } catch (e) {
+        Swal.fire("Error", e.message, "error");
+    }
+};
 
-      } catch (err) {
-        Swal.fire("Error", err.message, "error");
-      }
-    };
-
-    // EMAIL LOGIN
-    btnEmailLogin.onclick = async () => {
-      try {
-        await signInWithEmailAndPassword(auth, inputEmail.value, inputEmailPass.value);
-        Swal.fire("Success", "Login Successful!", "success");
-        setTimeout(() => location.href = "student-dashboard.html", 900);
-      } catch (err) {
-        Swal.fire("Error", err.message, "error");
-      }
-    };
-
-    // GOOGLE LOGIN
-    btnGoogle.onclick = async () => {
-      try {
-        await signInWithPopup(auth, new GoogleAuthProvider());
-        Swal.fire("Success", "Google Login Successful!", "success");
-        setTimeout(() => location.href = "student-dashboard.html", 900);
-      } catch (err) {
-        Swal.fire("Error", err.message, "error");
-      }
-    };
-
-  </script>
+</script>
 
 </body>
 </html>
