@@ -119,81 +119,129 @@ style="background:linear-gradient(90deg,#4f46e5,#9333ea);-webkit-background-clip
 
 <!-- Firebase -->
 <script type="module">
+import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { 
-    getFirestore, doc, getDoc, collection, getDocs 
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  collection,
+  getDocs
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+// Firebase config
 const firebaseConfig = {
-    apiKey: "AIzaSyCR5rqthBh0vX0yLOcOG3b9xJiKbYtzdxU",
-    authDomain: "target-zone-8fffd.firebaseapp.com",
-    projectId: "target-zone-8fffd",
-    storageBucket: "target-zone-8fffd.appspot.com",
-    messagingSenderId: "667579216123",
-    appId: "1:667579216123:web:37bb1fcc724743073d005e"
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_BUCKET",
+  messagingSenderId: "YOUR_MSG",
+  appId: "YOUR_APP",
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-/* ================================
-   GET studentDocId FROM URL
-================================ */
-const url = new URL(window.location.href);
-const sid = url.searchParams.get("sid");
+// ======== Error Visible Logger ========
+function showError(err, step = "") {
+  console.error("🔥 Dashboard Error (" + step + "):", err);
 
-if (!sid) {
-    Swal.fire("Error", "Invalid Dashboard URL (Missing SID)", "error");
+  Swal.fire({
+    title: "Dashboard Error",
+    html: `
+      <b>Step:</b> ${step}<br><br>
+      <b>Error:</b><br>${err?.message || err}
+      <hr>
+      <small>Check console for full details.</small>
+    `,
+    icon: "error",
+  });
 }
 
-/* ================================
-   LOAD STUDENT DATA
-================================ */
+// ======== MAIN FUNCTION ========
 async function loadDashboard() {
+  try {
+    console.log("🔵 Dashboard loading...");
 
-    const ref = doc(db, "students", sid);
-    const snap = await getDoc(ref);
+    const url = new URL(window.location.href);
+    const sid = url.searchParams.get("sid");
+    console.log("🔵 SID =", sid);
 
-    if (!snap.exists()) {
-        Swal.fire("Error", "Student data not found!", "error");
-        return;
+    if (!sid) {
+      showError("Missing SID in URL", "SID Validation");
+      return;
     }
 
-    const d = snap.data();
+    // Step 1 — Load student document
+    let studentSnap;
+    try {
+      studentSnap = await getDoc(doc(db, "students", sid));
+    } catch (err) {
+      showError(err, "getDoc(students/sid)");
+      return;
+    }
 
-    name.textContent = d.name;
-    phone.textContent = d.phone;
-    dob.textContent = d.dob;
-    father.textContent = d.father;
-    batch.textContent = d.batch;
-    whatsapp.textContent = d.whatsapp;
+    if (!studentSnap.exists()) {
+      showError("Student Document Not Found in Firestore!", "Student Data Load");
+      return;
+    }
 
-    infoSection.classList.remove("hidden");
+    const student = studentSnap.data();
+    console.log("🟢 Student Data:", student);
 
-    /* LOAD PAYMENTS */
-    const payRef = collection(db, "students", sid, "payments");
-    const paySnap = await getDocs(payRef);
+    // Fill DOM
+    try {
+      document.getElementById("sname").innerText = student.name || "N/A";
+      document.getElementById("sid").innerText   = sid;
+      document.getElementById("sdob").innerText  = student.dob || "N/A";
+      document.getElementById("sphone").innerText = student.phone || "N/A";
+      document.getElementById("sclass").innerText = student.class || "N/A";
+      document.getElementById("saddress").innerText = student.address || "N/A";
+    } catch (err) {
+      showError(err, "Updating HTML Fields");
+      return;
+    }
 
-    let html = "";
-    paySnap.forEach(doc => {
-        let p = doc.data();
-        html += `
-            <tr>
-                <td>${p.date}</td>
-                <td>${p.month}</td>
-                <td>${p.amount} টাকা</td>
-            </tr>
-        `;
+    // Step 2 — Payments / Subcollection
+    console.log("🔵 Loading payments...");
+
+    let paySnap;
+    try {
+      paySnap = await getDocs(collection(db, "students", sid, "payments"));
+    } catch (err) {
+      showError(err, "Loading Payment Collection");
+      return;
+    }
+
+    const table = document.getElementById("paymentTableBody");
+    table.innerHTML = "";
+
+    paySnap.forEach((doc) => {
+      const p = doc.data();
+      console.log("🟢 Payment record:", p);
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${p?.amount || "N/A"}</td>
+        <td>${p?.date || "N/A"}</td>
+        <td>${p?.status || "N/A"}</td>
+      `;
+      table.appendChild(tr);
     });
 
-    document.getElementById("paymentTable").innerHTML = html;
-    paymentSection.classList.remove("hidden");
-    examSection.classList.remove("hidden");
+    // Show Dashboard
+    document.getElementById("infoSection").classList.remove("hidden");
+
+    Swal.fire("Success", "Dashboard Loaded Successfully!", "success");
+
+  } catch (err) {
+    showError(err, "Main loadDashboard()");
+  }
 }
 
-loadDashboard();
-
-</script>
+window.onload = loadDashboard;
+      </script>
 </body>
 </html>
