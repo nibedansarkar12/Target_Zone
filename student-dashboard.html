@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Student Dashboard - Target Zone</title>
+
+<!-- Tailwind -->
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+<!-- SweetAlert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<style>
+/* Background Glow */
+body {
+    margin: 0;
+    padding: 20px;
+    background: radial-gradient(circle at top, #dbeafe, #e0f2fe, #ffffff);
+    font-family: "Inter", sans-serif;
+}
+
+/* Floating Lights */
+.light { position: fixed; width: 350px; height: 350px; filter: blur(120px); border-radius: 50%; z-index:-1; animation: float 8s infinite alternate ease-in-out; }
+.light1 { background: rgba(99,102,241,0.25); top:10%; left:5%; }
+.light2 { background: rgba(236,72,153,0.25); top:30%; left:60%; }
+.light3 { background: rgba(14,165,233,0.25); top:70%; left:20%; }
+
+@keyframes float { from { transform: translateY(0px); } to { transform: translateY(40px);} }
+
+/* Premium Cards */
+.glass-card {
+    background: rgba(255,255,255,0.72);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+}
+
+.sec-title {
+    font-size: 26px;
+    font-weight: 800;
+    margin-bottom: 12px;
+    background: linear-gradient(90deg,#4f46e5,#9333ea);
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+/* Table */
+.table-box { overflow-x: auto; }
+th { background:#4f46e5; color:white; padding:10px; }
+td { padding:10px; border-bottom:1px solid #e5e7eb; }
+
+/* Exam Button */
+.examBtn {
+    background: linear-gradient(90deg,#4f46e5,#9333ea);
+    color:white; padding:12px; width:100%; font-size:18px; 
+    border-radius:14px; font-weight:700;
+    box-shadow:0 8px 18px rgba(99,102,241,0.3);
+}
+</style>
+
+</head>
+<body>
+
+<!-- BG Floating Lights -->
+<div class="light light1"></div>
+<div class="light light2"></div>
+<div class="light light3"></div>
+
+<div class="max-w-5xl mx-auto">
+
+<h1 class="text-4xl font-extrabold text-center mb-6"
+style="background:linear-gradient(90deg,#4f46e5,#9333ea);-webkit-background-clip:text;color:transparent;">
+ 🎓 Student Dashboard
+</h1>
+
+<!-- STUDENT INFO -->
+<div id="infoSection" class="glass-card hidden mb-6">
+    <h2 class="sec-title">📌 ব্যক্তিগত তথ্য</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <p><strong>নাম:</strong> <span id="name"></span></p>
+        <p><strong>ফোন:</strong> <span id="phone"></span></p>
+        <p><strong>জন্মতারিখ:</strong> <span id="dob"></span></p>
+        <p><strong>পিতার নাম:</strong> <span id="father"></span></p>
+        <p><strong>ব্যাচ:</strong> <span id="batch"></span></p>
+        <p><strong>হোয়াটসঅ্যাপ:</strong> <span id="whatsapp"></span></p>
+    </div>
+</div>
+
+<!-- PAYMENTS -->
+<div id="paymentSection" class="glass-card hidden mb-6">
+    <h2 class="sec-title">💰 পেমেন্ট হিস্ট্রি</h2>
+
+    <div class="table-box">
+        <table class="w-full">
+            <thead>
+                <tr>
+                    <th>তারিখ</th>
+                    <th>মাস</th>
+                    <th>টাকা</th>
+                </tr>
+            </thead>
+            <tbody id="paymentTable"></tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Exam -->
+<div id="examSection" class="glass-card hidden mb-6">
+    <h2 class="sec-title">📝 Exam</h2>
+    <a href="quiz.html">
+        <button class="examBtn">Go to Exam Page</button>
+    </a>
+</div>
+
+</div>
+
+<!-- Firebase -->
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { 
+    getFirestore, doc, getDoc, collection, getDocs 
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyCR5rqthBh0vX0yLOcOG3b9xJiKbYtzdxU",
+    authDomain: "target-zone-8fffd.firebaseapp.com",
+    projectId: "target-zone-8fffd",
+    storageBucket: "target-zone-8fffd.appspot.com",
+    messagingSenderId: "667579216123",
+    appId: "1:667579216123:web:37bb1fcc724743073d005e"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+/* ================================
+   GET studentDocId FROM URL
+================================ */
+const url = new URL(window.location.href);
+const sid = url.searchParams.get("sid");
+
+if (!sid) {
+    Swal.fire("Error", "Invalid Dashboard URL (Missing SID)", "error");
+}
+
+/* ================================
+   LOAD STUDENT DATA
+================================ */
+async function loadDashboard() {
+
+    const ref = doc(db, "students", sid);
+    const snap = await getDoc(ref);
+
+    if (!snap.exists()) {
+        Swal.fire("Error", "Student data not found!", "error");
+        return;
+    }
+
+    const d = snap.data();
+
+    name.textContent = d.name;
+    phone.textContent = d.phone;
+    dob.textContent = d.dob;
+    father.textContent = d.father;
+    batch.textContent = d.batch;
+    whatsapp.textContent = d.whatsapp;
+
+    infoSection.classList.remove("hidden");
+
+    /* LOAD PAYMENTS */
+    const payRef = collection(db, "students", sid, "payments");
+    const paySnap = await getDocs(payRef);
+
+    let html = "";
+    paySnap.forEach(doc => {
+        let p = doc.data();
+        html += `
+            <tr>
+                <td>${p.date}</td>
+                <td>${p.month}</td>
+                <td>${p.amount} টাকা</td>
+            </tr>
+        `;
+    });
+
+    document.getElementById("paymentTable").innerHTML = html;
+    paymentSection.classList.remove("hidden");
+    examSection.classList.remove("hidden");
+}
+
+loadDashboard();
+
+</script>
+</body>
+</html>
