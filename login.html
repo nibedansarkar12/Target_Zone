@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Target Zone — Login</title>
 
-  <!-- Tailwind CSS -->
+  <!-- Tailwind -->
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 
   <!-- SweetAlert -->
@@ -28,16 +28,15 @@
 
     .sun{
       position:fixed;
-      top:5%;
-      left:50%;
+      top:5%; left:50%;
       transform:translateX(-50%);
-      width:130px;
-      height:130px;
+      width:130px; height:130px;
       border-radius:50%;
-      background:radial-gradient(circle,#fff7b5 0%,#ffd24f 50%,#ffb445 100%);
+      background:radial-gradient(circle,#fff7b5,#ffd24f,#ffb445);
       box-shadow:0 10px 60px rgba(255,180,60,0.25);
       z-index:0;
     }
+
     .cloud{
       position:fixed;
       background:white;
@@ -74,7 +73,12 @@
       .card{flex-direction:column;align-items:center;text-align:center;}
     }
 
-    .pill{padding:8px 15px;border-radius:999px;cursor:pointer;font-weight:600;}
+    .pill{
+      padding:8px 15px;
+      border-radius:999px;
+      cursor:pointer;
+      font-weight:600;
+    }
     .pill.active{
       background:linear-gradient(90deg,var(--accent1),var(--accent2));
       color:white;
@@ -111,38 +115,37 @@
 
   <div class="card">
 
-    <!-- Left Logo -->
+    <!-- LEFT LOGO -->
     <div class="flex justify-center items-center w-full">
       <img class="logo-img"
         src="https://raw.githubusercontent.com/nibedansarkar12/Target_Zone/main/target-zone-high-resolution-logo-black.png">
     </div>
 
-    <!-- Right Login Form -->
+    <!-- RIGHT FORM -->
     <div class="w-full">
 
       <h2 class="text-2xl font-bold text-gray-800 mb-3">Target Zone — Login</h2>
 
-      <!-- Toggle Pills -->
+      <!-- TOGGLE -->
       <div class="flex gap-3 mb-4">
-        <div id="pillUID" class="pill active">UID Login</div>
+        <div id="pillUID" class="pill active">Phone Login</div>
         <div id="pillEmail" class="pill">Email Login</div>
       </div>
 
-      <!-- UID Login Form -->
+      <!-- PHONE + DOB LOGIN -->
       <div id="form-uid">
 
-        <input id="inputUid" class="input mb-3" placeholder="UID লিখুন">
+        <input id="inputPhone" class="input mb-3" placeholder="ফোন নম্বর লিখুন">
 
         <div class="relative mb-3">
-          <input id="inputUidPass" class="input pr-10" type="password"
-            placeholder="জন্মতারিখ (YYYY-MM-DD)">
-          <span id="toggleUidPass" class="absolute right-4 top-3 cursor-pointer">👁️</span>
+          <input id="inputDob" class="input pr-10" type="password" placeholder="জন্মতারিখ (YYYY-MM-DD)">
+          <span id="toggleDob" class="absolute right-4 top-3 cursor-pointer">👁️</span>
         </div>
 
-        <button id="btnUidLogin" class="action-btn mb-2">Login with UID</button>
+        <button id="btnPhoneLogin" class="action-btn mb-2">Login</button>
       </div>
 
-      <!-- Email Login Form -->
+      <!-- EMAIL LOGIN -->
       <div id="form-email" class="hidden">
 
         <input id="inputEmail" class="input mb-3" type="email" placeholder="Email লিখুন">
@@ -155,11 +158,11 @@
         <button id="btnEmailLogin" class="action-btn mb-2">Login with Email</button>
       </div>
 
-      <!-- Google -->
       <div class="my-4">
         <button id="btnGoogle"
           class="w-full flex items-center justify-center gap-3 py-2 border rounded-lg bg-white">
-          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Sign in with Google
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
+          Sign in with Google
         </button>
       </div>
 
@@ -171,8 +174,7 @@
     </div>
   </div>
 
-
-  <!-- Firebase Scripts -->
+  <!-- FIREBASE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup }
@@ -193,99 +195,84 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Selectors
-    const pillUID = document.getElementById("pillUID");
-    const pillEmail = document.getElementById("pillEmail");
-    const formUID = document.getElementById("form-uid");
-    const formEmail = document.getElementById("form-email");
-
+    // Toggle buttons
     pillUID.onclick = () => {
       pillUID.classList.add("active");
       pillEmail.classList.remove("active");
-      formUID.classList.remove("hidden");
-      formEmail.classList.add("hidden");
+      form-uid.classList.remove("hidden");
+      form-email.classList.add("hidden");
     };
     pillEmail.onclick = () => {
       pillEmail.classList.add("active");
       pillUID.classList.remove("active");
-      formEmail.classList.remove("hidden");
-      formUID.classList.add("hidden");
+      form-email.classList.remove("hidden");
+      form-uid.classList.add("hidden");
     };
 
-    // Eye Icon — Password Visibility
-    document.getElementById("toggleUidPass").onclick = () => {
-      const p = document.getElementById("inputUidPass");
-      p.type = p.type === "password" ? "text" : "password";
+    // Eye toggles
+    toggleDob.onclick = () => {
+      inputDob.type = inputDob.type === "password" ? "text" : "password";
     };
-    document.getElementById("toggleEmailPass").onclick = () => {
-      const p = document.getElementById("inputEmailPass");
-      p.type = p.type === "password" ? "text" : "password";
+    toggleEmailPass.onclick = () => {
+      inputEmailPass.type = inputEmailPass.type === "password" ? "text" : "password";
     };
 
-    // UID + DOB Login
-    document.getElementById("btnUidLogin").onclick = async () => {
-      const uid = inputUid.value.trim();
-      const dob = inputUidPass.value.trim();
+    // PHONE + DOB LOGIN
+    btnPhoneLogin.onclick = async () => {
+      const phone = inputPhone.value.trim();
+      const dob = inputDob.value.trim();
 
-      if (!uid || !dob) {
-        Swal.fire("Error", "UID ও জন্মতারিখ লিখুন", "error");
+      if (!phone || !dob) {
+        Swal.fire("Error", "ফোন নম্বর ও জন্মতারিখ দিন", "error");
         return;
       }
 
       try {
         const q = query(
           collection(db, "students"),
-          where("uid", "==", uid),
+          where("phone", "==", phone),
           where("dob", "==", dob)
         );
-
         const snap = await getDocs(q);
 
         if (snap.empty) {
-          Swal.fire("Login Failed", "ভুল UID বা জন্মতারিখ", "error");
+          Swal.fire("Login Failed", "ভুল ফোন নম্বর বা জন্মতারিখ", "error");
           return;
         }
 
-        const docId = snap.docs[0].id;
-        localStorage.setItem("studentId", docId);
+        const id = snap.docs[0].id;
+        localStorage.setItem("studentId", id);
 
         Swal.fire("Success", "Login Successful!", "success");
-        setTimeout(() => (location.href = "student-dashboard.html"), 900);
+        setTimeout(() => location.href = "student-dashboard.html", 900);
 
       } catch (err) {
         Swal.fire("Error", err.message, "error");
       }
     };
 
-    // Email Login
-    document.getElementById("btnEmailLogin").onclick = async () => {
-      const email = inputEmail.value;
-      const pass = inputEmailPass.value;
-
-      if (!email || !pass) {
-        Swal.fire("Error", "Email এবং Password দিন", "error");
-        return;
-      }
-
+    // EMAIL LOGIN
+    btnEmailLogin.onclick = async () => {
       try {
-        await signInWithEmailAndPassword(auth, email, pass);
+        await signInWithEmailAndPassword(auth, inputEmail.value, inputEmailPass.value);
         Swal.fire("Success", "Login Successful!", "success");
-        setTimeout(() => (location.href = "student-dashboard.html"), 900);
+        setTimeout(() => location.href = "student-dashboard.html", 900);
       } catch (err) {
         Swal.fire("Error", err.message, "error");
       }
     };
 
-    // Google Login
-    document.getElementById("btnGoogle").onclick = async () => {
+    // GOOGLE LOGIN
+    btnGoogle.onclick = async () => {
       try {
         await signInWithPopup(auth, new GoogleAuthProvider());
         Swal.fire("Success", "Google Login Successful!", "success");
-        setTimeout(() => (location.href = "student-dashboard.html"), 900);
+        setTimeout(() => location.href = "student-dashboard.html", 900);
       } catch (err) {
         Swal.fire("Error", err.message, "error");
       }
     };
+
   </script>
 
 </body>
