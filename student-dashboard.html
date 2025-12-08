@@ -12,36 +12,25 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <style>
-/* Floating Background Glow */
+/* Background Glow */
 body {
     margin: 0;
     padding: 20px;
     background: radial-gradient(circle at top, #dbeafe, #e0f2fe, #ffffff);
     font-family: "Inter", sans-serif;
-    overflow-x: hidden;
 }
 
-.light {
-    position: fixed;
-    width: 350px;
-    height: 350px;
-    filter: blur(120px);
-    border-radius: 50%;
-    z-index: -1;
-    animation: float 8s infinite alternate ease-in-out;
-}
+/* Floating Lights */
+.light { position: fixed; width: 350px; height: 350px; filter: blur(120px); border-radius: 50%; z-index:-1; animation: float 8s infinite alternate ease-in-out; }
 .light1 { background: rgba(99,102,241,0.25); top:10%; left:5%; }
 .light2 { background: rgba(236,72,153,0.25); top:30%; left:60%; }
 .light3 { background: rgba(14,165,233,0.25); top:70%; left:20%; }
 
-@keyframes float {
-    from { transform: translateY(0px); }
-    to { transform: translateY(40px); }
-}
+@keyframes float { from { transform: translateY(0px); } to { transform: translateY(40px);} }
 
-/* Glass Card */
+/* Premium Cards */
 .glass-card {
-    background: rgba(255,255,255,0.7);
+    background: rgba(255,255,255,0.72);
     backdrop-filter: blur(15px);
     border-radius: 20px;
     padding: 25px;
@@ -57,70 +46,36 @@ body {
     color: transparent;
 }
 
+/* Table */
+.table-box { overflow-x: auto; }
+th { background:#4f46e5; color:white; padding:10px; }
+td { padding:10px; border-bottom:1px solid #e5e7eb; }
+
 /* Exam Button */
 .examBtn {
     background: linear-gradient(90deg,#4f46e5,#9333ea);
-    color: white;
-    padding: 12px;
-    width: 100%;
-    border-radius: 14px;
-    font-weight: 700;
-    font-size: 18px;
-    box-shadow: 0 8px 18px rgba(99,102,241,0.3);
-}
-
-/* Payment Table */
-.table-box { overflow-x: auto; }
-th {
-    padding: 10px;
-    background: #4f46e5;
-    color: white;
-    font-weight: 700;
-}
-td {
-    padding: 10px;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-/* Email-linking box */
-#linkBox {
-    background: rgba(255,255,255,0.85);
-    padding: 25px;
-    border-radius: 22px;
-    box-shadow: 0 15px 28px rgba(0,0,0,0.15);
+    color:white; padding:12px; width:100%; font-size:18px; 
+    border-radius:14px; font-weight:700;
+    box-shadow:0 8px 18px rgba(99,102,241,0.3);
 }
 </style>
 
 </head>
 <body>
 
-<!-- BG Lights -->
+<!-- BG Floating Lights -->
 <div class="light light1"></div>
 <div class="light light2"></div>
 <div class="light light3"></div>
 
 <div class="max-w-5xl mx-auto">
 
-<h1 class="text-4xl font-extrabold mb-6 text-center"
- style="background:linear-gradient(90deg,#4f46e5,#9333ea);-webkit-background-clip:text;color:transparent;">
+<h1 class="text-4xl font-extrabold text-center mb-6"
+style="background:linear-gradient(90deg,#4f46e5,#9333ea);-webkit-background-clip:text;color:transparent;">
  🎓 Student Dashboard
 </h1>
 
-<!-- *******************************
-     EMAIL LOGIN — LINK BOX
-******************************** -->
-<div id="linkBox" class="hidden mb-6">
-    <h2 class="text-2xl font-bold mb-3 text-indigo-700">🔗 প্রথমবার Phone + DOB দিয়ে লিংক করুন</h2>
-
-    <input id="linkPhone" class="w-full p-3 border rounded-lg mb-3" placeholder="Phone Number">
-    <input id="linkDob" class="w-full p-3 border rounded-lg mb-3" placeholder="DOB (YYYY-MM-DD)">
-
-    <button id="submitLink" class="examBtn">Link Account</button>
-</div>
-
-<!-- *******************************
-     STUDENT INFO
-******************************** -->
+<!-- STUDENT INFO -->
 <div id="infoSection" class="glass-card hidden mb-6">
     <h2 class="sec-title">📌 ব্যক্তিগত তথ্য</h2>
 
@@ -134,9 +89,7 @@ td {
     </div>
 </div>
 
-<!-- *******************************
-     PAYMENT HISTORY
-******************************** -->
+<!-- PAYMENTS -->
 <div id="paymentSection" class="glass-card hidden mb-6">
     <h2 class="sec-title">💰 পেমেন্ট হিস্ট্রি</h2>
 
@@ -154,12 +107,9 @@ td {
     </div>
 </div>
 
-<!-- *******************************
-     EXAM SECTION → quiz.html Redirect
-******************************** -->
+<!-- Exam -->
 <div id="examSection" class="glass-card hidden mb-6">
     <h2 class="sec-title">📝 Exam</h2>
-
     <a href="quiz.html">
         <button class="examBtn">Go to Exam Page</button>
     </a>
@@ -167,12 +117,12 @@ td {
 
 </div>
 
-<!-- Firebase + JS -->
+<!-- Firebase -->
 <script type="module">
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import {
-    getFirestore, doc, getDoc, collection, getDocs, updateDoc, query, where
+import { 
+    getFirestore, doc, getDoc, collection, getDocs 
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -185,76 +135,30 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
 const db = getFirestore(app);
 
+/* ================================
+   GET studentDocId FROM URL
+================================ */
+const url = new URL(window.location.href);
+const sid = url.searchParams.get("sid");
 
-/* ------------------------------
-   CHECK LOGIN STATE
--------------------------------- */
-onAuthStateChanged(auth, async (user) => {
+if (!sid) {
+    Swal.fire("Error", "Invalid Dashboard URL (Missing SID)", "error");
+}
 
-    const sid = localStorage.getItem("studentId");
+/* ================================
+   LOAD STUDENT DATA
+================================ */
+async function loadDashboard() {
 
-    // PHONE LOGIN → Already have studentId
-    if (sid) {
-        loadDashboard(sid);
-        return;
-    }
-
-    // EMAIL LOGIN → Need linking
-    if (!user) return;
-
-    const q = query(collection(db, "students"), where("linkedEmail", "==", user.email));
-    const snap = await getDocs(q);
-
-    if (!snap.empty) {
-        const id = snap.docs[0].id;
-        localStorage.setItem("studentId", id);
-        loadDashboard(id);
-    } else {
-        document.getElementById("linkBox").classList.remove("hidden");
-    }
-});
-
-/* ------------------------------
-   LINK EMAIL → PHONE + DOB
--------------------------------- */
-document.getElementById("submitLink").onclick = async () => {
-
-    const phone = linkPhone.value.trim();
-    const dob = linkDob.value.trim();
-    const user = auth.currentUser;
-
-    const q = query(
-        collection(db, "students"),
-        where("phone", "==", phone),
-        where("dob", "==", dob)
-    );
-
-    const snap = await getDocs(q);
-
-    if (snap.empty) {
-        Swal.fire("Error", "স্টুডেন্ট পাওয়া যায়নি!", "error");
-        return;
-    }
-
-    const ref = snap.docs[0].ref;
-    await updateDoc(ref, { linkedEmail: user.email });
-
-    localStorage.setItem("studentId", snap.docs[0].id);
-
-    Swal.fire("Success", "অ্যাকাউন্ট লিংক সম্পন্ন!", "success");
-    setTimeout(()=> location.reload(), 800);
-};
-
-/* ------------------------------
-   LOAD DASHBOARD
--------------------------------- */
-async function loadDashboard(id) {
-
-    const ref = doc(db, "students", id);
+    const ref = doc(db, "students", sid);
     const snap = await getDoc(ref);
+
+    if (!snap.exists()) {
+        Swal.fire("Error", "Student data not found!", "error");
+        return;
+    }
 
     const d = snap.data();
 
@@ -266,28 +170,30 @@ async function loadDashboard(id) {
     whatsapp.textContent = d.whatsapp;
 
     infoSection.classList.remove("hidden");
-    paymentSection.classList.remove("hidden");
-    examSection.classList.remove("hidden");
 
-    // Load Payments
-    const payRef = collection(db, "students", id, "payments");
+    /* LOAD PAYMENTS */
+    const payRef = collection(db, "students", sid, "payments");
     const paySnap = await getDocs(payRef);
 
     let html = "";
     paySnap.forEach(doc => {
         let p = doc.data();
         html += `
-        <tr>
-            <td>${p.date}</td>
-            <td>${p.month}</td>
-            <td>${p.amount} টাকা</td>
-        </tr>
+            <tr>
+                <td>${p.date}</td>
+                <td>${p.month}</td>
+                <td>${p.amount} টাকা</td>
+            </tr>
         `;
     });
 
     document.getElementById("paymentTable").innerHTML = html;
+    paymentSection.classList.remove("hidden");
+    examSection.classList.remove("hidden");
 }
-</script>
 
+loadDashboard();
+
+</script>
 </body>
 </html>
