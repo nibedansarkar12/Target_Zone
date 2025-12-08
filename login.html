@@ -1,255 +1,311 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="bn">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>Target Zone – Login</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Target Zone — Login</title>
+
+  <!-- Tailwind CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+  <!-- SweetAlert -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      min-height: 100vh; margin: 0; padding: 24px 12px;
-      background: linear-gradient(to bottom, #87cefa, #e0f7fa);
-      background-attachment: fixed; overflow-x: hidden; position: relative;
-      transition: background .3s ease;
+    :root{
+      --card-bg: rgba(255,255,255,0.75);
+      --glass: rgba(255,255,255,0.35);
+      --accent1: #6d28d9;
+      --accent2: #8b5cf6;
     }
-    body.dark { background: linear-gradient(to bottom, #0f172a, #1e293b); color:#e2e8f0; }
+    html,body{height:100%}
+    body{
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg,#c7f0ff 0%, #eaf7ff 45%, #f6fbff 100%);
+      margin:0; display:flex; align-items:center; justify-content:center; min-height:100vh;
+    }
 
-    /* Sun + Clouds */
-    .sun { position: fixed; top: 5%; right: 8%; width: 130px; height: 130px; border-radius: 50%;
-      background: radial-gradient(circle at 40% 40%, #ffe27a 0%, #ffc938 55%, #ff9f1a 100%);
-      box-shadow:0 0 60px rgba(255,200,0,.55),0 0 120px rgba(255,180,0,.35);
-      animation:sunPulse 6s ease-in-out infinite alternate; z-index:1; }
-    @keyframes sunPulse { from{transform:scale(1)} to{transform:scale(1.08)} }
-    .cloud { position: fixed; background:#fff; border-radius:50%; opacity:.7;
-      animation: float linear infinite; box-shadow:40px 20px 60px rgba(0,0,0,.08); z-index:2; }
-    .cloud.one { width:220px; height:68px; top:18%; left:-260px; animation-duration:75s; }
-    .cloud.two { width:170px; height:56px; top:38%; left:-220px; animation-duration:95s; }
-    .cloud.three { width:280px; height:80px; top:62%; left:-320px; animation-duration:115s; }
-    @keyframes float { from{transform:translateX(0)} to{transform:translateX(120vw)} }
+    /* Sun centered on top */
+    .sun{
+      position:fixed; top:4%;
+      left:50%; transform:translateX(-50%);
+      width:140px; height:140px; border-radius:50%;
+      background: radial-gradient(circle at 35% 35%, #fff6b8 0%, #ffd454 45%, #ffb547 100%);
+      box-shadow: 0 12px 60px rgba(255,180,60,0.18), inset 0 -10px 30px rgba(255,200,0,0.06);
+      z-index:0;
+    }
 
-    /* Form */
-    .form-card { background:rgba(255,255,255,.68); backdrop-filter:blur(12px); border-radius:1.5rem;
-      box-shadow:0 20px 50px rgba(0,0,0,.2); transition:all .25s ease; position:relative; z-index:5; }
-    .form-card:hover { background:rgba(255,255,255,.92); transform:translateY(-2px) scale(1.01); }
+    .cloud{
+      position:fixed; background:#fff; border-radius:999px; opacity:.9;
+      filter: blur(2px); z-index:0;
+    }
+    .cloud.c1{ width:240px; height:70px; top:16%; left:6%; }
+    .cloud.c2{ width:180px; height:56px; top:22%; right:6%; }
+    .cloud.c3{ width:300px; height:84px; top:34%; left:8%; opacity:.55; }
 
-    /* Inputs */
-    .t-input { background:rgba(255,255,255,.7); border:1px solid rgba(0,0,0,.12); transition:.25s }
-    .t-input:focus { background:#fff; border-color:#4facfe; box-shadow:0 0 0 4px rgba(79,172,254,.28); outline:none }
-    .t-input::placeholder { animation:pulsePlaceholder 2s infinite; }
-    @keyframes pulsePlaceholder { 0%,100%{opacity:.7} 50%{opacity:1} }
-    .input-error { border-color:#f87171 !important; box-shadow:0 0 0 3px rgba(248,113,113,.2) }
+    /* Container */
+    .wrap{ z-index:10; width:100%; max-width:920px; margin:48px; }
 
-    /* Glow button */
-    .btn-glow{ transition:.3s; position:relative; overflow:hidden; }
-    .btn-glow::after{ content:""; position:absolute; inset:0; border-radius:inherit;
-      box-shadow:0 0 15px 3px rgba(79,172,254,.6); opacity:0; transition:.3s; }
-    .btn-glow:hover::after{ opacity:1; }
+    /* Modern card */
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.80));
+      border-radius:20px; box-shadow: 0 20px 50px rgba(30,41,59,0.12);
+      backdrop-filter: blur(8px);
+      padding:28px;
+      display:flex; gap:28px; align-items:center;
+    }
 
-    /* Toggle pills - subtle, preserves original design */
-    .login-toggle { display:flex; gap:6px; justify-content:center; margin-bottom:10px; }
-    .toggle-pill { padding:6px 12px; border-radius:999px; cursor:pointer; font-weight:600; font-size:0.95rem;
-                  border:1px solid rgba(0,0,0,0.06); background:rgba(255,255,255,0.6); }
-    .toggle-pill.active { background:linear-gradient(90deg,#6366f1,#8b5cf6); color:white; box-shadow:0 6px 20px rgba(99,102,241,0.15); }
+    /* left visual */
+    .card-art{
+      flex:1; min-width:220px;
+      display:flex; align-items:center; justify-content:center; position:relative;
+    }
+    .art-bubble{
+      width:170px; height:170px; border-radius:22px;
+      background: linear-gradient(135deg,var(--accent1), var(--accent2));
+      box-shadow: 0 18px 40px rgba(99,102,241,0.18);
+      display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:28px;
+    }
+
+    /* form area */
+    .card-form{ flex:1.3; min-width:300px; }
+    .brand{
+      display:flex; gap:12px; align-items:center; margin-bottom:8px;
+    }
+    .brand h1{ font-size:26px; font-weight:800; color:#2b2f4a; margin:0; letter-spacing:.2px; }
+
+    /* toggle pills */
+    .pills{ display:flex; gap:8px; margin-bottom:12px; }
+    .pill{
+      padding:8px 14px; border-radius:999px; cursor:pointer;
+      background:transparent; border:1px solid rgba(30,41,59,0.04); color:#1f2937; font-weight:600;
+      transition:all .18s ease;
+    }
+    .pill.active{
+      background: linear-gradient(90deg,var(--accent1), var(--accent2));
+      color:white; box-shadow: 0 12px 30px rgba(99,102,241,0.12);
+      transform: translateY(-2px);
+    }
+
+    /* inputs */
+    .input{
+      width:100%; padding:12px 14px; border-radius:12px; border:1px solid rgba(30,41,59,0.06);
+      background: rgba(255,255,255,0.85); outline:none; font-size:15px; color:#0f172a;
+      box-shadow: 0 6px 18px rgba(14,20,30,0.03) inset;
+    }
+    .input:focus{ box-shadow: 0 8px 30px rgba(99,102,241,0.08); border-color:rgba(99,102,241,0.28) }
+
+    .action-btn{
+      width:100%; padding:12px 14px; border-radius:12px; font-weight:700; color:white; border:none;
+      background: linear-gradient(90deg,var(--accent1), var(--accent2));
+      box-shadow: 0 14px 30px rgba(99,102,241,0.12);
+    }
+
+    /* google btn */
+    .google-btn{ display:flex; align-items:center; gap:12px; justify-content:center;
+      padding:10px 12px; border-radius:12px; border:1px solid rgba(30,41,59,0.06);
+      background:white; cursor:pointer; font-weight:600; color:#0f172a;
+    }
+    .muted{ color:#64748b; }
+
+    /* small helper */
+    .helper{ font-size:13px; color:#475569; margin-top:8px; }
+
+    /* responsive */
+    @media (max-width:920px){
+      .card{ flex-direction:column; padding:20px; gap:16px; }
+      .card-art{ order:2; }
+    }
+
   </style>
 </head>
 <body>
-  <!-- Background -->
-  <div class="sun"></div>
-  <div class="cloud one"></div>
-  <div class="cloud two"></div>
-  <div class="cloud three"></div>
 
-  <!-- Dark mode toggle -->
-  <div class="fixed top-4 right-4 z-50">
-    <button id="themeToggle" class="bg-gray-200 dark:bg-gray-700 p-2 rounded-full">🌙</button>
-  </div>
+  <!-- Decor -->
+  <div class="sun" aria-hidden="true"></div>
+  <div class="cloud c1" aria-hidden="true"></div>
+  <div class="cloud c2" aria-hidden="true"></div>
+  <div class="cloud c3" aria-hidden="true"></div>
 
-  <!-- Login Form -->
-  <div class="flex items-center justify-center min-h-screen">
-    <div class="form-card p-6 md:p-8 w-full max-w-md mx-auto">
-      <h2 class="text-3xl font-extrabold text-center mb-4 bg-gradient-to-r from-blue-600 to-indigo-500 bg-clip-text text-transparent">
-        🔐 Target Zone – Login
-      </h2>
-
-      <!-- Toggle pills (UID / Email) - keeps design intact, small and subtle -->
-      <div class="login-toggle">
-        <div id="pill-uid" class="toggle-pill active">UID Login</div>
-        <div id="pill-email" class="toggle-pill">Email Login</div>
+  <div class="wrap mx-auto">
+    <div class="card">
+      <!-- left art / illustration -->
+      <div class="card-art">
+        <div class="art-bubble">TZ</div>
       </div>
 
-      <form id="loginForm" class="grid grid-cols-1 gap-4" novalidate>
-        <!-- UID block (hidden when Email mode) -->
-        <div id="uidBlock" class="">
-          <input id="uid" type="text" class="t-input px-4 py-3 rounded-lg shadow-sm" placeholder="🎫 UID" />
-          <input id="uid_password" type="password" class="t-input px-4 py-3 rounded-lg shadow-sm" placeholder="🔑 Password" />
-          <button id="uidLoginBtn" type="button" class="btn-glow w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-purple-600 hover:to-indigo-600 text-white py-3 rounded-lg font-semibold text-lg">
-            Login with UID
-          </button>
+      <!-- right form -->
+      <div class="card-form">
+        <div class="brand">
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 11C3 6.58 6.58 3 11 3s8 3.58 8 8" stroke="#6d28d9" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M12 21v-6" stroke="#8b5cf6" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <h1>Target Zone — Login</h1>
         </div>
 
-        <!-- Email block (hidden when UID mode) -->
-        <div id="emailBlock" class="hidden">
-          <input id="emailInput" type="email" class="t-input px-4 py-3 rounded-lg shadow-sm" placeholder="📧 Email *" />
-          <div class="relative">
-            <input id="emailPass" type="password" class="t-input w-full px-4 py-3 rounded-lg shadow-sm pr-10" placeholder="🔐 Password *" />
-            <span id="togglePw" class="absolute right-3 top-3 cursor-pointer">👁️</span>
+        <!-- Toggle pills -->
+        <div class="pills" role="tablist" aria-label="Login type">
+          <div id="pillUID" class="pill active" role="tab" aria-selected="true">UID Login</div>
+          <div id="pillEmail" class="pill" role="tab" aria-selected="false">Email Login</div>
+        </div>
+
+        <!-- Form content -->
+        <div id="forms">
+
+          <!-- UID Form -->
+          <div id="form-uid">
+            <div class="mb-3">
+              <input id="inputUid" class="input" placeholder="UID লিখুন (e.g. ফোন বা STU-xxxxx)" />
+            </div>
+            <div class="mb-3">
+              <input id="inputUidPass" class="input" type="password" placeholder="Password" />
+            </div>
+            <div class="mb-3">
+              <button id="btnUidLogin" class="action-btn">Login with UID</button>
+            </div>
+            <div class="mb-2 helper muted">নোট: UID হলো আপনার admin-panel generated ID।</div>
           </div>
-          <label class="flex items-center gap-2">
-            <input type="checkbox" id="remember" class="mt-1">
-            <span class="text-sm">Remember me</span>
-          </label>
 
-          <button id="emailLoginBtn" type="button" class="btn-glow w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-purple-600 hover:to-indigo-600 text-white py-3 rounded-lg font-semibold text-lg">
-            ✅ Login
+          <!-- Email Form (hidden initially) -->
+          <div id="form-email" class="hidden">
+            <div class="mb-3">
+              <input id="inputEmail" class="input" type="email" placeholder="ইমেইল লিখুন" />
+            </div>
+            <div class="mb-3 relative">
+              <input id="inputEmailPass" class="input" type="password" placeholder="Password" />
+            </div>
+            <div class="mb-3">
+              <button id="btnEmailLogin" class="action-btn">Login with Email</button>
+            </div>
+            <div class="mb-2 helper muted">Email দিয়ে login করলে প্রথমবার আপনার UID লিংক করতে বলা হবে (dashboard-এ)।</div>
+          </div>
+
+        </div>
+
+        <!-- divider -->
+        <div class="my-4 flex items-center gap-3">
+          <div style="flex:1;height:1px;background:linear-gradient(90deg, rgba(15,23,42,0.03), rgba(15,23,42,0.06));"></div>
+          <div class="muted text-sm">অথবা</div>
+          <div style="flex:1;height:1px;background:linear-gradient(90deg, rgba(15,23,42,0.03), rgba(15,23,42,0.06));"></div>
+        </div>
+
+        <!-- Google -->
+        <div class="mb-3">
+          <button id="btnGoogle" class="google-btn">
+            <svg width="18" height="18" viewBox="0 0 48 48" class="" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.63 1.22 9.1 3.61l6.77-6.77C35.42 2.89 30.18.5 24 .5 14.83.5 7.08 6.42 3.96 14.74l7.91 6.14C13.61 15.1 18.41 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.5c0-1.6-.14-3.13-.4-4.59H24v9.1h12.9c-.56 3.01-2.25 5.56-4.81 7.27l7.64 5.94C44.11 38.27 46.98 31.89 46.98 24.5z"/><path fill="#FBBC05" d="M11.87 28.88a14.46 14.46 0 0 1 0-9.76l-7.91-6.14a23.92 23.92 0 0 0 0 22.04l7.91-6.14z"/><path fill="#34A853" d="M24 47.5c6.18 0 11.42-2.04 15.23-5.54l-7.64-5.94c-2.12 1.43-4.83 2.28-7.59 2.28-5.59 0-10.39-5.6-12.13-11.38l-7.91 6.14C7.08 42.58 14.83 47.5 24 47.5z"/></svg>
+            Sign in with Google
           </button>
         </div>
 
-        <!-- Google button (always shown, preserved exact look) -->
-        <button id="googleBtn" type="button"
-          class="w-full mt-1 flex items-center justify-center gap-3 border border-gray-300 bg-white hover:bg-gray-100 text-gray-700 py-3 rounded-lg font-medium shadow-sm transition">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="w-5 h-5"><path fill="#EA4335" d="M24 9.5c3.54 0 6.63 1.22 9.1 3.61l6.77-6.77C35.42 2.89 30.18.5 24 .5 14.83.5 7.08 6.42 3.96 14.74l7.91 6.14C13.61 15.1 18.41 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.5c0-1.6-.14-3.13-.4-4.59H24v9.1h12.9c-.56 3.01-2.25 5.56-4.81 7.27l7.64 5.94C44.11 38.27 46.98 31.89 46.98 24.5z"/><path fill="#FBBC05" d="M11.87 28.88a14.46 14.46 0 0 1 0-9.76l-7.91-6.14a23.92 23.92 0 0 0 0 22.04l7.91-6.14z"/><path fill="#34A853" d="M24 47.5c6.18 0 11.42-2.04 15.23-5.54l-7.64-5.94c-2.12 1.43-4.83 2.28-7.59 2.28-5.59 0-10.39-5.6-12.13-11.38l-7.91 6.14C7.08 42.58 14.83 47.5 24 47.5z"/></svg>
-          Sign in with Google
-        </button>
-
-      </form>
-
-      <!-- Signup link -->
-      <p class="text-center mt-4 text-sm">
-        👤 একাউন্ট নেই?
-        <a href="signup.html" class="text-blue-600 font-semibold hover:underline">
-          সাইন আপ করুন
-        </a>
-      </p>
-
-      <!-- Admin Login link -->
-      <p class="text-center mt-3">
-        <a href="admin-login.html"
-           class="inline-block px-4 py-2 text-sm font-medium text-indigo-600 dark:text-indigo-300 border border-indigo-300 dark:border-indigo-600 rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-800 transition">
-          🛠️ অ্যাডমিন লগইন
-        </a>
-      </p>
+        <div class="flex items-center justify-between mt-2">
+          <a href="signup.html" class="text-sm text-indigo-600 font-semibold">সাইন আপ করুন</a>
+          <a href="admin-login.html" class="text-sm text-gray-600">অ্যাডমিন লগইন</a>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- Firebase Login -->
+  <!-- Firebase + Logic -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, collection, query, where, getDocs, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getFirestore, collection, query, where, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    const firebaseConfig={apiKey:"AIzaSyCR5rqthBh0vX0yLOcOG3b9xJiKbYtzdxU",authDomain:"target-zone-8fffd.firebaseapp.com",projectId:"target-zone-8fffd",storageBucket:"target-zone-8fffd.appspot.com",messagingSenderId:"667579216123",appId:"1:667579216123:web:37bb1fcc724743073d005e"};
-    const app=initializeApp(firebaseConfig);
-    const auth=getAuth(app);
-    const db=getFirestore(app);
+    const firebaseConfig = {
+      apiKey: "AIzaSyCR5rqthBh0vX0yLOcOG3b9xJiKbYtzdxU",
+      authDomain: "target-zone-8fffd.firebaseapp.com",
+      projectId: "target-zone-8fffd",
+      storageBucket: "target-zone-8fffd.appspot.com",
+      messagingSenderId: "667579216123",
+      appId: "1:667579216123:web:37bb1fcc724743073d005e"
+    };
 
-    // theme toggle
-    document.getElementById("themeToggle")?.addEventListener("click", ()=> document.body.classList.toggle("dark"));
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-    // show/hide password icon for email block
-    document.getElementById("togglePw")?.addEventListener("click", ()=>{
-      const p = document.getElementById("emailPass");
-      if (!p) return;
-      p.type = p.type === "password" ? "text" : "password";
-    });
+    // UI refs
+    const pillUID = document.getElementById('pillUID');
+    const pillEmail = document.getElementById('pillEmail');
+    const formUid = document.getElementById('form-uid');
+    const formEmail = document.getElementById('form-email');
 
-    // Toggle pills logic (preserve design: just show/hide blocks)
-    const pillUid = document.getElementById("pill-uid");
-    const pillEmail = document.getElementById("pill-email");
-    const uidBlock = document.getElementById("uidBlock");
-    const emailBlock = document.getElementById("emailBlock");
-
-    function setMode(mode) {
-      if (mode === "uid") {
-        pillUid.classList.add("active");
-        pillEmail.classList.remove("active");
-        uidBlock.classList.remove("hidden");
-        emailBlock.classList.add("hidden");
+    function setMode(mode){
+      if(mode === 'uid'){
+        pillUID.classList.add('active'); pillEmail.classList.remove('active');
+        formUid.classList.remove('hidden'); formEmail.classList.add('hidden');
       } else {
-        pillEmail.classList.add("active");
-        pillUid.classList.remove("active");
-        emailBlock.classList.remove("hidden");
-        uidBlock.classList.add("hidden");
+        pillEmail.classList.add('active'); pillUID.classList.remove('active');
+        formEmail.classList.remove('hidden'); formUid.classList.add('hidden');
       }
     }
+    // default
+    setMode('uid');
 
-    pillUid.addEventListener("click", ()=> setMode("uid"));
-    pillEmail.addEventListener("click", ()=> setMode("email"));
+    pillUID.addEventListener('click', ()=> setMode('uid'));
+    pillEmail.addEventListener('click', ()=> setMode('email'));
 
-    // initialize default (UID active) to keep similar UX
-    setMode("uid");
+    // Useful helpers
+    const toast = (icon, title) => Swal.fire({ icon, title, timer:1500, showConfirmButton:false });
 
-    /* ---------------------------
-       UID Login handler
-       --------------------------- */
-    document.getElementById("uidLoginBtn").addEventListener("click", async ()=> {
-      const uidVal = document.getElementById("uid").value.trim();
-      const pwd = document.getElementById("uid_password").value.trim();
-      // small validation
-      if (!uidVal || !pwd) {
-        Swal.fire({icon:"error", title:"UID & Password দরকার"});
-        return;
-      }
+    /* ---------------- UID LOGIN ---------------- */
+    document.getElementById('btnUidLogin').addEventListener('click', async () => {
+      const uid = document.getElementById('inputUid').value.trim();
+      const pass = document.getElementById('inputUidPass').value.trim();
+      if(!uid || !pass){ Swal.fire({icon:'error',title:'UID ও Password লিখুন'}); return; }
+
       try {
-        const q = query(collection(db,"students"), where("uid","==",uidVal), where("password","==",pwd));
+        const q = query(collection(db,'students'), where('uid','==',uid), where('password','==',pass));
         const snap = await getDocs(q);
-        if (snap.empty) {
-          Swal.fire({icon:"error", title:"Login Failed", text:"ভুল UID বা Password"});
-          return;
-        }
-        const studentId = snap.docs[0].id;
-        localStorage.setItem("studentId", studentId);
-        Swal.fire({icon:"success", title:"Login Successful", timer:1200, showConfirmButton:false});
-        setTimeout(()=> location.href = "student-dashboard.html", 1200);
-      } catch (err) {
-        console.error(err);
-        Swal.fire({icon:"error", title:"Login Error", text: err.message || err});
+        if(snap.empty){ Swal.fire({icon:'error',title:'Login Failed', text:'ভুল UID বা Password'}); return; }
+        const sid = snap.docs[0].id;
+        localStorage.setItem('studentId', sid);
+        toast('success','Login Successful');
+        setTimeout(()=> location.href = 'student-dashboard.html', 900);
+      } catch(e){
+        console.error(e); Swal.fire({icon:'error',title:'Login Error', text:e.message||e});
       }
     });
 
-    /* ---------------------------
-       Email Login handler
-       --------------------------- */
-    document.getElementById("emailLoginBtn").addEventListener("click", async ()=> {
-      const email = document.getElementById("emailInput").value.trim();
-      const pwd = document.getElementById("emailPass").value;
-      if (!email || !pwd) { Swal.fire({icon:"error", title:"Email ও Password দরকার"}); return; }
+    /* ---------------- EMAIL LOGIN ---------------- */
+    document.getElementById('btnEmailLogin').addEventListener('click', async () => {
+      const em = document.getElementById('inputEmail').value.trim();
+      const pw = document.getElementById('inputEmailPass').value;
+      if(!em || !pw){ Swal.fire({icon:'error',title:'Email & Password দিন'}); return; }
+
       try {
-        await signInWithEmailAndPassword(auth, email, pwd);
-        // redirect to dashboard (dashboard will decide whether to show UID-link box)
-        Swal.fire({icon:"success", title:"Login Successful", timer:1200, showConfirmButton:false});
-        setTimeout(()=> location.href = "student-dashboard.html", 1000);
-      } catch (err) {
-        console.error(err);
-        Swal.fire({icon:"error", title:"Login Failed", text: err.message || err});
+        await signInWithEmailAndPassword(auth, em, pw);
+        toast('success','Login Successful');
+        // dashboard will show UID-link box if not linked
+        setTimeout(()=> location.href = 'student-dashboard.html', 900);
+      } catch(e){
+        console.error(e); Swal.fire({icon:'error',title:'Login Failed', text:e.message});
       }
     });
 
-    /* ---------------------------
-       Google login handler (kept exactly same behaviour)
-       --------------------------- */
-    document.getElementById("googleBtn").addEventListener("click", async ()=> {
+    /* ---------------- GOOGLE LOGIN ---------------- */
+    document.getElementById('btnGoogle').addEventListener('click', async () => {
       const provider = new GoogleAuthProvider();
       try {
         const res = await signInWithPopup(auth, provider);
-        const user = res.user;
-        // ensure a record in 'users' (non-intrusive)
-        await setDoc(doc(db, "users", user.uid), {
-          uid: user.uid,
-          name: user.displayName || "",
-          email: user.email || "",
-          createdAt: serverTimestamp(),
-          google: true
-        }, { merge: true });
-        Swal.fire({icon:"success", title:"Google Login Successful", timer:1200, showConfirmButton:false});
-        setTimeout(()=> location.href = "student-dashboard.html", 1000);
-      } catch (err) {
-        console.error(err);
-        Swal.fire({icon:"error", title:"Google Login Failed", text: err.message || err});
+        // keep a minimal user record if needed (non-intrusive)
+        // redirect to dashboard (link UI will appear if necessary)
+        toast('success','Google Login Successful');
+        setTimeout(()=> location.href = 'student-dashboard.html', 900);
+      } catch(e){
+        console.error(e); Swal.fire({icon:'error',title:'Google Login Failed', text:e.message});
       }
     });
+
+    // Optional: auto-detect if studentId exists in localStorage and redirect to dashboard
+    const existing = localStorage.getItem('studentId');
+    if(existing){
+      // small safety: allow staying on login if user wants to switch — do nothing
+      // or auto-redirect uncomment next line:
+      // location.href = 'student-dashboard.html';
+    }
+
   </script>
 </body>
 </html>
