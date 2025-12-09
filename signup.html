@@ -1,600 +1,535 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Target Zone – Signup (Ultra Modern)</title>
+  <title>Target Zone – Signup (Final Clean Hybrid)</title>
 
-  <!-- Tailwind v3 CDN -->
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- flatpickr for nice datepicker -->
+  <!-- flatpickr -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
-  <!-- SweetAlert for alerts -->
+  <!-- SweetAlert2 -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <!-- lottie -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.9.6/lottie.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
   <style>
     :root{
-      --bg-1:#0f172a; --bg-2:#0b1220;
-      --card-glass: rgba(255,255,255,0.06);
-      --glass-strong: rgba(255,255,255,0.08);
-      --accent-1: #6366F1; /* indigo */
-      --accent-2: #8B5CF6; /* violet */
-      --accent-3: #06B6D4; /* cyan */
+      --bg-1:#071024; --bg-2:#041122;
+      --accent-1:#6366F1; --accent-2:#8B5CF6; --accent-3:#06B6D4;
     }
-
-    /* Page background gradient + subtle noise */
+    *{box-sizing:border-box}
     body{
-      min-height:100vh;
-      margin:0;
+      margin:0; min-height:100vh;
       font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial;
-      background: linear-gradient(180deg, rgba(14,23,45,1) 0%, rgba(6,8,20,1) 100%);
       color:#e6eef8;
+      background: radial-gradient(900px 420px at 8% 12%, rgba(139,92,246,0.06), transparent),
+                  linear-gradient(180deg,var(--bg-1),var(--bg-2));
       -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-      overflow-x:hidden;
     }
 
-    /* Parallax layers container */
-    .bg-layer { position:fixed; inset:0; z-index:0; pointer-events:none; }
-
-    /* Sun with slow rotation */
-    .sun {
-      position: absolute;
-      top:5%;
-      right:6%;
-      width:140px;
-      height:140px;
-      border-radius:50%;
-      background: radial-gradient(circle at 35% 35%, #ffe27a 0%, #ffc938 60%, #ff9f1a 100%);
-      box-shadow: 0 0 80px rgba(255,160,0,0.25), 0 0 160px rgba(255,140,0,0.12);
-      transform-origin:center;
-      animation: sunSpin 24s linear infinite;
-      mix-blend-mode:screen;
-      opacity:0.95;
-    }
+    /* Background layers */
+    .bg-layer{ position:fixed; inset:0; z-index:0; pointer-events:none; }
+    .sun{ position:absolute; right:6%; top:6%; width:130px; height:130px; border-radius:50%;
+      background: radial-gradient(circle at 30% 30%, #ffe27a 0%, #ffc938 60%, #ff9f1a 100%); filter:blur(.6px); opacity:0.92; mix-blend-mode:screen; animation: sunSpin 26s linear infinite; }
     @keyframes sunSpin{ from{ transform:rotate(0deg) } to{ transform:rotate(360deg) } }
+    .cloud{ position:absolute; background:linear-gradient(180deg,#fff,#f3f4f6); border-radius:9999px; filter:blur(.7px); opacity:.85; box-shadow:0 30px 80px rgba(2,6,23,0.55) }
+    .cloud.c1{ width:300px; height:84px; top:12%; left:-320px; animation:cloud1 120s linear infinite; }
+    .cloud.c2{ width:200px; height:60px; top:44%; left:-260px; animation:cloud2 90s linear infinite; }
+    @keyframes cloud1{ from{transform:translateX(0)} to{transform:translateX(160vw)} }
+    @keyframes cloud2{ from{transform:translateX(0)} to{transform:translateX(140vw)} }
 
-    /* Cloud layers for parallax */
-    .cloud {
-      position:absolute;
-      background: linear-gradient(180deg,#ffffff 0%, #f3f4f6 100%);
-      border-radius:9999px;
-      filter: blur(.4px);
-      opacity:0.85;
-      box-shadow:0 30px 80px rgba(2,6,23,0.6);
-      transform: translateZ(0);
-    }
-    .cloud.c1{ width:260px; height:72px; top:18%; left:-260px; animation:cloudMove1 110s linear infinite; }
-    .cloud.c2{ width:180px; height:56px; top:36%; left:-200px; animation:cloudMove2 95s linear infinite; }
-    .cloud.c3{ width:320px; height:100px; top:62%; left:-340px; animation:cloudMove3 125s linear infinite; }
-    @keyframes cloudMove1 { from{ transform:translateX(0) } to{ transform:translateX(140vw) } }
-    @keyframes cloudMove2 { from{ transform:translateX(0) } to{ transform:translateX(130vw) } }
-    @keyframes cloudMove3 { from{ transform:translateX(0) } to{ transform:translateX(150vw) } }
+    /* floating blobs */
+    .blob{ position:absolute; width:420px; height:420px; border-radius:50%; filter: blur(60px) saturate(120%); opacity:0.12; mix-blend-mode:screen; animation:blobFloat 18s ease-in-out infinite; }
+    .blob.b1{ background:linear-gradient(90deg,#06B6D4,#8B5CF6); left:-6%; top:38% }
+    .blob.b2{ background:linear-gradient(90deg,#FF6B6B,#FFD166); right:-10%; top:10%; opacity:0.08 }
+    @keyframes blobFloat{ 0%{ transform:translateY(0) }50%{ transform:translateY(-24px) }100%{ transform:translateY(0) } }
 
-    /* Subtle particles using pseudo element */
-    .particles { position:absolute; inset:0; background-image: radial-gradient(rgba(255,255,255,0.02) 1px, transparent 1px); background-size: 60px 60px; opacity:0.6; mix-blend-mode:overlay; }
+    /* Container */
+    .wrap{ position:relative; z-index:10; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:40px 22px; }
+    .content{ width:100%; max-width:1200px; display:grid; gap:24px; grid-template-columns: 1fr; }
+    @media(min-width:960px){ .content{ grid-template-columns: 1fr 480px; } }
 
-    /* Card */
-    .form-card{
-      position:relative;
-      z-index:10;
-      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
-      border: 1px solid rgba(255,255,255,0.04);
-      border-radius:1rem;
-      padding: 1.5rem;
-      box-shadow: 0 10px 40px rgba(2,6,23,0.6);
-      backdrop-filter: blur(10px) saturate(120%);
-      transition: transform .28s cubic-bezier(.2,.9,.2,1), box-shadow .28s;
+    /* Left column: feature list + live preview */
+    .left{
+      padding:22px; display:flex; flex-direction:column; gap:18px;
     }
-    .form-card:hover{ transform: translateY(-6px); box-shadow: 0 20px 60px rgba(2,6,23,0.7) }
+    .brand{
+      font-weight:800; font-size:28px;
+      background:linear-gradient(90deg,var(--accent-1),var(--accent-2)); -webkit-background-clip:text; background-clip:text; color:transparent;
+    }
+    .lead{ color:#cfe7ff; opacity:0.9; max-width:44ch }
 
-    /* Floating labels */
-    .field { position:relative; margin-top:0.6rem; }
-    .input, .select {
-      width:100%;
-      padding:1rem 1rem 0.9rem 1rem;
-      border-radius:0.75rem;
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      border:1px solid rgba(255,255,255,0.04);
-      color:inherit;
-      transition: box-shadow .18s, border-color .18s, background .18s;
+    /* Right: hybrid card wrapper */
+    .card-wrap{ position:relative; }
+    .main-card{
+      border-radius:14px; padding:16px; background: linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.01));
+      border:1px solid rgba(255,255,255,0.04); box-shadow:0 14px 50px rgba(2,6,23,0.6); backdrop-filter: blur(10px); overflow:visible; transition: transform .22s ease;
     }
-    .input:focus, .select:focus { outline:none; box-shadow: 0 6px 24px rgba(99,102,241,0.08); border-color: rgba(99,102,241,0.6) }
-    label.flabel{
-      position:absolute;
-      left:1rem;
-      top:50%;
-      transform:translateY(-50%);
-      pointer-events:none;
-      transition: transform .18s, font-size .18s, top .18s, opacity .18s;
-      color:rgba(226,232,240,0.8);
-      font-size:0.95rem;
-      display:flex; gap:.5rem; align-items:center;
-    }
-    .input:not(:placeholder-shown) + .flabel,
-    .input:focus + .flabel,
-    .select:not([value=""]) + .flabel,
-    .select:focus + .flabel {
-      top:0.6rem;
-      transform:translateY(0);
-      font-size:0.78rem;
-      opacity:0.95;
-    }
+    .main-card:hover{ transform:translateY(-6px); }
 
-    /* Small icon inside field */
-    .field .icon {
-      position:absolute;
-      right:0.9rem;
-      top:50%;
-      transform:translateY(-50%);
-      cursor:pointer;
-      opacity:0.9;
+    /* mini-cards layout (facebook-style) */
+    .mini-cards{ display:flex; flex-direction:column; gap:12px; }
+    .mini{
+      border-radius:12px; padding:12px; background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));
+      border:1px solid rgba(255,255,255,0.03);
+    }
+    .mini h4{ font-weight:700; margin-bottom:6px; color:#e6eef8; }
+    .mini p{ color:#cbd5e1; font-size:14px; margin:0 }
+
+    /* collapsible inside the main card */
+    .section{ border-radius:10px; margin-bottom:8px; overflow:hidden; border:1px solid rgba(255,255,255,0.03) }
+    .section .head{ display:flex; align-items:center; justify-content:space-between; padding:10px 12px; cursor:pointer; background:linear-gradient(180deg, rgba(255,255,255,0.012), transparent); }
+    .section .head h5{ margin:0; font-weight:700 }
+    .section .body{ padding:12px; display:none; background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent) }
+    .section.open .body{ display:block; }
+
+    /* form fields */
+    .field{ margin-top:8px; position:relative }
+    .input, .select, .textarea{
+      width:100%; padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,0.04); background:rgba(255,255,255,0.02); color:inherit;
+    }
+    label.flabel{ position:absolute; left:12px; top:10px; transform:translateY(0); font-size:13px; color:rgba(226,232,240,0.8); pointer-events:none }
+    .small{ font-size:13px; color:#cbd5e1; margin-top:6px }
+
+    /* password strength */
+    .strength{ height:8px; background:rgba(255,255,255,0.04); border-radius:8px; overflow:hidden }
+    .strength > span{ display:block; height:100%; width:0%; transition:width .28s; background:linear-gradient(90deg,#ef4444,#f59e0b,#10b981) }
+
+    /* submit button morph */
+    .btn{ display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:10px 14px; border-radius:10px; cursor:pointer; font-weight:700; color:white; }
+    .btn-primary{ background:linear-gradient(90deg,var(--accent-1),var(--accent-2)); box-shadow: 0 10px 35px rgba(99,102,241,0.12); border:none }
+    .btn-google{ background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.04); color:inherit }
+
+    /* responsive */
+    @media(max-width:960px){
+      .content{ grid-template-columns: 1fr }
+      .main-card{ margin-top:12px }
     }
 
-    /* Animated gradient button (aurora) */
-    .btn-aurora{
-      position:relative;
-      padding:.9rem 1rem;
-      border-radius:.75rem;
-      font-weight:700;
-      letter-spacing:.2px;
-      overflow:hidden;
-      border: none;
-      cursor:pointer;
-      color:white;
-      transition: transform .14s ease, box-shadow .14s;
-      background: linear-gradient(270deg, #6366F1, #8B5CF6, #EC4899, #06B6D4);
-      background-size: 800% 800%;
-      animation: aurora 8s ease infinite;
-      box-shadow: 0 8px 30px rgba(99,102,241,0.12);
-    }
-    .btn-aurora:hover { transform: translateY(-3px) scale(1.01); box-shadow: 0 18px 40px rgba(99,102,241,0.16) }
-    @keyframes aurora {
-      0%{ background-position:0% 50% } 50%{ background-position:100% 50% } 100%{ background-position:0% 50% }
-    }
+    /* small helpers */
+    .muted{ color:#9fb3d6; font-size:13px }
+    .error{ box-shadow: 0 0 0 6px rgba(248,113,113,0.06); border-color: rgba(248,113,113,0.85) }
 
-    /* Google style button */
-    .btn-google{
-      display:flex;
-      gap:.75rem;
-      align-items:center;
-      justify-content:center;
-      padding:.85rem;
-      border-radius:.75rem;
-      font-weight:700;
-      background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
-      border:1px solid rgba(255,255,255,0.06);
-      transition: transform .12s, box-shadow .12s;
-      cursor:pointer;
-    }
-    .btn-google:hover { transform:translateY(-2px); box-shadow:0 12px 30px rgba(2,6,23,0.6) }
-
-    /* Password strength bar + label */
-    .strength-bar{ height:8px; border-radius:8px; background:rgba(255,255,255,0.04); overflow:hidden; }
-    .strength-bar > span{ display:block; height:100%; width:0%; transition: width .28s; background: linear-gradient(90deg,#ef4444,#f59e0b,#10b981); }
-    .strength-text{ font-size:.85rem; color:rgba(226,232,240,0.85); margin-top:.35rem; }
-
-    /* Input error styling */
-    .input.error { box-shadow: 0 0 0 6px rgba(248,113,113,0.06); border-color: rgba(248,113,113,0.85) }
-
-    /* Loading overlay */
-    .loading-overlay{
-      position: absolute;
-      inset:0;
-      background: linear-gradient(180deg, rgba(2,6,23,0.6), rgba(2,6,23,0.55));
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:1rem;
-      border-radius:1rem;
-      z-index:50;
-      backdrop-filter: blur(2px);
-    }
-    .lds-ellipsis{ display:inline-block; position:relative; width:60px; height:12px; }
-    .lds-ellipsis div{ position:absolute; top:0; width:12px; height:12px; border-radius:50%; animation: lds-ellipsis 0.9s cubic-bezier(.2,.7,.2,1) infinite; background:white; opacity:0.9 }
-    .lds-ellipsis div:nth-child(1){ left:6px; animation-delay:0s }
-    .lds-ellipsis div:nth-child(2){ left:6px; animation-delay:.12s }
-    .lds-ellipsis div:nth-child(3){ left:26px; animation-delay:.24s }
-    .lds-ellipsis div:nth-child(4){ left:45px; animation-delay:.36s }
-    @keyframes lds-ellipsis { 0%{ transform:scale(0) } 50%{ transform:scale(1) } 100%{ transform:scale(0) } }
-
-    /* Responsive tweaks */
-    @media (min-width:768px){
-      .container-grid { display:grid; grid-template-columns: 1fr 420px; gap:2.5rem; align-items:center; }
-      .left-hero{ padding-left:2rem; }
+    /* reduced motion */
+    @media (prefers-reduced-motion: reduce){
+      .sun, .cloud, .blob, .main-card{ animation:none !important; transition:none !important }
     }
   </style>
 </head>
 <body>
 
-  <!-- Background layers -->
-  <div class="bg-layer">
+  <div class="bg-layer" aria-hidden="true">
     <div class="sun"></div>
-    <div class="cloud c1" style="opacity:0.95"></div>
-    <div class="cloud c2" style="opacity:0.82"></div>
-    <div class="cloud c3" style="opacity:0.88"></div>
-    <div class="particles"></div>
+    <div class="cloud c1"></div>
+    <div class="cloud c2"></div>
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
   </div>
 
-  <!-- Page content -->
-  <div class="min-h-screen flex items-center justify-center px-6 py-12 relative">
-    <div class="container-grid w-full max-w-6xl">
+  <div class="wrap">
+    <div class="content">
 
-      <!-- Left hero / marketing column -->
-      <div class="left-hero text-left hidden md:block">
-        <h1 class="text-4xl font-extrabold mb-4" style="background:linear-gradient(90deg,var(--accent-1),var(--accent-2)); -webkit-background-clip:text; background-clip:text; color:transparent;">
-          🎯 Target Zone
-        </h1>
-        <p class="text-slate-300 mb-6 max-w-md">Join Target Zone and unlock personalised mock tests, expert guidance and a thriving study community. Fast sign up, secure auth and a beautiful UI to keep you motivated.</p>
+      <!-- LEFT: intro + live theme preview small -->
+      <div class="left">
+        <div class="brand">🎯 Target Zone</div>
+        <div class="lead">Sign up fast — hybrid design: compact mini-cards + collapsible pro-card. Random themes & motion wallpaper included.</div>
 
-        <ul class="space-y-3 text-slate-300">
-          <li>• Clean, modern UI with parallax background</li>
-          <li>• Strong client-side validation & friendly UX</li>
-          <li>• Fast Google Sign-in and Firebase-ready</li>
-        </ul>
+        <div class="mini-cards">
+          <div class="mini">
+            <h4>Why join?</h4>
+            <p class="small">Personalised mock tests, progress tracking, and a study community to keep you motivated.</p>
+          </div>
+
+          <div class="mini">
+            <h4>Secure</h4>
+            <p class="small">Firebase auth + friendly client-side validation.</p>
+          </div>
+
+          <div class="mini">
+            <h4>Custom themes</h4>
+            <p class="small">Random dynamic backgrounds on each load + motion wallpaper toggle.</p>
+          </div>
+        </div>
+
+        <!-- quick controls for previewing themes -->
+        <div style="margin-top:12px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+          <button id="previewThemeBtn" class="btn btn-google" aria-label="Random theme">🔁 Random Theme</button>
+          <button id="toggleMotionBtn" class="btn btn-google">📱 Motion Wallpaper</button>
+        </div>
+
       </div>
 
-      <!-- Right: Form Card -->
-      <div class="form-card max-w-xl mx-auto">
-        <!-- Loading overlay (hidden initially) -->
-        <div id="loadingOverlay" class="loading-overlay hidden">
-          <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
-          <div>Processing your signup…</div>
-        </div>
+      <!-- RIGHT: hybrid main card -->
+      <div class="card-wrap">
+        <div class="main-card" id="mainCard" role="region" aria-label="Signup card">
 
-        <div class="mb-4">
-          <h2 class="text-2xl font-bold">Create your account</h2>
-          <p class="text-slate-300 text-sm">Fast signup — secure authentication. Already a member? <a href="login.html" class="text-indigo-300 underline">Log in</a></p>
-        </div>
-
-        <form id="signupForm" class="space-y-3" novalidate>
-          <!-- Full name -->
-          <div class="field">
-            <input id="name" class="input" placeholder=" " autocomplete="name" required>
-            <label for="name" class="flabel">👤 Full Name *</label>
-          </div>
-
-          <!-- WhatsApp number with country detection -->
-          <div class="field">
-            <input id="whatsapp" class="input" placeholder=" " inputmode="tel" autocomplete="tel" required>
-            <label for="whatsapp" class="flabel">📱 WhatsApp Number (10 digits) *</label>
-            <div id="waNote" class="text-xs text-slate-300 mt-1 hidden">Detected country: <span id="detCountry">—</span></div>
-          </div>
-
-          <!-- Email -->
-          <div class="field">
-            <input id="email" type="email" class="input" placeholder=" " autocomplete="email" required>
-            <label for="email" class="flabel">📧 Email *</label>
-          </div>
-
-          <!-- DOB with flatpickr -->
-          <div class="field">
-            <input id="dob" class="input" placeholder=" " required>
-            <label for="dob" class="flabel">📅 Date of Birth *</label>
-            <div class="icon" id="dobIcon" title="Pick date">📅</div>
-          </div>
-
-          <!-- Password -->
-          <div class="field">
-            <input id="password" type="password" class="input pr-12" placeholder=" " autocomplete="new-password" required>
-            <label for="password" class="flabel">🔐 Password *</label>
-            <div class="icon" id="togglePw" title="Show / hide">👁️</div>
-
-            <div class="mt-3">
-              <div class="strength-bar"><span id="pwBar"></span></div>
-              <div class="strength-text" id="pwText">Type a password (min 8 chars)</div>
+          <!-- top mini row (facebook style) -->
+          <div style="display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap;">
+            <div class="mini" style="flex:1; min-width:160px">
+              <h4>Personal</h4>
+              <p class="small">Name, email, phone</p>
+            </div>
+            <div class="mini" style="flex:1; min-width:160px">
+              <h4>Security</h4>
+              <p class="small">Password & preferences</p>
             </div>
           </div>
 
-          <!-- Education select -->
-          <div class="field">
-            <select id="education" class="select" required>
-              <option value=""> </option>
-              <option>Madhyamik</option>
-              <option>HS</option>
-              <option>Graduate</option>
-              <option>Post Graduate</option>
-              <option>Other</option>
-            </select>
-            <label for="education" class="flabel">🎓 Educational Qualification *</label>
-          </div>
+          <!-- inside: collapsible sections -->
+          <div id="sections">
 
-          <!-- Status select -->
-          <div class="field">
-            <select id="status" class="select" required>
-              <option value=""> </option>
-              <option>Student</option>
-              <option>Job Seeker</option>
-              <option>Employed</option>
-            </select>
-            <label for="status" class="flabel">🧑‍🎓 Current Status *</label>
-          </div>
+            <!-- SECTION 1: PERSONAL -->
+            <div class="section open" id="secPersonal">
+              <div class="head" tabindex="0" role="button" aria-expanded="true" aria-controls="personalBody">
+                <h5>Personal Info</h5>
+                <div>▼</div>
+              </div>
+              <div class="body" id="personalBody">
+                <div class="field">
+                  <label class="flabel">Full name *</label>
+                  <input id="name" class="input" placeholder=" " required>
+                </div>
 
-          <!-- UID auto-generate -->
-          <div class="field">
-            <input id="uid" readonly class="input" placeholder=" " value="">
-            <label for="uid" class="flabel">🆔 UID (Auto Generated)</label>
-          </div>
+                <div class="field" style="margin-top:10px;">
+                  <label class="flabel">WhatsApp number *</label>
+                  <input id="whatsapp" class="input" placeholder="10-digit or +countrycode" required>
+                </div>
 
-          <!-- subscribe + terms -->
-          <div class="flex items-center gap-3">
-            <label class="inline-flex items-center gap-2">
-              <input type="checkbox" id="subscribe" class="h-4 w-4 rounded" />
-              <span class="text-sm text-slate-300">🔔 Receive updates</span>
-            </label>
-            <label class="inline-flex items-center gap-2 ml-4">
-              <input type="checkbox" id="terms" class="h-4 w-4 rounded" required />
-              <span class="text-sm text-slate-300">I agree to <a href="terms.html" class="underline text-indigo-300">Terms</a></span>
-            </label>
-          </div>
+                <div class="field" style="margin-top:10px;">
+                  <label class="flabel">Email *</label>
+                  <input id="email" type="email" class="input" placeholder="you@example.com" required>
+                </div>
 
-          <!-- Buttons -->
-          <div class="space-y-2">
-            <button id="submitBtn" type="submit" class="btn-aurora w-full">✅ Create account</button>
-            <button id="googleBtn" type="button" class="btn-google w-full">
-              <svg width="20" height="20" viewBox="0 0 533.5 544.3" xmlns="http://www.w3.org/2000/svg" aria-hidden>
-                <path fill="#4285F4" d="M533.5 278.4c0-17.4-1.6-34.2-4.6-50.5H272v95.6h146.9c-6.4 34.9-25.1 64.5-53.8 84.4v69h86.9c50.9-46.9 81.5-116.1 81.5-198.5z"/>
-                <path fill="#34A853" d="M272 544.3c72.5 0 133.3-24 177.8-65.2l-86.9-69c-24.3 16.3-55.4 26-90.9 26-69.9 0-129.3-47.2-150.5-110.6H31.3v69.6C75.9 479.5 169.6 544.3 272 544.3z"/>
-                <path fill="#FBBC04" d="M121.5 328.9c-10.9-32.9-10.9-68.8 0-101.7V157.6H31.3c-38.8 75.1-38.8 164.9 0 240z"/>
-                <path fill="#EA4335" d="M272 109.8c39.4 0 74.9 13.6 102.8 40.3l77.1-77.1C405.6 21.2 348.1 0 272 0 169.6 0 75.9 64.8 31.3 157.6l90.2 69.6C142.7 157 202.1 109.8 272 109.8z"/>
-              </svg>
-              <span>🔑 Sign up with Google</span>
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
+                <div style="display:flex; gap:10px; margin-top:10px;">
+                  <div style="flex:1">
+                    <label class="flabel">Gender</label>
+                    <select id="gender" class="select" style="padding:10px 12px;">
+                      <option value="">Prefer not to say</option>
+                      <option>Male</option>
+                      <option>Female</option>
+                      <option>Other</option>
+                    </select>
+                  </div>
+                  <div style="flex:1">
+                    <label class="flabel">Preferred language</label>
+                    <select id="lang" class="select" style="padding:10px 12px;">
+                      <option>বাংলা</option>
+                      <option>English</option>
+                      <option>हिन्दी</option>
+                    </select>
+                  </div>
+                </div>
 
-  <!-- Firebase logic (kept from original) -->
+                <div style="display:flex; gap:10px; margin-top:10px;">
+                  <div style="flex:1">
+                    <label class="flabel">State</label>
+                    <select id="state" class="select" style="padding:10px 12px;">
+                      <option value="">Select state</option>
+                      <option>West Bengal</option>
+                      <option>Bihar</option>
+                      <option>Odisha</option>
+                      <option>Other</option>
+                    </select>
+                  </div>
+                  <div style="flex:1">
+                    <label class="flabel">District</label>
+                    <input id="district" class="input" placeholder="District name">
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- SECTION 2: SECURITY -->
+            <div class="section" id="secSecurity">
+              <div class="head" tabindex="0" role="button" aria-expanded="false" aria-controls="securityBody">
+                <h5>Security</h5>
+                <div>▼</div>
+              </div>
+              <div class="body" id="securityBody">
+                <div class="field">
+                  <label class="flabel">Password *</label>
+                  <input id="password" type="password" class="input" placeholder="At least 8 characters" required>
+                </div>
+
+                <div class="field" style="margin-top:8px;">
+                  <div class="strength"><span id="pwBar" style="width:0%"></span></div>
+                  <div id="pwText" class="small">Type a password (min 8 chars)</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SECTION 3: ACADEMIC / EXAM -->
+            <div class="section" id="secAcademic">
+              <div class="head" tabindex="0" role="button" aria-expanded="false" aria-controls="academicBody">
+                <h5>Academic / Exam Preferences</h5>
+                <div>▼</div>
+              </div>
+              <div class="body" id="academicBody">
+                <div style="display:flex; gap:10px">
+                  <div style="flex:1">
+                    <label class="flabel">Education</label>
+                    <select id="education" class="select">
+                      <option>Madhyamik</option><option>HS</option><option>Graduate</option><option>Post Graduate</option><option>Other</option>
+                    </select>
+                  </div>
+                  <div style="flex:1">
+                    <label class="flabel">Current Status</label>
+                    <select id="status" class="select">
+                      <option>Student</option><option>Job Seeker</option><option>Employed</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div style="margin-top:10px;">
+                  <label class="flabel">Which exams are you preparing for?</label>
+                  <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
+                    <label class="small"><input type="checkbox" class="examChk" value="WBPSC"> WBPSC</label>
+                    <label class="small"><input type="checkbox" class="examChk" value="SSC"> SSC</label>
+                    <label class="small"><input type="checkbox" class="examChk" value="Railway"> Railway</label>
+                    <label class="small"><input type="checkbox" class="examChk" value="College"> College Exams</label>
+                  </div>
+                </div>
+
+                <div style="margin-top:10px;">
+                  <label class="flabel">Referral code (optional)</label>
+                  <input id="referral" class="input" placeholder="If someone referred you">
+                </div>
+              </div>
+            </div>
+
+            <!-- SECTION 4: TERMS & FINISH -->
+            <div class="section" id="secFinish">
+              <div class="head" tabindex="0" role="button" aria-expanded="false" aria-controls="finishBody">
+                <h5>Finish</h5>
+                <div>▼</div>
+              </div>
+              <div class="body" id="finishBody">
+                <div style="display:flex; gap:8px; align-items:center;">
+                  <label class="small"><input type="checkbox" id="subscribe"> Receive updates</label>
+                  <label class="small" style="margin-left:8px"><input type="checkbox" id="terms" required> I agree to <a href="#" class="muted underline">Terms</a></label>
+                </div>
+
+                <div style="margin-top:12px; display:flex; gap:8px;">
+                  <button id="submitBtn" class="btn btn-primary" type="button">✅ Create account</button>
+                  <button id="googleBtn" class="btn btn-google" type="button">🔑 Sign up with Google</button>
+                </div>
+
+                <div id="statusMsg" class="small" style="margin-top:8px;color:#bcd">Status messages appear here</div>
+              </div>
+            </div>
+
+          </div> <!-- /sections -->
+
+        </div> <!-- /main-card -->
+      </div> <!-- /card-wrap -->
+
+    </div> <!-- /content -->
+  </div> <!-- /wrap -->
+
+  <!-- Firebase imports -->
   <script type="module">
-    // Firebase v10 imports (same as your original file)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    // --- KEEP YOUR ORIGINAL FIREBASE CONFIG HERE (unchanged) ---
-    const firebaseConfig={apiKey:"AIzaSyCR5rqthBh0vX0yLOcOG3b9xJiKbYtzdxU",authDomain:"target-zone-8fffd.firebaseapp.com",projectId:"target-zone-8fffd",storageBucket:"target-zone-8fffd.appspot.com",messagingSenderId:"667579216123",appId:"1:667579216123:web:37bb1fcc724743073d005e"};
-    const app=initializeApp(firebaseConfig); const auth=getAuth(app); const db=getFirestore(app);
+    // Firebase config (keep your values)
+    const firebaseConfig = {
+      apiKey: "AIzaSyCR5rqthBh0vX0yLOcOG3b9xJiKbYtzdxU",
+      authDomain: "target-zone-8fffd.firebaseapp.com",
+      projectId: "target-zone-8fffd",
+      storageBucket: "target-zone-8fffd.appspot.com",
+      messagingSenderId: "667579216123",
+      appId: "1:667579216123:web:37bb1fcc724743073d005e"
+    };
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
     // DOM refs
-    const form = document.getElementById('signupForm');
+    const sections = document.getElementById('sections');
+    const secHeads = document.querySelectorAll('.section .head');
+    const submitBtn = document.getElementById('submitBtn');
+    const googleBtn = document.getElementById('googleBtn');
+    const statusMsg = document.getElementById('statusMsg');
+    const previewThemeBtn = document.getElementById('previewThemeBtn');
+    const toggleMotionBtn = document.getElementById('toggleMotionBtn');
+    const mainCard = document.getElementById('mainCard');
+
+    // form fields
     const nameField = document.getElementById('name');
     const waField = document.getElementById('whatsapp');
     const emailField = document.getElementById('email');
-    const dobField = document.getElementById('dob');
-    const pwField = document.getElementById('password');
-    const uidField = document.getElementById('uid');
-    const submitBtn = document.getElementById('submitBtn');
-    const googleBtn = document.getElementById('googleBtn');
-    const loadingOverlay = document.getElementById('loadingOverlay');
-    const pwBar = document.getElementById('pwBar');
-    const pwText = document.getElementById('pwText');
-    const waNote = document.getElementById('waNote');
-    const detCountry = document.getElementById('detCountry');
+    const pwdField = document.getElementById('password');
+    const education = document.getElementById('education');
+    const statusSel = document.getElementById('status');
+    const subscribe = document.getElementById('subscribe');
+    const terms = document.getElementById('terms');
+    const referral = document.getElementById('referral');
 
-    // ------------- UI Enhancements / Utils ----------------
-
-    // Improved UID generator: "TZ-YYYY-<INITIALS>-XXXX"
-    function generateUID(name){
-      const year = new Date().getFullYear().toString().slice(-2);
-      const initials = (name.split(' ').map(s=>s.charAt(0)).slice(0,3).join('') || 'U').toUpperCase();
-      const rand = Math.floor(1000 + Math.random()*9000);
-      return `TZ-${year}-${initials}-${rand}`;
-    }
-    nameField.addEventListener('input', ()=>{
-      uidField.value = generateUID(nameField.value.trim());
-    });
-    // initialize with default
-    uidField.value = generateUID('User');
-
-    // flatpickr for DOB
-    flatpickr(dobField, {
-      dateFormat: "Y-m-d",
-      maxDate: "today",
-      defaultDate: null,
-      allowInput: true,
-      clickOpens: true,
+    // ---------------- Collapsible behaviour ----------------
+    secHeads.forEach(h=>{
+      h.addEventListener('click', ()=> {
+        const sec = h.parentElement;
+        const open = sec.classList.toggle('open');
+        h.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+      // keyboard accessible
+      h.addEventListener('keydown', (e)=> { if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); h.click(); } });
     });
 
-    // DOB icon click to open
-    document.getElementById('dobIcon').addEventListener('click', ()=> {
-      dobField._flatpickr ? dobField._flatpickr.open() : dobField.focus();
-    });
-
-    // Toggle password show/hide
-    document.getElementById('togglePw').addEventListener('click', ()=>{
-      pwField.type = (pwField.type === 'password') ? 'text' : 'password';
-    });
-
-    // Password strength check (digit-by-digit logic)
-    function evaluatePassword(pw){
-      let sc = 0;
-      if(!pw) return { score:0, pct:0, label: 'Type a password (min 8 chars)' };
-      if(pw.length >= 8) sc++;
+    // ---------------- Password strength ----------------
+    function evalPw(pw){
+      let sc=0;
+      if(!pw) return {score:0,pct:0,label:'Type a password'};
+      if(pw.length>=8) sc++;
       if(/[A-Z]/.test(pw)) sc++;
       if(/[a-z]/.test(pw)) sc++;
       if(/\d/.test(pw)) sc++;
       if(/[^A-Za-z0-9]/.test(pw)) sc++;
       const pct = Math.round((sc/5)*100);
-      let label = 'Weak';
-      if(sc >= 4) label = 'Strong';
-      else if(sc >= 2) label = 'Medium';
-      return { score: sc, pct, label };
+      let label='Weak';
+      if(sc>=4) label='Strong';
+      else if(sc>=2) label='Medium';
+      return {score:sc,pct,label};
     }
-    pwField.addEventListener('input', ()=>{
-      const val = pwField.value;
-      const res = evaluatePassword(val);
-      pwBar.style.width = res.pct + '%';
-      pwText.textContent = (res.label === 'Weak') ? 'Weak — add uppercase, numbers, symbols' : (res.label === 'Medium') ? 'Medium — almost there' : 'Strong — good to go';
-      // color handled via gradient
+    pwdField.addEventListener('input', ()=>{
+      const r = evalPw(pwdField.value);
+      document.getElementById('pwBar').style.width = r.pct + '%';
+      document.getElementById('pwText').textContent = r.label === 'Weak' ? 'Weak — add uppercase, numbers, symbols' : (r.label === 'Medium' ? 'Medium — almost there' : 'Strong — good to go');
     });
 
-    // WhatsApp validation + simple "country detect" heuristic
-    function cleanDigits(s){ return (s||'').replace(/\D/g,''); }
-    waField.addEventListener('input', ()=>{
-      const raw = waField.value.trim();
-      const digits = cleanDigits(raw);
-      let ok = false;
-      // Accept local 10-digit or international with country code up to 13 digits
-      if(/^\d{10}$/.test(digits)) ok = true;
-      if(/^\d{11,13}$/.test(digits) && /^\+?/.test(raw)) ok = true;
-      waField.classList.toggle('error', !ok && digits.length>0);
-      // Simple country detect: if starts with 91 or if number length 10 assume IN
-      if(digits.startsWith('91') || digits.length===10) {
-        detCountry.textContent = 'India (+91)';
-        waNote.classList.remove('hidden');
-      } else if(digits.startsWith('1')) {
-        detCountry.textContent = 'USA/Canada (+1)';
-        waNote.classList.remove('hidden');
-      } else {
-        detCountry.textContent = '—';
-        if(digits.length===0) waNote.classList.add('hidden');
-      }
+    // ---------------- Random theme & motion wallpaper ----------------
+    const themes = [
+      { name:'aurora', bg:'radial-gradient(900px 400px at 6% 12%, rgba(139,92,246,0.06), transparent), linear-gradient(180deg,#071024,#041122)' },
+      { name:'neon', bg:'radial-gradient(600px 240px at 90% 20%, rgba(6,182,212,0.06), transparent), linear-gradient(180deg,#071024,#09132a)' },
+      { name:'sunset', bg:'radial-gradient(700px 300px at 10% 80%, rgba(255,160,100,0.06), transparent), linear-gradient(180deg,#0a1729,#231227)' },
+      { name:'galaxy', bg:'radial-gradient(900px 400px at 20% 20%, rgba(255,120,200,0.04), transparent), linear-gradient(180deg,#020617,#081026)' }
+    ];
+    function applyRandomTheme(){
+      const t = themes[Math.floor(Math.random()*themes.length)];
+      document.body.style.background = t.bg;
+      mainCard.style.borderColor = 'rgba(255,255,255,0.045)';
+    }
+    previewThemeBtn.addEventListener('click', applyRandomTheme);
+
+    let motionOn = true;
+    toggleMotionBtn.addEventListener('click', ()=>{
+      motionOn = !motionOn;
+      document.querySelectorAll('.blob').forEach(b=> b.style.display = motionOn ? 'block' : 'none');
+      toggleMotionBtn.textContent = motionOn ? '📱 Motion Wallpaper' : '📵 Motion OFF';
     });
 
-    // Basic accessibility: pressing Enter inside any field should submit if valid
-    form.addEventListener('keydown', (e)=>{
-      if(e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
-        e.preventDefault();
-        submitBtn.click();
-      }
-    });
+    // on load apply a random theme
+    applyRandomTheme();
 
-    // Form validation with auto-scroll to first invalid
-    function validateForm(){
-      let valid = true;
-      let firstInvalid = null;
-      const required = form.querySelectorAll('[required]');
-      required.forEach(el=>{
-        const isCheckbox = el.type === 'checkbox';
-        const hasValue = isCheckbox ? el.checked : (el.value && el.value.toString().trim() !== '');
-        if(!hasValue){
-          valid = false;
-          el.classList.add('error');
-          if(!firstInvalid) firstInvalid = el;
-        } else {
-          el.classList.remove('error');
-        }
-      });
+    // rotate background every N seconds (gentle)
+    setInterval(()=> {
+      if(Math.random() < 0.45) applyRandomTheme();
+    }, 8000);
 
-      // Email simple check
-      const emailVal = emailField.value.trim();
-      if(emailVal && !/^\S+@\S+\.\S+$/.test(emailVal)){
-        valid = false;
-        emailField.classList.add('error');
-        if(!firstInvalid) firstInvalid = emailField;
-      }
-
-      // WhatsApp check
-      const waDigits = cleanDigits(waField.value);
-      if(!( /^\d{10}$/.test(waDigits) || /^\d{11,13}$/.test(waDigits) )){
-        valid = false;
-        waField.classList.add('error');
-        if(!firstInvalid) firstInvalid = waField;
-      }
-
-      // Password length
-      if(!(pwField.value && pwField.value.length >= 8)){
-        valid = false;
-        pwField.classList.add('error');
-        if(!firstInvalid) firstInvalid = pwField;
-      }
-
-      if(firstInvalid){
-        // smooth scroll the card and focus
-        firstInvalid.scrollIntoView({behavior:'smooth', block:'center'});
-        firstInvalid.focus({preventScroll:true});
-      }
-      return valid;
-    }
-
-    // Show loading overlay
-    function showLoading(show=true){
-      if(show) loadingOverlay.classList.remove('hidden'); else loadingOverlay.classList.add('hidden');
-    }
-
-    // -------------- Submit Handling (Firebase) -----------------
-    form.addEventListener('submit', async (e)=> {
-      e.preventDefault();
-      if(!validateForm()){
-        Swal.fire({ icon: 'error', title: 'Missing or invalid fields', text: 'Please correct highlighted fields.' });
-        return;
-      }
-
-      // prepare payload
-      const payload = {
-        uid: uidField.value || generateUID(nameField.value.trim()),
+    // ---------------- Simple form validation ----------------
+    function gatherForm(){
+      const exams = Array.from(document.querySelectorAll('.examChk:checked')).map(n=>n.value);
+      return {
         name: nameField.value.trim(),
         whatsapp: waField.value.trim(),
         email: emailField.value.trim(),
-        dob: dobField.value,
-        education: document.getElementById('education').value,
-        status: document.getElementById('status').value,
-        subscribe: document.getElementById('subscribe').checked,
+        password: pwdField.value,
+        gender: document.getElementById('gender').value,
+        language: document.getElementById('lang').value,
+        state: document.getElementById('state').value,
+        district: document.getElementById('district').value,
+        education: education.value,
+        status: statusSel.value,
+        exams,
+        referral: referral.value.trim(),
+        subscribe: subscribe.checked
       };
+    }
 
-      submitBtn.disabled = true;
+    function validateAll(data){
+      if(!data.name) return 'Please enter your name';
+      if(!/^\S+@\S+\.\S+$/.test(data.email)) return 'Enter a valid email';
+      const digits = (data.whatsapp || '').replace(/\D/g,'');
+      if(!( /^\d{10}$/.test(digits) || /^\d{11,13}$/.test(digits) )) return 'Enter a valid WhatsApp number';
+      if(!data.password || data.password.length < 8) return 'Password must be at least 8 characters';
+      if(!terms.checked) return 'You must agree to Terms';
+      return null;
+    }
+
+    // ---------------- Submit (Firebase) ----------------
+    submitBtn.addEventListener('click', async ()=>{
+      const data = gatherForm();
+      const v = validateAll(data);
+      if(v){
+        Swal.fire({ icon:'error', title:'Validation', text: v });
+        return;
+      }
+
+      // micro-loading
       submitBtn.textContent = 'Processing…';
-      showLoading(true);
+      submitBtn.disabled = true;
+      statusMsg.textContent = 'Creating account…';
 
       try{
-        // Create Firebase user with email/password
-        await createUserWithEmailAndPassword(auth, payload.email, pwField.value);
-        // Save profile in Firestore
-        await addDoc(collection(db, 'users'), {...payload, createdAt: serverTimestamp()});
-        await Swal.fire({ icon:'success', title:'Signup successful!', showConfirmButton:false, timer:2000 });
-        // redirect to exam or dashboard
-        window.location.href = 'exam.html';
+        // Create Firebase user
+        const cred = await createUserWithEmailAndPassword(auth, data.email, data.password);
+        // Save profile to Firestore (no photo, no OTP)
+        await addDoc(collection(db, 'users'), {...data, uid: cred.user.uid, createdAt: serverTimestamp()});
+        // success
+        Swal.fire({ icon:'success', title:'Signup successful!', showConfirmButton:false, timer:1400 });
+
+        // small lottie success (non-blocking)
+        const animDiv = document.createElement('div');
+        animDiv.style.width='86px'; animDiv.style.height='86px'; animDiv.style.margin='14px auto';
+        document.querySelector('.main-card').appendChild(animDiv);
+        lottie.loadAnimation({ container: animDiv, renderer:'svg', loop:false, autoplay:true, path:'https://assets3.lottiefiles.com/packages/lf20_jbrw3hcz.json' });
+
+        // redirect (simulate)
+        setTimeout(()=>{ window.location.href = 'exam.html'; }, 1400);
       } catch(err){
         console.error(err);
-        await Swal.fire({ icon:'error', title:'Signup failed', text: err && err.message ? err.message : 'Unknown error' });
+        Swal.fire({ icon:'error', title:'Signup failed', text: err && err.message ? err.message : 'Unknown error' });
       } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = '✅ Create account';
-        showLoading(false);
+        statusMsg.textContent = '';
       }
     });
 
-    // Google sign in
+    // ---------------- Google Sign In (Firebase) ----------------
     googleBtn.addEventListener('click', async ()=>{
       const provider = new GoogleAuthProvider();
       try{
-        showLoading(true);
         const res = await signInWithPopup(auth, provider);
         const user = res.user;
-        await addDoc(collection(db, 'users'), {
-          uid: user.uid,
-          name: user.displayName || '',
-          email: user.email || '',
-          google: true,
-          createdAt: serverTimestamp()
-        });
-        await Swal.fire({ icon:'success', title:'Signed in with Google', showConfirmButton:false, timer:1500 });
+        await addDoc(collection(db, 'users'), { uid: user.uid, name: user.displayName || '', email: user.email || '', google:true, createdAt: serverTimestamp() });
+        Swal.fire({ icon:'success', title:'Signed in with Google', showConfirmButton:false, timer:1200 });
         window.location.href = 'exam.html';
       } catch(err){
         console.error(err);
-        await Swal.fire({ icon:'error', title:'Google sign-in failed', text: err && err.message ? err.message : 'Unknown error' });
-      } finally { showLoading(false); }
+        Swal.fire({ icon:'error', title:'Google sign-in failed', text: err && err.message ? err.message : 'Unknown error' });
+      }
     });
 
-    // Small enhancement: remove error class on input
+    // Accessibility: keyboard focus ring
+    document.body.addEventListener('keydown', (e)=> { if(e.key === 'Tab') document.documentElement.classList.add('user-is-tabbing'); });
+
+    // small helper: remove error class on input
     document.querySelectorAll('.input, .select').forEach(el=>{
       el.addEventListener('input', ()=> el.classList.remove('error'));
-      el.addEventListener('change', ()=> el.classList.remove('error'));
     });
 
-    // Accessibility: focus ring for keyboard users
-    document.body.addEventListener('keydown', (e)=>{
-      if(e.key === 'Tab') document.documentElement.classList.add('user-is-tabbing');
-    });
   </script>
 
-  <!-- Attribution / original file citation -->
-  <!-- Source/starting point: original signup.html provided by user. Reference: 1 -->
-
+  <!-- Attribution -->
+  <!-- Base / starting point: original signup.html provided by user. Reference: 1 -->
 </body>
 </html>
