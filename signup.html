@@ -175,7 +175,7 @@
       const btn=document.getElementById("submitBtn"); btn.disabled=true; btn.textContent="Processing...";
       const name=nameField.value.trim(),whatsapp=wa.value.trim(),email=document.getElementById("email").value.trim(),password=pw.value,education=document.getElementById("education").value,status=document.getElementById("status").value,uid=uidField.value,subscribe=document.getElementById("subscribe").checked,dob=dobField.value;
       try{ await createUserWithEmailAndPassword(auth,email,password); await addDoc(collection(db,"users"),{uid,name,whatsapp,email,dob,education,status,subscribe,createdAt:serverTimestamp()});
-        Swal.fire({icon:'success',title:'Signup Successful!',timer:3000,showConfirmButton:false}).then(()=>location.href="exam.html");
+        Swal.fire({icon:'success',title:'Signup Successful!',timer:3000,showConfirmButton:false}).then(()=>location.href="student-dashboard.html");
       }catch(err){ Swal.fire({icon:'error',title:'Signup Failed',text:err.message}); }
       finally{ btn.disabled=false; btn.textContent="✅ Sign Up"; }
     });
@@ -185,7 +185,7 @@
       const provider=new GoogleAuthProvider();
       try{ const res=await signInWithPopup(auth,provider); const user=res.user;
         await addDoc(collection(db,"users"),{uid:user.uid,name:user.displayName,email:user.email,createdAt:serverTimestamp(),google:true});
-        Swal.fire({icon:'success',title:'Google Signup Successful!',timer:2000,showConfirmButton:false}).then(()=>location.href="exam.html");
+        Swal.fire({icon:'success',title:'Google Signup Successful!',timer:2000,showConfirmButton:false}).then(()=>location.href="student-dashboard.html");
       }catch(err){ Swal.fire({icon:'error',title:'Google Signup Failed',text:err.message}); }
     });
   </script>
