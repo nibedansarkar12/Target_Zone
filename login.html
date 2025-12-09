@@ -26,29 +26,6 @@
       padding:30px;
     }
 
-    .sun{
-      position:fixed;
-      top:5%; left:50%;
-      transform:translateX(-50%);
-      width:130px; height:130px;
-      border-radius:50%;
-      background:radial-gradient(circle,#fff7b5,#ffd24f,#ffb445);
-      box-shadow:0 10px 60px rgba(255,180,60,0.25);
-      z-index:0;
-    }
-
-    .cloud{
-      position:fixed;
-      background:white;
-      border-radius:999px;
-      opacity:.8;
-      filter:blur(3px);
-      z-index:0;
-    }
-    .c1{width:240px;height:70px;top:18%;left:8%;}
-    .c2{width:200px;height:60px;top:28%;right:6%;}
-    .c3{width:280px;height:80px;top:35%;left:12%;opacity:.55;}
-
     .card{
       width:100%;
       max-width:900px;
@@ -59,12 +36,10 @@
       backdrop-filter:blur(10px);
       box-shadow:0 20px 40px rgba(0,0,0,0.12);
       border-radius:20px;
-      z-index:10;
     }
 
     .logo-img{
       max-width:180px;
-      max-height:180px;
       object-fit:contain;
       border-radius:12px;
     }
@@ -107,11 +82,6 @@
 
 </head>
 <body>
-
-  <div class="sun"></div>
-  <div class="cloud c1"></div>
-  <div class="cloud c2"></div>
-  <div class="cloud c3"></div>
 
   <div class="card">
 
@@ -158,6 +128,7 @@
         <button id="btnEmailLogin" class="action-btn mb-2">Login with Email</button>
       </div>
 
+      <!-- GOOGLE LOGIN -->
       <div class="my-4">
         <button id="btnGoogle"
           class="w-full flex items-center justify-center gap-3 py-2 border rounded-lg bg-white">
@@ -177,11 +148,22 @@
   <!-- FIREBASE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup }
-      from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, collection, query, where, getDocs }
-      from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { 
+      getAuth, 
+      signInWithEmailAndPassword, 
+      GoogleAuthProvider, 
+      signInWithPopup 
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
+    import { 
+      getFirestore, 
+      collection, 
+      query, 
+      where, 
+      getDocs 
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    /* Your Firebase Config */
     const firebaseConfig = {
       apiKey: "AIzaSyCR5rqthBh0vX0yLOcOG3b9xJiKbYtzdxU",
       authDomain: "target-zone-8fffd.firebaseapp.com",
@@ -195,15 +177,7 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    /* =========================
-       TOGGLE SWITCH FIXED
-    ========================== */
-
-    const pillUID = document.getElementById("pillUID");
-    const pillEmail = document.getElementById("pillEmail");
-    const formUID = document.getElementById("formUID");
-    const formEmail = document.getElementById("formEmail");
-
+    /* Toggle UI */
     pillUID.onclick = () => {
       pillUID.classList.add("active");
       pillEmail.classList.remove("active");
@@ -218,22 +192,14 @@
       formUID.classList.add("hidden");
     };
 
-    /* =========================
-       EYE TOGGLE
-    ========================== */
-    toggleDob.onclick = () => {
-      inputDob.type = inputDob.type === "password" ? "text" : "password";
-    };
-    toggleEmailPass.onclick = () => {
-      inputEmailPass.type = inputEmailPass.type === "password" ? "text" : "password";
-    };
+    toggleDob.onclick = () => inputDob.type = inputDob.type === "password" ? "text" : "password";
+    toggleEmailPass.onclick = () => inputEmailPass.type = inputEmailPass.type === "password" ? "text" : "password";
 
-    /* =========================
-       PHONE + DOB LOGIN
-    ========================== */
 
+    /* -----------------------------------------
+       PHONE LOGIN (Already Working)
+    ----------------------------------------- */
     btnPhoneLogin.onclick = async () => {
-
       const phone = inputPhone.value.trim();
       const dob = inputDob.value.trim();
 
@@ -255,11 +221,11 @@
           return;
         }
 
-        const studentId = snap.docs[0].id;
+        const sid = snap.docs[0].id;
 
         Swal.fire("Success", "Login Successful!", "success");
         setTimeout(() => {
-          location.href = `student-dashboard.html?sid=${studentId}`;
+          location.href = `student-dashboard.html?sid=${sid}`;
         }, 900);
 
       } catch (err) {
@@ -267,29 +233,61 @@
       }
     };
 
-    /* =========================
-       EMAIL LOGIN
-    ========================== */
 
+    /* -----------------------------------------
+       EMAIL LOGIN (FIXED)
+    ----------------------------------------- */
     btnEmailLogin.onclick = async () => {
       try {
-        await signInWithEmailAndPassword(auth, inputEmail.value, inputEmailPass.value);
+        const result = await signInWithEmailAndPassword(auth, inputEmail.value, inputEmailPass.value);
+        const user = result.user;
+
+        // Firestore থেকে student খুঁজুন
+        const q = query(collection(db, "students"), where("email", "==", user.email));
+        const snap = await getDocs(q);
+
+        if (snap.empty) {
+          Swal.fire("Error", "এই ইমেইল দিয়ে কোনো ছাত্র পাওয়া যায়নি!", "error");
+          return;
+        }
+
+        const sid = snap.docs[0].id;
+
         Swal.fire("Success", "Login Successful!", "success");
-        setTimeout(() => location.href = "student-dashboard.html", 900);
+        setTimeout(() => {
+          location.href = `student-dashboard.html?sid=${sid}`;
+        }, 900);
+
       } catch (err) {
         Swal.fire("Error", err.message, "error");
       }
     };
 
-    /* =========================
-       GOOGLE LOGIN
-    ========================== */
 
+    /* -----------------------------------------
+       GOOGLE LOGIN (FIXED)
+    ----------------------------------------- */
     btnGoogle.onclick = async () => {
       try {
-        await signInWithPopup(auth, new GoogleAuthProvider());
+        const result = await signInWithPopup(auth, new GoogleAuthProvider());
+        const user = result.user;
+
+        // Firestore থেকে student খুঁজুন
+        const q = query(collection(db, "students"), where("email", "==", user.email));
+        const snap = await getDocs(q);
+
+        if (snap.empty) {
+          Swal.fire("Error", "এই Google অ্যাকাউন্ট দিয়ে কোনো ছাত্র পাওয়া যায়নি!", "error");
+          return;
+        }
+
+        const sid = snap.docs[0].id;
+
         Swal.fire("Success", "Google Login Successful!", "success");
-        setTimeout(() => location.href = "student-dashboard.html", 900);
+        setTimeout(() => {
+          location.href = `student-dashboard.html?sid=${sid}`;
+        }, 900);
+
       } catch (err) {
         Swal.fire("Error", err.message, "error");
       }
