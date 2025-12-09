@@ -692,89 +692,133 @@ window.loadQuestions = async (categoryOrColl) => {
       });
     } catch (e) { console.error(e); list.innerHTML="Error"; }
   };
+window.openStudentFinance = async (studentId) => {
+  const area = document.getElementById("profile-area");
+  area.innerHTML = "Loading...";
 
-  window.openStudentFinance = async (studentId) => {
-    const area = document.getElementById("profile-area");
-    area.innerHTML = "Loading...";
-    try {
-      const docRef = doc(db, "students", studentId);
-      const sDoc = await getDoc(docRef);
-      if (!sDoc.exists()) { area.innerHTML="Not found"; return; }
-      const s = sDoc.data();
-      area.innerHTML = `
-        <div>
-          <div class="font-semibold text-lg">${s.name||"(No name)"}</div>
-          <div class="text-sm">${s.phone||""} ${s.whatsapp?("• "+s.whatsapp):""}</div>
-          <div class="text-xs">${s.address||""}</div>
-          <hr class="my-2"/>
-          <h5 class="font-semibold">Monthly Account</h5>
-          <table class="w-full text-sm border mt-2"><thead><tr><th>Month</th><th>Amount</th><th>Note</th><th>Action</th></tr></thead><tbody id="finance-rows"><tr><td colspan="4">Loading...</td></tr></tbody></table>
-          <div class="mt-2 flex gap-2">
-            <select id="pay-month" class="border px-2 py-1">${generateLast12MonthsOptions()}</select>
-            <input id="pay-amount" type="number" placeholder="Amount (₹)" class="border px-2 py-1"/>
-            <input id="pay-note" placeholder="Note" class="border px-2 py-1"/>
-            <button onclick="addPayment('${studentId}')" class="bg-blue-600 px-3 py-1 rounded">Add</button>
-          </div>
-        </div>`;
-      loadFinance(studentId);
-    } catch (e) { console.error(e); area.innerHTML="Error"; }
-  };
+  try {
+    const docRef = doc(db, "students", studentId);
+    const sDoc = await getDoc(docRef);
+    if (!sDoc.exists()) { 
+      area.innerHTML = "Not found"; 
+      return; 
+    }
 
-  async function loadFinance(studentId) {
-    const tbody=document.getElementById("finance-rows");
-    tbody.innerHTML="<tr><td colspan='4'>Loading...</td></tr>";
-    try {
-      const q=query(collection(db,"salaries"),where("studentId","==",studentId),orderBy("month","desc"));
-      const snap=await getDocs(q);
-      tbody.innerHTML="";
-      if(snap.empty){tbody.innerHTML="<tr><td colspan='4'>No records</td></tr>";return;}
-      snap.forEach(docSnap=>{
-        const d=docSnap.data();
-        tbody.innerHTML+=`<tr><td>${d.month}</td><td>${d.amount}</td><td>${d.note||""}</td><td><button class="bg-red-600 px-2 py-1 rounded text-sm" onclick="deleteSalary('${docSnap.id}','${studentId}')">Del</button></td></tr>`;
-      });
-    } catch(e){console.error(e);tbody.innerHTML="<tr><td colspan='4'>Error</td></tr>";}
+    const s = sDoc.data();
+
+    area.innerHTML = `
+      <div>
+        <div class="font-semibold text-lg">${s.name || "(No name)"}</div>
+        <div class="text-sm">${s.phone || ""} ${s.whatsapp ? ("• " + s.whatsapp) : ""}</div>
+        <div class="text-xs">${s.address || ""}</div>
+
+        <hr class="my-2"/>
+
+        <h5 class="font-semibold text-indigo-700 text-lg mb-2">Monthly Account</h5>
+
+        <!-- ⭐ Modern Table -->
+        <table class="min-w-full border border-gray-300 rounded-2xl overflow-hidden shadow-xl text-sm">
+          <thead class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
+            <tr>
+              <th class="py-2 px-3 text-left">📅 Date</th>
+              <th class="py-2 px-3 text-left">🗓 Month</th>
+              <th class="py-2 px-3 text-left">💰 Amount</th>
+              <th class="py-2 px-3 text-left">📝 Note</th>
+              <th class="py-2 px-3 text-center">⚙️ Action</th>
+            </tr>
+          </thead>
+          <tbody id="finance-rows">
+            <tr><td colspan="5">Loading...</td></tr>
+          </tbody>
+        </table>
+
+        <!-- ⭐ Modern Add Form -->
+        <div class="mt-4 flex flex-wrap gap-2 items-center bg-white/40 p-4 rounded-xl backdrop-blur-xl shadow-lg">
+
+          <input id="pay-date" type="date" 
+                 class="border px-3 py-2 rounded-lg shadow w-40" />
+
+          <select id="pay-month" class="border px-3 py-2 rounded-lg shadow w-40">
+            ${generateLast12MonthsOptions()}
+          </select>
+
+          <input id="pay-amount" type="number" placeholder="Amount ₹"
+                 class="border px-3 py-2 rounded-lg shadow w-32" />
+
+          <input id="pay-note" placeholder="Note"
+                 class="border px-3 py-2 rounded-lg shadow flex-1" />
+
+          <button onclick="addPayment('${studentId}')"
+                  class="bg-indigo-600 text-white px-4 py-2 rounded-lg shadow hover:bg-indigo-700">
+            ➕ Add
+          </button>
+
+        </div>
+      </div>
+    `;
+
+    // Load existing finance records
+    loadFinance(studentId);
+
+  } catch (e) {
+    console.error(e);
+    area.innerHTML = "Error loading student finance";
+  }
+};
+
+  snap.forEach(docSnap => {
+  const d = docSnap.data();
+  const id = docSnap.id;
+
+  tbody.innerHTML += `
+  <tr class="border-b hover:bg-indigo-50 transition">
+    <td class="py-2 px-3">${d.date || ''}</td>
+    <td class="py-2 px-3 font-semibold">${d.month || ''}</td>
+    <td class="py-2 px-3 font-bold text-green-700">₹${d.amount || 0}</td>
+    <td class="py-2 px-3">${d.note || ''}</td>
+    <td class="py-2 px-3 text-center">
+      <button onclick="deleteSalary('${id}','${studentId}')"
+        class="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-700">
+        🗑 Delete
+      </button>
+    </td>
+  </tr>
+  `;
+});
+
+  async function addPayment(studentId) {
+  const date = document.getElementById("pay-date").value;
+  const month = document.getElementById("pay-month").value;
+  const amount = Number(document.getElementById("pay-amount").value);
+  const note = document.getElementById("pay-note").value;
+
+  if (!date || !month || !amount) {
+    alert("⚠️ তারিখ, মাস এবং টাকা দিতে হবে!");
+    return;
   }
 
-  async function addPayment(studentId){
-    const month=document.getElementById("pay-month").value;
-    const amount=Number(document.getElementById("pay-amount").value);
-    const note=document.getElementById("pay-note").value;
-    if(!month||!amount){/* Fixed alert: compute UID safely from form fields if available */
-var __regName = document.getElementById('reg-name')?.value || document.getElementById('name')?.value || '';
-var __regPhone = document.getElementById('reg-phone')?.value || document.getElementById('phone')?.value || '';
-if(__regName || __regPhone){
-  var __uid = (__regPhone? __regPhone : 'UID') + ( __regName? ('-' + __regName.charAt(0).toUpperCase()) : '');
-  alert('Registration Complete! UID: ' + __uid);
-} else {
-  alert('Registration Complete!');
-}
-return;}
-    try{
-      await addDoc(collection(db,"salaries"),{studentId,month,amount,note,createdAt:Date.now()});
-      loadFinance(studentId);
-      document.getElementById("pay-amount").value="";document.getElementById("pay-note").value="";
-    }catch(e){console.error(e);/* Fixed alert: compute UID safely from form fields if available */
-var __regName = document.getElementById('reg-name')?.value || document.getElementById('name')?.value || '';
-var __regPhone = document.getElementById('reg-phone')?.value || document.getElementById('phone')?.value || '';
-if(__regName || __regPhone){
-  var __uid = (__regPhone? __regPhone : 'UID') + ( __regName? ('-' + __regName.charAt(0).toUpperCase()) : '');
-  alert('Registration Complete! UID: ' + __uid);
-} else {
-  alert('Registration Complete!');
-}
-}
-  }
-
-  function exportCurrentViewCSV(){
-    const rows=[["Month","Amount","Note"]];
-    document.querySelectorAll("#finance-rows tr").forEach(tr=>{
-      const cols=Array.from(tr.querySelectorAll("td")).map(td=>td.textContent.trim());
-      if(cols.length>=3)rows.push([cols[0],cols[1],cols[2]]);
+  try {
+    await addDoc(collection(db, "salaries"), {
+      studentId,
+      date,           // নতুনভাবে date save হচ্ছে
+      month,
+      amount,
+      note: note || "",
+      createdAt: Date.now()
     });
-    const csv=rows.map(r=>r.join(",")).join("\n");
-    const blob=new Blob([csv],{type:"text/csv"});
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement("a");a.href=url;a.download="salary.csv";a.click();URL.revokeObjectURL(url);
+
+    loadFinance(studentId);
+
+    // Reset form fields
+    document.getElementById("pay-date").value = "";
+    document.getElementById("pay-month").value = "";
+    document.getElementById("pay-amount").value = "";
+    document.getElementById("pay-note").value = "";
+
+  } catch (e) {
+    console.error("Error saving payment:", e);
+    alert("Error saving payment: " + e.message);
+  }
   }
 
 // === Add Batch & Student Management ===
