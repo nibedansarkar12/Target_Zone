@@ -12,23 +12,12 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <style>
-/* Background Glow */
 body {
     margin: 0;
     padding: 20px;
     background: radial-gradient(circle at top, #dbeafe, #e0f2fe, #ffffff);
     font-family: "Inter", sans-serif;
 }
-
-/* Floating Lights */
-.light { position: fixed; width: 350px; height: 350px; filter: blur(120px); border-radius: 50%; z-index:-1; animation: float 8s infinite alternate ease-in-out; }
-.light1 { background: rgba(99,102,241,0.25); top:10%; left:5%; }
-.light2 { background: rgba(236,72,153,0.25); top:30%; left:60%; }
-.light3 { background: rgba(14,165,233,0.25); top:70%; left:20%; }
-
-@keyframes float { from { transform: translateY(0px); } to { transform: translateY(40px);} }
-
-/* Premium Cards */
 .glass-card {
     background: rgba(255,255,255,0.72);
     backdrop-filter: blur(15px);
@@ -36,7 +25,6 @@ body {
     padding: 25px;
     box-shadow: 0 12px 40px rgba(0,0,0,0.15);
 }
-
 .sec-title {
     font-size: 26px;
     font-weight: 800;
@@ -45,13 +33,9 @@ body {
     -webkit-background-clip: text;
     color: transparent;
 }
-
-/* Table */
 .table-box { overflow-x: auto; }
 th { background:#4f46e5; color:white; padding:10px; }
 td { padding:10px; border-bottom:1px solid #e5e7eb; }
-
-/* Exam Button */
 .examBtn {
     background: linear-gradient(90deg,#4f46e5,#9333ea);
     color:white; padding:12px; width:100%; font-size:18px; 
@@ -59,14 +43,9 @@ td { padding:10px; border-bottom:1px solid #e5e7eb; }
     box-shadow:0 8px 18px rgba(99,102,241,0.3);
 }
 </style>
-
 </head>
-<body>
 
-<!-- BG Floating Lights -->
-<div class="light light1"></div>
-<div class="light light2"></div>
-<div class="light light3"></div>
+<body>
 
 <div class="max-w-5xl mx-auto">
 
@@ -117,131 +96,105 @@ style="background:linear-gradient(90deg,#4f46e5,#9333ea);-webkit-background-clip
 
 </div>
 
-<!-- Firebase -->
+
+<!-- FIREBASE -->
 <script type="module">
-import {
-  initializeApp
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, doc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-import {
-  getFirestore,
-  doc,
-  getDoc,
-  collection,
-  getDocs
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-// Firebase config
+// ---- YOUR FIREBASE CONFIG (Same as login.html) ----
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_BUCKET",
-  messagingSenderId: "YOUR_MSG",
-  appId: "YOUR_APP",
+  apiKey: "AIzaSyCR5rqthBh0vX0yLOcOG3b9xJiKbYtzdxU",
+  authDomain: "target-zone-8fffd.firebaseapp.com",
+  projectId: "target-zone-8fffd",
+  storageBucket: "target-zone-8fffd.appspot.com",
+  messagingSenderId: "667579216123",
+  appId: "1:667579216123:web:37bb1fcc724743073d005e"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// ======== Error Visible Logger ========
-function showError(err, step = "") {
-  console.error("🔥 Dashboard Error (" + step + "):", err);
 
+// ⚠ Error Popup
+function showError(msg, step="") {
   Swal.fire({
     title: "Dashboard Error",
-    html: `
-      <b>Step:</b> ${step}<br><br>
-      <b>Error:</b><br>${err?.message || err}
-      <hr>
-      <small>Check console for full details.</small>
-    `,
-    icon: "error",
+    html: `<b>Step:</b> ${step}<br><br><b>Error:</b> ${msg}`,
+    icon: "error"
   });
 }
 
-// ======== MAIN FUNCTION ========
+
+// ================ MAIN DASHBOARD LOADER ====================
 async function loadDashboard() {
+
+  const url = new URL(window.location.href);
+  const sid = url.searchParams.get("sid");
+
+  if (!sid) {
+    showError("Missing SID in URL", "SID Validation");
+    return;
+  }
+
+  // ===== LOAD STUDENT DATA =====
   try {
-    console.log("🔵 Dashboard loading...");
+    const snap = await getDoc(doc(db, "students", sid));
 
-    const url = new URL(window.location.href);
-    const sid = url.searchParams.get("sid");
-    console.log("🔵 SID =", sid);
-
-    if (!sid) {
-      showError("Missing SID in URL", "SID Validation");
+    if (!snap.exists()) {
+      showError("Student profile not found!", "Student Data");
       return;
     }
 
-    // Step 1 — Load student document
-    let studentSnap;
-    try {
-      studentSnap = await getDoc(doc(db, "students", sid));
-    } catch (err) {
-      showError(err, "getDoc(students/sid)");
-      return;
-    }
+    const s = snap.data();
 
-    if (!studentSnap.exists()) {
-      showError("Student Document Not Found in Firestore!", "Student Data Load");
-      return;
-    }
+    document.getElementById("name").innerText = s.name || "N/A";
+    document.getElementById("phone").innerText = s.phone || "N/A";
+    document.getElementById("dob").innerText = s.dob || "N/A";
+    document.getElementById("father").innerText = s.father || "N/A";
+    document.getElementById("batch").innerText = s.batch || "N/A";
+    document.getElementById("whatsapp").innerText = s.whatsapp || "N/A";
 
-    const student = studentSnap.data();
-    console.log("🟢 Student Data:", student);
+    document.getElementById("infoSection").classList.remove("hidden");
 
-    // Fill DOM
-    try {
-      document.getElementById("sname").innerText = student.name || "N/A";
-      document.getElementById("sid").innerText   = sid;
-      document.getElementById("sdob").innerText  = student.dob || "N/A";
-      document.getElementById("sphone").innerText = student.phone || "N/A";
-      document.getElementById("sclass").innerText = student.class || "N/A";
-      document.getElementById("saddress").innerText = student.address || "N/A";
-    } catch (err) {
-      showError(err, "Updating HTML Fields");
-      return;
-    }
+  } catch (err) {
+    showError(err.message, "Loading Student Info");
+    return;
+  }
 
-    // Step 2 — Payments / Subcollection
-    console.log("🔵 Loading payments...");
 
-    let paySnap;
-    try {
-      paySnap = await getDocs(collection(db, "students", sid, "payments"));
-    } catch (err) {
-      showError(err, "Loading Payment Collection");
-      return;
-    }
-
-    const table = document.getElementById("paymentTableBody");
+  // ===== LOAD PAYMENTS =====
+  try {
+    const paySnap = await getDocs(collection(db, "students", sid, "payments"));
+    const table = document.getElementById("paymentTable");
     table.innerHTML = "";
 
-    paySnap.forEach((doc) => {
+    paySnap.forEach(doc => {
       const p = doc.data();
-      console.log("🟢 Payment record:", p);
 
       const tr = document.createElement("tr");
       tr.innerHTML = `
-        <td>${p?.amount || "N/A"}</td>
-        <td>${p?.date || "N/A"}</td>
-        <td>${p?.status || "N/A"}</td>
+        <td>${p.date || "N/A"}</td>
+        <td>${p.month || "N/A"}</td>
+        <td>${p.amount || "N/A"}</td>
       `;
       table.appendChild(tr);
     });
 
-    // Show Dashboard
-    document.getElementById("infoSection").classList.remove("hidden");
-
-    Swal.fire("Success", "Dashboard Loaded Successfully!", "success");
+    document.getElementById("paymentSection").classList.remove("hidden");
 
   } catch (err) {
-    showError(err, "Main loadDashboard()");
+    showError(err.message, "Loading Payments");
   }
+
+  // Show Exam
+  document.getElementById("examSection").classList.remove("hidden");
+
 }
 
 window.onload = loadDashboard;
-      </script>
+
+</script>
+
 </body>
 </html>
