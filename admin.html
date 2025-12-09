@@ -758,34 +758,6 @@ window.openStudentFinance = async (studentId) => {
     `;
 
     // Load existing finance records
-    loadFinance(studentId);
-
-  } catch (e) {
-    console.error(e);
-    area.innerHTML = "Error loading student finance";
-  }
-};
-
-  snap.forEach(docSnap => {
-  const d = docSnap.data();
-  const id = docSnap.id;
-
-  tbody.innerHTML += `
-  <tr class="border-b hover:bg-indigo-50 transition">
-    <td class="py-2 px-3">${d.date || ''}</td>
-    <td class="py-2 px-3 font-semibold">${d.month || ''}</td>
-    <td class="py-2 px-3 font-bold text-green-700">₹${d.amount || 0}</td>
-    <td class="py-2 px-3">${d.note || ''}</td>
-    <td class="py-2 px-3 text-center">
-      <button onclick="deleteSalary('${id}','${studentId}')"
-        class="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-700">
-        🗑 Delete
-      </button>
-    </td>
-  </tr>
-  `;
-});
-
   async function addPayment(studentId) {
   const date = document.getElementById("pay-date").value;
   const month = document.getElementById("pay-month").value;
