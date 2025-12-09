@@ -100,9 +100,17 @@ style="background:linear-gradient(90deg,#4f46e5,#9333ea);-webkit-background-clip
 <!-- FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, doc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { 
+  getFirestore, 
+  doc, 
+  getDoc, 
+  collection, 
+  getDocs, 
+  query, 
+  where 
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// ---- YOUR FIREBASE CONFIG (Same as login.html) ----
+// ---- FIREBASE CONFIG ----
 const firebaseConfig = {
   apiKey: "AIzaSyCR5rqthBh0vX0yLOcOG3b9xJiKbYtzdxU",
   authDomain: "target-zone-8fffd.firebaseapp.com",
@@ -115,8 +123,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-
-// ⚠ Error Popup
+// Error Popup
 function showError(msg, step="") {
   Swal.fire({
     title: "Dashboard Error",
@@ -163,18 +170,24 @@ async function loadDashboard() {
   }
 
 
-  // ===== LOAD PAYMENTS =====
+  // ===== LOAD PAYMENT HISTORY FROM salaries COLLECTION =====
   try {
-    const paySnap = await getDocs(collection(db, "students", sid, "payments"));
+    const q1 = query(
+      collection(db, "salaries"),
+      where("studentId", "==", sid)
+    );
+
+    const paySnap = await getDocs(q1);
+
     const table = document.getElementById("paymentTable");
     table.innerHTML = "";
 
-    paySnap.forEach(doc => {
-      const p = doc.data();
+    paySnap.forEach(docSnap => {
+      const p = docSnap.data();
 
       const tr = document.createElement("tr");
       tr.innerHTML = `
-        <td>${p.date || "N/A"}</td>
+        <td>${new Date(p.createdAt).toLocaleDateString("bn-BD")}</td>
         <td>${p.month || "N/A"}</td>
         <td>${p.amount || "N/A"}</td>
       `;
@@ -187,9 +200,8 @@ async function loadDashboard() {
     showError(err.message, "Loading Payments");
   }
 
-  // Show Exam
+  // Show Exam Section
   document.getElementById("examSection").classList.remove("hidden");
-
 }
 
 window.onload = loadDashboard;
