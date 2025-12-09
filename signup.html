@@ -1,331 +1,600 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="bn">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Target Zone — Sign Up</title>
+  <title>Target Zone – Signup (Ultra Modern)</title>
 
-  <!-- Tailwind -->
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <!-- SweetAlert -->
+  <!-- Tailwind v3 CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- flatpickr for nice datepicker -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+  <!-- SweetAlert for alerts -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <style>
-    /* Lighting + glass aesthetic */
-    :root {
-      --accent1: #7c3aed;
-      --accent2: #06b6d4;
-      --glass: rgba(255,255,255,0.6);
+    :root{
+      --bg-1:#0f172a; --bg-2:#0b1220;
+      --card-glass: rgba(255,255,255,0.06);
+      --glass-strong: rgba(255,255,255,0.08);
+      --accent-1: #6366F1; /* indigo */
+      --accent-2: #8B5CF6; /* violet */
+      --accent-3: #06B6D4; /* cyan */
     }
-    body {
-      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      background: radial-gradient(1200px 600px at 10% 10%, rgba(99,102,241,0.08), transparent 10%),
-                  radial-gradient(1000px 500px at 90% 90%, rgba(6,182,212,0.06), transparent 10%),
-                  linear-gradient(180deg,#f8fafc,#eef2ff 40%, #ffffff 100%);
+
+    /* Page background gradient + subtle noise */
+    body{
       min-height:100vh;
+      margin:0;
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial;
+      background: linear-gradient(180deg, rgba(14,23,45,1) 0%, rgba(6,8,20,1) 100%);
+      color:#e6eef8;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      overflow-x:hidden;
+    }
+
+    /* Parallax layers container */
+    .bg-layer { position:fixed; inset:0; z-index:0; pointer-events:none; }
+
+    /* Sun with slow rotation */
+    .sun {
+      position: absolute;
+      top:5%;
+      right:6%;
+      width:140px;
+      height:140px;
+      border-radius:50%;
+      background: radial-gradient(circle at 35% 35%, #ffe27a 0%, #ffc938 60%, #ff9f1a 100%);
+      box-shadow: 0 0 80px rgba(255,160,0,0.25), 0 0 160px rgba(255,140,0,0.12);
+      transform-origin:center;
+      animation: sunSpin 24s linear infinite;
+      mix-blend-mode:screen;
+      opacity:0.95;
+    }
+    @keyframes sunSpin{ from{ transform:rotate(0deg) } to{ transform:rotate(360deg) } }
+
+    /* Cloud layers for parallax */
+    .cloud {
+      position:absolute;
+      background: linear-gradient(180deg,#ffffff 0%, #f3f4f6 100%);
+      border-radius:9999px;
+      filter: blur(.4px);
+      opacity:0.85;
+      box-shadow:0 30px 80px rgba(2,6,23,0.6);
+      transform: translateZ(0);
+    }
+    .cloud.c1{ width:260px; height:72px; top:18%; left:-260px; animation:cloudMove1 110s linear infinite; }
+    .cloud.c2{ width:180px; height:56px; top:36%; left:-200px; animation:cloudMove2 95s linear infinite; }
+    .cloud.c3{ width:320px; height:100px; top:62%; left:-340px; animation:cloudMove3 125s linear infinite; }
+    @keyframes cloudMove1 { from{ transform:translateX(0) } to{ transform:translateX(140vw) } }
+    @keyframes cloudMove2 { from{ transform:translateX(0) } to{ transform:translateX(130vw) } }
+    @keyframes cloudMove3 { from{ transform:translateX(0) } to{ transform:translateX(150vw) } }
+
+    /* Subtle particles using pseudo element */
+    .particles { position:absolute; inset:0; background-image: radial-gradient(rgba(255,255,255,0.02) 1px, transparent 1px); background-size: 60px 60px; opacity:0.6; mix-blend-mode:overlay; }
+
+    /* Card */
+    .form-card{
+      position:relative;
+      z-index:10;
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+      border: 1px solid rgba(255,255,255,0.04);
+      border-radius:1rem;
+      padding: 1.5rem;
+      box-shadow: 0 10px 40px rgba(2,6,23,0.6);
+      backdrop-filter: blur(10px) saturate(120%);
+      transition: transform .28s cubic-bezier(.2,.9,.2,1), box-shadow .28s;
+    }
+    .form-card:hover{ transform: translateY(-6px); box-shadow: 0 20px 60px rgba(2,6,23,0.7) }
+
+    /* Floating labels */
+    .field { position:relative; margin-top:0.6rem; }
+    .input, .select {
+      width:100%;
+      padding:1rem 1rem 0.9rem 1rem;
+      border-radius:0.75rem;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border:1px solid rgba(255,255,255,0.04);
+      color:inherit;
+      transition: box-shadow .18s, border-color .18s, background .18s;
+    }
+    .input:focus, .select:focus { outline:none; box-shadow: 0 6px 24px rgba(99,102,241,0.08); border-color: rgba(99,102,241,0.6) }
+    label.flabel{
+      position:absolute;
+      left:1rem;
+      top:50%;
+      transform:translateY(-50%);
+      pointer-events:none;
+      transition: transform .18s, font-size .18s, top .18s, opacity .18s;
+      color:rgba(226,232,240,0.8);
+      font-size:0.95rem;
+      display:flex; gap:.5rem; align-items:center;
+    }
+    .input:not(:placeholder-shown) + .flabel,
+    .input:focus + .flabel,
+    .select:not([value=""]) + .flabel,
+    .select:focus + .flabel {
+      top:0.6rem;
+      transform:translateY(0);
+      font-size:0.78rem;
+      opacity:0.95;
+    }
+
+    /* Small icon inside field */
+    .field .icon {
+      position:absolute;
+      right:0.9rem;
+      top:50%;
+      transform:translateY(-50%);
+      cursor:pointer;
+      opacity:0.9;
+    }
+
+    /* Animated gradient button (aurora) */
+    .btn-aurora{
+      position:relative;
+      padding:.9rem 1rem;
+      border-radius:.75rem;
+      font-weight:700;
+      letter-spacing:.2px;
+      overflow:hidden;
+      border: none;
+      cursor:pointer;
+      color:white;
+      transition: transform .14s ease, box-shadow .14s;
+      background: linear-gradient(270deg, #6366F1, #8B5CF6, #EC4899, #06B6D4);
+      background-size: 800% 800%;
+      animation: aurora 8s ease infinite;
+      box-shadow: 0 8px 30px rgba(99,102,241,0.12);
+    }
+    .btn-aurora:hover { transform: translateY(-3px) scale(1.01); box-shadow: 0 18px 40px rgba(99,102,241,0.16) }
+    @keyframes aurora {
+      0%{ background-position:0% 50% } 50%{ background-position:100% 50% } 100%{ background-position:0% 50% }
+    }
+
+    /* Google style button */
+    .btn-google{
+      display:flex;
+      gap:.75rem;
+      align-items:center;
+      justify-content:center;
+      padding:.85rem;
+      border-radius:.75rem;
+      font-weight:700;
+      background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+      border:1px solid rgba(255,255,255,0.06);
+      transition: transform .12s, box-shadow .12s;
+      cursor:pointer;
+    }
+    .btn-google:hover { transform:translateY(-2px); box-shadow:0 12px 30px rgba(2,6,23,0.6) }
+
+    /* Password strength bar + label */
+    .strength-bar{ height:8px; border-radius:8px; background:rgba(255,255,255,0.04); overflow:hidden; }
+    .strength-bar > span{ display:block; height:100%; width:0%; transition: width .28s; background: linear-gradient(90deg,#ef4444,#f59e0b,#10b981); }
+    .strength-text{ font-size:.85rem; color:rgba(226,232,240,0.85); margin-top:.35rem; }
+
+    /* Input error styling */
+    .input.error { box-shadow: 0 0 0 6px rgba(248,113,113,0.06); border-color: rgba(248,113,113,0.85) }
+
+    /* Loading overlay */
+    .loading-overlay{
+      position: absolute;
+      inset:0;
+      background: linear-gradient(180deg, rgba(2,6,23,0.6), rgba(2,6,23,0.55));
       display:flex;
       align-items:center;
       justify-content:center;
-      padding:32px;
+      gap:1rem;
+      border-radius:1rem;
+      z-index:50;
+      backdrop-filter: blur(2px);
     }
+    .lds-ellipsis{ display:inline-block; position:relative; width:60px; height:12px; }
+    .lds-ellipsis div{ position:absolute; top:0; width:12px; height:12px; border-radius:50%; animation: lds-ellipsis 0.9s cubic-bezier(.2,.7,.2,1) infinite; background:white; opacity:0.9 }
+    .lds-ellipsis div:nth-child(1){ left:6px; animation-delay:0s }
+    .lds-ellipsis div:nth-child(2){ left:6px; animation-delay:.12s }
+    .lds-ellipsis div:nth-child(3){ left:26px; animation-delay:.24s }
+    .lds-ellipsis div:nth-child(4){ left:45px; animation-delay:.36s }
+    @keyframes lds-ellipsis { 0%{ transform:scale(0) } 50%{ transform:scale(1) } 100%{ transform:scale(0) } }
 
-    .card {
-      width:100%;
-      max-width:960px;
-      border-radius:18px;
-      padding:28px;
-      position:relative;
-      overflow:hidden;
-      box-shadow: 0 20px 50px rgba(15,23,42,0.12);
-      background: linear-gradient(180deg, rgba(255,255,255,0.7), rgba(255,255,255,0.55));
-      backdrop-filter: blur(10px) saturate(120%);
-      border: 1px solid rgba(124,58,237,0.08);
+    /* Responsive tweaks */
+    @media (min-width:768px){
+      .container-grid { display:grid; grid-template-columns: 1fr 420px; gap:2.5rem; align-items:center; }
+      .left-hero{ padding-left:2rem; }
     }
-
-    /* animated light streak */
-    .card::before {
-      content: "";
-      position: absolute;
-      left: -40%;
-      top: -30%;
-      width: 160%;
-      height: 70%;
-      background: linear-gradient(90deg, rgba(124,58,237,0.12), rgba(6,182,212,0.12), rgba(124,58,237,0.08));
-      transform: rotate(-12deg);
-      filter: blur(30px);
-      animation: float 8s ease-in-out infinite;
-      pointer-events: none;
-    }
-    @keyframes float {
-      0% { transform: translateX(-10%) rotate(-12deg); }
-      50% { transform: translateX(10%) rotate(-14deg); }
-      100% { transform: translateX(-10%) rotate(-12deg); }
-    }
-
-    .brand {
-      font-weight:800;
-      font-size:20px;
-      letter-spacing:0.4px;
-      background: linear-gradient(90deg,var(--accent1),var(--accent2));
-      -webkit-background-clip: text;
-      color: transparent;
-    }
-
-    .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
-    @media(max-width:800px){ .form-grid{ grid-template-columns:1fr } }
-
-    .input {
-      width:100%;
-      padding:12px 14px;
-      border-radius:12px;
-      border:1px solid rgba(15,23,42,0.06);
-      background: rgba(255,255,255,0.9);
-      font-size:15px;
-      outline:none;
-      transition: box-shadow .18s, transform .12s;
-    }
-    .input:focus { box-shadow: 0 6px 20px rgba(124,58,237,0.08); transform: translateY(-1px); }
-
-    .primary-btn {
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:10px;
-      padding:12px 16px;
-      border-radius:12px;
-      font-weight:700;
-      cursor:pointer;
-      background: linear-gradient(90deg,var(--accent1),var(--accent2));
-      color:white;
-      border:none;
-      box-shadow: 0 10px 30px rgba(124,58,237,0.16);
-      transition: transform .12s, box-shadow .12s;
-    }
-    .primary-btn:active { transform: translateY(1px); box-shadow: 0 6px 18px rgba(124,58,237,0.12); }
-
-    .muted { color:#475569; font-size:13px; }
-
-    .small {
-      font-size:13px;
-    }
-
-    .eye {
-      cursor:pointer;
-      user-select:none;
-    }
-
-    .divider {
-      height:1px; background:linear-gradient(90deg, transparent, rgba(15,23,42,0.06), transparent);
-      margin:18px 0;
-    }
-
-    /* subtle focus ring for accessibility */
-    .input:focus { box-shadow: 0 0 0 4px rgba(99,102,241,0.06); }
-
-    .legal { font-size:12px; color:#6b7280; }
-
   </style>
 </head>
 <body>
 
-  <div class="card">
-    <div class="flex items-center justify-between mb-6">
-      <div>
-        <div class="brand">Target Zone</div>
-        <div class="muted">Sign up and join the exam platform</div>
-      </div>
-      <div class="text-right">
-        <div class="muted small">Already have an account?</div>
-        <a href="login.html" class="small text-indigo-600 font-semibold">Login</a>
-      </div>
-    </div>
-
-    <h2 class="text-2xl font-extrabold mb-1">Create your account</h2>
-    <p class="muted mb-6">Quick sign up — use a valid email. You can verify later to unlock full profile.</p>
-
-    <form id="signupForm" class="space-y-4">
-
-      <div class="form-grid">
-        <div>
-          <label class="small muted">Full name</label>
-          <input id="name" class="input" type="text" placeholder="আপনার নাম লিখুন" required>
-        </div>
-
-        <div>
-          <label class="small muted">Phone</label>
-          <input id="phone" class="input" type="tel" placeholder="01xxxxxxxxx" required>
-        </div>
-
-        <div>
-          <label class="small muted">Birthdate (YYYY-MM-DD)</label>
-          <input id="dob" class="input" type="text" placeholder="1998-08-31" required>
-        </div>
-
-        <div>
-          <label class="small muted">Father's name (optional)</label>
-          <input id="father" class="input" type="text" placeholder="পিতার নাম">
-        </div>
-
-        <div>
-          <label class="small muted">Email</label>
-          <input id="email" class="input" type="email" placeholder="example@mail.com" required>
-        </div>
-
-        <div>
-          <label class="small muted">Password</label>
-          <div class="relative">
-            <input id="password" class="input pr-12" type="password" placeholder="কমপক্ষে 6 অক্ষর" required>
-            <span id="togglePass" class="absolute right-3 top-3 eye muted">👁️</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="divider"></div>
-
-      <div class="flex items-center justify-between">
-        <div class="legal">
-          By creating an account you agree to our <a href="#" class="text-indigo-600">Terms</a>
-        </div>
-        <button id="btnSignup" type="button" class="primary-btn">Create account</button>
-      </div>
-
-    </form>
-
-    <p class="muted small mt-4">Pro tip: Ensure your phone & DOB match the student records to allow instant linking during verify.</p>
+  <!-- Background layers -->
+  <div class="bg-layer">
+    <div class="sun"></div>
+    <div class="cloud c1" style="opacity:0.95"></div>
+    <div class="cloud c2" style="opacity:0.82"></div>
+    <div class="cloud c3" style="opacity:0.88"></div>
+    <div class="particles"></div>
   </div>
 
-  <!-- FIREBASE + LOGIC -->
+  <!-- Page content -->
+  <div class="min-h-screen flex items-center justify-center px-6 py-12 relative">
+    <div class="container-grid w-full max-w-6xl">
+
+      <!-- Left hero / marketing column -->
+      <div class="left-hero text-left hidden md:block">
+        <h1 class="text-4xl font-extrabold mb-4" style="background:linear-gradient(90deg,var(--accent-1),var(--accent-2)); -webkit-background-clip:text; background-clip:text; color:transparent;">
+          🎯 Target Zone
+        </h1>
+        <p class="text-slate-300 mb-6 max-w-md">Join Target Zone and unlock personalised mock tests, expert guidance and a thriving study community. Fast sign up, secure auth and a beautiful UI to keep you motivated.</p>
+
+        <ul class="space-y-3 text-slate-300">
+          <li>• Clean, modern UI with parallax background</li>
+          <li>• Strong client-side validation & friendly UX</li>
+          <li>• Fast Google Sign-in and Firebase-ready</li>
+        </ul>
+      </div>
+
+      <!-- Right: Form Card -->
+      <div class="form-card max-w-xl mx-auto">
+        <!-- Loading overlay (hidden initially) -->
+        <div id="loadingOverlay" class="loading-overlay hidden">
+          <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+          <div>Processing your signup…</div>
+        </div>
+
+        <div class="mb-4">
+          <h2 class="text-2xl font-bold">Create your account</h2>
+          <p class="text-slate-300 text-sm">Fast signup — secure authentication. Already a member? <a href="login.html" class="text-indigo-300 underline">Log in</a></p>
+        </div>
+
+        <form id="signupForm" class="space-y-3" novalidate>
+          <!-- Full name -->
+          <div class="field">
+            <input id="name" class="input" placeholder=" " autocomplete="name" required>
+            <label for="name" class="flabel">👤 Full Name *</label>
+          </div>
+
+          <!-- WhatsApp number with country detection -->
+          <div class="field">
+            <input id="whatsapp" class="input" placeholder=" " inputmode="tel" autocomplete="tel" required>
+            <label for="whatsapp" class="flabel">📱 WhatsApp Number (10 digits) *</label>
+            <div id="waNote" class="text-xs text-slate-300 mt-1 hidden">Detected country: <span id="detCountry">—</span></div>
+          </div>
+
+          <!-- Email -->
+          <div class="field">
+            <input id="email" type="email" class="input" placeholder=" " autocomplete="email" required>
+            <label for="email" class="flabel">📧 Email *</label>
+          </div>
+
+          <!-- DOB with flatpickr -->
+          <div class="field">
+            <input id="dob" class="input" placeholder=" " required>
+            <label for="dob" class="flabel">📅 Date of Birth *</label>
+            <div class="icon" id="dobIcon" title="Pick date">📅</div>
+          </div>
+
+          <!-- Password -->
+          <div class="field">
+            <input id="password" type="password" class="input pr-12" placeholder=" " autocomplete="new-password" required>
+            <label for="password" class="flabel">🔐 Password *</label>
+            <div class="icon" id="togglePw" title="Show / hide">👁️</div>
+
+            <div class="mt-3">
+              <div class="strength-bar"><span id="pwBar"></span></div>
+              <div class="strength-text" id="pwText">Type a password (min 8 chars)</div>
+            </div>
+          </div>
+
+          <!-- Education select -->
+          <div class="field">
+            <select id="education" class="select" required>
+              <option value=""> </option>
+              <option>Madhyamik</option>
+              <option>HS</option>
+              <option>Graduate</option>
+              <option>Post Graduate</option>
+              <option>Other</option>
+            </select>
+            <label for="education" class="flabel">🎓 Educational Qualification *</label>
+          </div>
+
+          <!-- Status select -->
+          <div class="field">
+            <select id="status" class="select" required>
+              <option value=""> </option>
+              <option>Student</option>
+              <option>Job Seeker</option>
+              <option>Employed</option>
+            </select>
+            <label for="status" class="flabel">🧑‍🎓 Current Status *</label>
+          </div>
+
+          <!-- UID auto-generate -->
+          <div class="field">
+            <input id="uid" readonly class="input" placeholder=" " value="">
+            <label for="uid" class="flabel">🆔 UID (Auto Generated)</label>
+          </div>
+
+          <!-- subscribe + terms -->
+          <div class="flex items-center gap-3">
+            <label class="inline-flex items-center gap-2">
+              <input type="checkbox" id="subscribe" class="h-4 w-4 rounded" />
+              <span class="text-sm text-slate-300">🔔 Receive updates</span>
+            </label>
+            <label class="inline-flex items-center gap-2 ml-4">
+              <input type="checkbox" id="terms" class="h-4 w-4 rounded" required />
+              <span class="text-sm text-slate-300">I agree to <a href="terms.html" class="underline text-indigo-300">Terms</a></span>
+            </label>
+          </div>
+
+          <!-- Buttons -->
+          <div class="space-y-2">
+            <button id="submitBtn" type="submit" class="btn-aurora w-full">✅ Create account</button>
+            <button id="googleBtn" type="button" class="btn-google w-full">
+              <svg width="20" height="20" viewBox="0 0 533.5 544.3" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+                <path fill="#4285F4" d="M533.5 278.4c0-17.4-1.6-34.2-4.6-50.5H272v95.6h146.9c-6.4 34.9-25.1 64.5-53.8 84.4v69h86.9c50.9-46.9 81.5-116.1 81.5-198.5z"/>
+                <path fill="#34A853" d="M272 544.3c72.5 0 133.3-24 177.8-65.2l-86.9-69c-24.3 16.3-55.4 26-90.9 26-69.9 0-129.3-47.2-150.5-110.6H31.3v69.6C75.9 479.5 169.6 544.3 272 544.3z"/>
+                <path fill="#FBBC04" d="M121.5 328.9c-10.9-32.9-10.9-68.8 0-101.7V157.6H31.3c-38.8 75.1-38.8 164.9 0 240z"/>
+                <path fill="#EA4335" d="M272 109.8c39.4 0 74.9 13.6 102.8 40.3l77.1-77.1C405.6 21.2 348.1 0 272 0 169.6 0 75.9 64.8 31.3 157.6l90.2 69.6C142.7 157 202.1 109.8 272 109.8z"/>
+              </svg>
+              <span>🔑 Sign up with Google</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase logic (kept from original) -->
   <script type="module">
+    // Firebase v10 imports (same as your original file)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import {
-      getAuth,
-      createUserWithEmailAndPassword,
-      updateProfile
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getAuth, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    import {
-      getFirestore,
-      collection,
-      addDoc,
-      serverTimestamp,
-      query,
-      where,
-      getDocs
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    // --- KEEP YOUR ORIGINAL FIREBASE CONFIG HERE (unchanged) ---
+    const firebaseConfig={apiKey:"AIzaSyCR5rqthBh0vX0yLOcOG3b9xJiKbYtzdxU",authDomain:"target-zone-8fffd.firebaseapp.com",projectId:"target-zone-8fffd",storageBucket:"target-zone-8fffd.appspot.com",messagingSenderId:"667579216123",appId:"1:667579216123:web:37bb1fcc724743073d005e"};
+    const app=initializeApp(firebaseConfig); const auth=getAuth(app); const db=getFirestore(app);
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCR5rqthBh0vX0yLOcOG3b9xJiKbYtzdxU",
-      authDomain: "target-zone-8fffd.firebaseapp.com",
-      projectId: "target-zone-8fffd",
-      storageBucket: "target-zone-8fffd.appspot.com",
-      messagingSenderId: "667579216123",
-      appId: "1:667579216123:web:37bb1fcc724743073d005e"
-    };
+    // DOM refs
+    const form = document.getElementById('signupForm');
+    const nameField = document.getElementById('name');
+    const waField = document.getElementById('whatsapp');
+    const emailField = document.getElementById('email');
+    const dobField = document.getElementById('dob');
+    const pwField = document.getElementById('password');
+    const uidField = document.getElementById('uid');
+    const submitBtn = document.getElementById('submitBtn');
+    const googleBtn = document.getElementById('googleBtn');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const pwBar = document.getElementById('pwBar');
+    const pwText = document.getElementById('pwText');
+    const waNote = document.getElementById('waNote');
+    const detCountry = document.getElementById('detCountry');
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+    // ------------- UI Enhancements / Utils ----------------
 
-    // UI elements
-    const btnSignup = document.getElementById("btnSignup");
-    const togglePass = document.getElementById("togglePass");
-
-    togglePass.onclick = () => {
-      const p = document.getElementById("password");
-      p.type = p.type === "password" ? "text" : "password";
-    };
-
-    // basic validators
-    function validateEmail(e){
-      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+    // Improved UID generator: "TZ-YYYY-<INITIALS>-XXXX"
+    function generateUID(name){
+      const year = new Date().getFullYear().toString().slice(-2);
+      const initials = (name.split(' ').map(s=>s.charAt(0)).slice(0,3).join('') || 'U').toUpperCase();
+      const rand = Math.floor(1000 + Math.random()*9000);
+      return `TZ-${year}-${initials}-${rand}`;
     }
-    function validatePhone(p){
-      return /^[0-9]{11}$/.test(p); // Bangladesh style 11 digits (e.g., 01xxxxxxxxx)
+    nameField.addEventListener('input', ()=>{
+      uidField.value = generateUID(nameField.value.trim());
+    });
+    // initialize with default
+    uidField.value = generateUID('User');
+
+    // flatpickr for DOB
+    flatpickr(dobField, {
+      dateFormat: "Y-m-d",
+      maxDate: "today",
+      defaultDate: null,
+      allowInput: true,
+      clickOpens: true,
+    });
+
+    // DOB icon click to open
+    document.getElementById('dobIcon').addEventListener('click', ()=> {
+      dobField._flatpickr ? dobField._flatpickr.open() : dobField.focus();
+    });
+
+    // Toggle password show/hide
+    document.getElementById('togglePw').addEventListener('click', ()=>{
+      pwField.type = (pwField.type === 'password') ? 'text' : 'password';
+    });
+
+    // Password strength check (digit-by-digit logic)
+    function evaluatePassword(pw){
+      let sc = 0;
+      if(!pw) return { score:0, pct:0, label: 'Type a password (min 8 chars)' };
+      if(pw.length >= 8) sc++;
+      if(/[A-Z]/.test(pw)) sc++;
+      if(/[a-z]/.test(pw)) sc++;
+      if(/\d/.test(pw)) sc++;
+      if(/[^A-Za-z0-9]/.test(pw)) sc++;
+      const pct = Math.round((sc/5)*100);
+      let label = 'Weak';
+      if(sc >= 4) label = 'Strong';
+      else if(sc >= 2) label = 'Medium';
+      return { score: sc, pct, label };
     }
-    function validateDob(d){
-      return /^\d{4}-\d{2}-\d{2}$/.test(d);
+    pwField.addEventListener('input', ()=>{
+      const val = pwField.value;
+      const res = evaluatePassword(val);
+      pwBar.style.width = res.pct + '%';
+      pwText.textContent = (res.label === 'Weak') ? 'Weak — add uppercase, numbers, symbols' : (res.label === 'Medium') ? 'Medium — almost there' : 'Strong — good to go';
+      // color handled via gradient
+    });
+
+    // WhatsApp validation + simple "country detect" heuristic
+    function cleanDigits(s){ return (s||'').replace(/\D/g,''); }
+    waField.addEventListener('input', ()=>{
+      const raw = waField.value.trim();
+      const digits = cleanDigits(raw);
+      let ok = false;
+      // Accept local 10-digit or international with country code up to 13 digits
+      if(/^\d{10}$/.test(digits)) ok = true;
+      if(/^\d{11,13}$/.test(digits) && /^\+?/.test(raw)) ok = true;
+      waField.classList.toggle('error', !ok && digits.length>0);
+      // Simple country detect: if starts with 91 or if number length 10 assume IN
+      if(digits.startsWith('91') || digits.length===10) {
+        detCountry.textContent = 'India (+91)';
+        waNote.classList.remove('hidden');
+      } else if(digits.startsWith('1')) {
+        detCountry.textContent = 'USA/Canada (+1)';
+        waNote.classList.remove('hidden');
+      } else {
+        detCountry.textContent = '—';
+        if(digits.length===0) waNote.classList.add('hidden');
+      }
+    });
+
+    // Basic accessibility: pressing Enter inside any field should submit if valid
+    form.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+        e.preventDefault();
+        submitBtn.click();
+      }
+    });
+
+    // Form validation with auto-scroll to first invalid
+    function validateForm(){
+      let valid = true;
+      let firstInvalid = null;
+      const required = form.querySelectorAll('[required]');
+      required.forEach(el=>{
+        const isCheckbox = el.type === 'checkbox';
+        const hasValue = isCheckbox ? el.checked : (el.value && el.value.toString().trim() !== '');
+        if(!hasValue){
+          valid = false;
+          el.classList.add('error');
+          if(!firstInvalid) firstInvalid = el;
+        } else {
+          el.classList.remove('error');
+        }
+      });
+
+      // Email simple check
+      const emailVal = emailField.value.trim();
+      if(emailVal && !/^\S+@\S+\.\S+$/.test(emailVal)){
+        valid = false;
+        emailField.classList.add('error');
+        if(!firstInvalid) firstInvalid = emailField;
+      }
+
+      // WhatsApp check
+      const waDigits = cleanDigits(waField.value);
+      if(!( /^\d{10}$/.test(waDigits) || /^\d{11,13}$/.test(waDigits) )){
+        valid = false;
+        waField.classList.add('error');
+        if(!firstInvalid) firstInvalid = waField;
+      }
+
+      // Password length
+      if(!(pwField.value && pwField.value.length >= 8)){
+        valid = false;
+        pwField.classList.add('error');
+        if(!firstInvalid) firstInvalid = pwField;
+      }
+
+      if(firstInvalid){
+        // smooth scroll the card and focus
+        firstInvalid.scrollIntoView({behavior:'smooth', block:'center'});
+        firstInvalid.focus({preventScroll:true});
+      }
+      return valid;
     }
 
-    btnSignup.onclick = async () => {
-      const name = document.getElementById("name").value.trim();
-      const phone = document.getElementById("phone").value.trim();
-      const dob = document.getElementById("dob").value.trim();
-      const father = document.getElementById("father").value.trim();
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
+    // Show loading overlay
+    function showLoading(show=true){
+      if(show) loadingOverlay.classList.remove('hidden'); else loadingOverlay.classList.add('hidden');
+    }
 
-      // UI feedback
-      btnSignup.disabled = true;
-      btnSignup.innerText = "Processing...";
-
-      // validation
-      if (!name || !phone || !dob || !email || !password) {
-        Swal.fire("Missing fields","সব ফিল্ড পূরণ করুন (father optional)।","error");
-        btnSignup.disabled = false; btnSignup.innerText = "Create account";
-        return;
-      }
-      if (!validatePhone(phone)) {
-        Swal.fire("Invalid phone","ফোন নম্বর সঠিক ফরম্যাটে দিন (11 সংখ্যা)।","error");
-        btnSignup.disabled = false; btnSignup.innerText = "Create account";
-        return;
-      }
-      if (!validateDob(dob)) {
-        Swal.fire("Invalid DOB","DOB ফরম্যাট : YYYY-MM-DD","error");
-        btnSignup.disabled = false; btnSignup.innerText = "Create account";
-        return;
-      }
-      if (!validateEmail(email)) {
-        Swal.fire("Invalid email","সঠিক ইমেইল দিন।","error");
-        btnSignup.disabled = false; btnSignup.innerText = "Create account";
-        return;
-      }
-      if (password.length < 6) {
-        Swal.fire("Weak password","পাসওয়ার্ড ন্যুনতম 6 অক্ষর হতে হবে।","error");
-        btnSignup.disabled = false; btnSignup.innerText = "Create account";
+    // -------------- Submit Handling (Firebase) -----------------
+    form.addEventListener('submit', async (e)=> {
+      e.preventDefault();
+      if(!validateForm()){
+        Swal.fire({ icon: 'error', title: 'Missing or invalid fields', text: 'Please correct highlighted fields.' });
         return;
       }
 
-      try {
-        // ১) Create auth user
-        const res = await createUserWithEmailAndPassword(auth, email, password);
+      // prepare payload
+      const payload = {
+        uid: uidField.value || generateUID(nameField.value.trim()),
+        name: nameField.value.trim(),
+        whatsapp: waField.value.trim(),
+        email: emailField.value.trim(),
+        dob: dobField.value,
+        education: document.getElementById('education').value,
+        status: document.getElementById('status').value,
+        subscribe: document.getElementById('subscribe').checked,
+      };
 
-        // Optionally set displayName
-        try { await updateProfile(res.user, { displayName: name }); } catch(e){ /* ignore */ }
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Processing…';
+      showLoading(true);
 
-        // ২) Create a student doc (if you want auto-create) OR link after verify
-        // Here we'll create the doc now so signup doesn't lead to 404.
-        const studentRef = await addDoc(collection(db, "students"), {
-          name: name,
-          phone: phone,
-          dob: dob,
-          father: father || "",
-          email: email,
-          uid: res.user.uid,
+      try{
+        // Create Firebase user with email/password
+        await createUserWithEmailAndPassword(auth, payload.email, pwField.value);
+        // Save profile in Firestore
+        await addDoc(collection(db, 'users'), {...payload, createdAt: serverTimestamp()});
+        await Swal.fire({ icon:'success', title:'Signup successful!', showConfirmButton:false, timer:2000 });
+        // redirect to exam or dashboard
+        window.location.href = 'exam.html';
+      } catch(err){
+        console.error(err);
+        await Swal.fire({ icon:'error', title:'Signup failed', text: err && err.message ? err.message : 'Unknown error' });
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = '✅ Create account';
+        showLoading(false);
+      }
+    });
+
+    // Google sign in
+    googleBtn.addEventListener('click', async ()=>{
+      const provider = new GoogleAuthProvider();
+      try{
+        showLoading(true);
+        const res = await signInWithPopup(auth, provider);
+        const user = res.user;
+        await addDoc(collection(db, 'users'), {
+          uid: user.uid,
+          name: user.displayName || '',
+          email: user.email || '',
+          google: true,
           createdAt: serverTimestamp()
         });
-
-        const sid = studentRef.id;
-
-        // Success
-        Swal.fire({
-          icon: "success",
-          title: "Signup complete",
-          html: `Account created. Redirecting to dashboard...`
-        });
-
-        // Redirect to dashboard with sid so no 404
-        setTimeout(() => {
-          location.href = `student-dashboard.html?sid=${sid}`;
-        }, 900);
-
-      } catch (err) {
-        // If auth created but doc creation failed, show error and recommend steps
+        await Swal.fire({ icon:'success', title:'Signed in with Google', showConfirmButton:false, timer:1500 });
+        window.location.href = 'exam.html';
+      } catch(err){
         console.error(err);
-        Swal.fire("Signup error", err.message || String(err), "error");
-        btnSignup.disabled = false; btnSignup.innerText = "Create account";
-      }
-    };
+        await Swal.fire({ icon:'error', title:'Google sign-in failed', text: err && err.message ? err.message : 'Unknown error' });
+      } finally { showLoading(false); }
+    });
+
+    // Small enhancement: remove error class on input
+    document.querySelectorAll('.input, .select').forEach(el=>{
+      el.addEventListener('input', ()=> el.classList.remove('error'));
+      el.addEventListener('change', ()=> el.classList.remove('error'));
+    });
+
+    // Accessibility: focus ring for keyboard users
+    document.body.addEventListener('keydown', (e)=>{
+      if(e.key === 'Tab') document.documentElement.classList.add('user-is-tabbing');
+    });
   </script>
+
+  <!-- Attribution / original file citation -->
+  <!-- Source/starting point: original signup.html provided by user. Reference: 1 -->
 
 </body>
 </html>
