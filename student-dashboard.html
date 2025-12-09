@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="bn">
+
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -19,28 +20,41 @@ body {
     font-family: "Inter", sans-serif;
 }
 .glass-card {
-    background: rgba(255,255,255,0.72);
+    background: rgba(255, 255, 255, 0.72);
     backdrop-filter: blur(15px);
     border-radius: 20px;
     padding: 25px;
-    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
 }
 .sec-title {
     font-size: 26px;
     font-weight: 800;
     margin-bottom: 12px;
-    background: linear-gradient(90deg,#4f46e5,#9333ea);
+    background: linear-gradient(90deg, #4f46e5, #9333ea);
     -webkit-background-clip: text;
     color: transparent;
 }
-.table-box { overflow-x: auto; }
-th { background:#4f46e5; color:white; padding:10px; }
-td { padding:10px; border-bottom:1px solid #e5e7eb; }
+.table-box {
+    overflow-x: auto;
+}
+th {
+    background: #4f46e5;
+    color: white;
+    padding: 10px;
+}
+td {
+    padding: 10px;
+    border-bottom: 1px solid #e5e7eb;
+}
 .examBtn {
-    background: linear-gradient(90deg,#4f46e5,#9333ea);
-    color:white; padding:12px; width:100%; font-size:18px; 
-    border-radius:14px; font-weight:700;
-    box-shadow:0 8px 18px rgba(99,102,241,0.3);
+    background: linear-gradient(90deg, #4f46e5, #9333ea);
+    color: white;
+    padding: 12px;
+    width: 100%;
+    font-size: 18px;
+    border-radius: 14px;
+    font-weight: 700;
+    box-shadow: 0 8px 18px rgba(99, 102, 241, 0.3);
 }
 </style>
 </head>
@@ -51,7 +65,7 @@ td { padding:10px; border-bottom:1px solid #e5e7eb; }
 
 <h1 class="text-4xl font-extrabold text-center mb-6"
 style="background:linear-gradient(90deg,#4f46e5,#9333ea);-webkit-background-clip:text;color:transparent;">
- 🎓 Student Dashboard
+    🎓 Student Dashboard
 </h1>
 
 <!-- STUDENT INFO -->
@@ -96,19 +110,10 @@ style="background:linear-gradient(90deg,#4f46e5,#9333ea);-webkit-background-clip
 
 </div>
 
-
 <!-- FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { 
-  getFirestore, 
-  doc, 
-  getDoc, 
-  collection, 
-  getDocs, 
-  query, 
-  where 
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 // ---- FIREBASE CONFIG ----
 const firebaseConfig = {
@@ -123,8 +128,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// Error Popup
-function showError(msg, step="") {
+// Error function
+function showError(msg, step = "") {
   Swal.fire({
     title: "Dashboard Error",
     html: `<b>Step:</b> ${step}<br><br><b>Error:</b> ${msg}`,
@@ -132,8 +137,7 @@ function showError(msg, step="") {
   });
 }
 
-
-// ================ MAIN DASHBOARD LOADER ====================
+// MAIN LOADER
 async function loadDashboard() {
 
   const url = new URL(window.location.href);
@@ -144,7 +148,7 @@ async function loadDashboard() {
     return;
   }
 
-  // ===== LOAD STUDENT DATA =====
+  // LOAD STUDENT INFO
   try {
     const snap = await getDoc(doc(db, "students", sid));
 
@@ -164,48 +168,38 @@ async function loadDashboard() {
 
     document.getElementById("infoSection").classList.remove("hidden");
 
-  } catch (err) {
-    showError(err.message, "Loading Student Info");
-    return;
-  }
-
-
-  // ===== LOAD PAYMENT HISTORY FROM salaries COLLECTION =====
-  try {
-    const q1 = query(
-      collection(db, "salaries"),
-      where("studentId", "==", sid)
-    );
-
-    const paySnap = await getDocs(q1);
-
+    // ===== LOAD PAYMENTS FROM STUDENT DOCUMENT =====
     const table = document.getElementById("paymentTable");
     table.innerHTML = "";
 
-    paySnap.forEach(docSnap => {
-      const p = docSnap.data();
+    const months = [
+      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    ];
 
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${new Date(p.createdAt).toLocaleDateString("bn-BD")}</td>
-        <td>${p.month || "N/A"}</td>
-        <td>${p.amount || "N/A"}</td>
-      `;
-      table.appendChild(tr);
+    months.forEach(m => {
+      if (s[m]) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>—</td>
+          <td>${m}</td>
+          <td>${s[m]}</td>
+        `;
+        table.appendChild(tr);
+      }
     });
 
     document.getElementById("paymentSection").classList.remove("hidden");
 
   } catch (err) {
-    showError(err.message, "Loading Payments");
+    showError(err.message, "Loading Student Info / Payments");
+    return;
   }
 
-  // Show Exam Section
   document.getElementById("examSection").classList.remove("hidden");
 }
 
 window.onload = loadDashboard;
-
 </script>
 
 </body>
