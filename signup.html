@@ -1,47 +1,217 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="bn">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Target Zone – Signup</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Target Zone — Sign Up</title>
 
-  <!-- Tailwind + SweetAlert -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <!-- Tailwind -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <!-- SweetAlert -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <style>
-    :root { --glass: rgba(255,255,255,.86); }
-    body { font-family: Inter, system-ui, Arial; background: linear-gradient(180deg,#eef2ff,#ffffff); }
-    .card { max-width:820px; margin:40px auto; background:var(--glass); padding:28px; border-radius:14px; box-shadow:0 20px 50px rgba(15,23,42,0.06); }
-    .muted{color:#6b7280}
+    /* Lighting + glass aesthetic */
+    :root {
+      --accent1: #7c3aed;
+      --accent2: #06b6d4;
+      --glass: rgba(255,255,255,0.6);
+    }
+    body {
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: radial-gradient(1200px 600px at 10% 10%, rgba(99,102,241,0.08), transparent 10%),
+                  radial-gradient(1000px 500px at 90% 90%, rgba(6,182,212,0.06), transparent 10%),
+                  linear-gradient(180deg,#f8fafc,#eef2ff 40%, #ffffff 100%);
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:32px;
+    }
+
+    .card {
+      width:100%;
+      max-width:960px;
+      border-radius:18px;
+      padding:28px;
+      position:relative;
+      overflow:hidden;
+      box-shadow: 0 20px 50px rgba(15,23,42,0.12);
+      background: linear-gradient(180deg, rgba(255,255,255,0.7), rgba(255,255,255,0.55));
+      backdrop-filter: blur(10px) saturate(120%);
+      border: 1px solid rgba(124,58,237,0.08);
+    }
+
+    /* animated light streak */
+    .card::before {
+      content: "";
+      position: absolute;
+      left: -40%;
+      top: -30%;
+      width: 160%;
+      height: 70%;
+      background: linear-gradient(90deg, rgba(124,58,237,0.12), rgba(6,182,212,0.12), rgba(124,58,237,0.08));
+      transform: rotate(-12deg);
+      filter: blur(30px);
+      animation: float 8s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes float {
+      0% { transform: translateX(-10%) rotate(-12deg); }
+      50% { transform: translateX(10%) rotate(-14deg); }
+      100% { transform: translateX(-10%) rotate(-12deg); }
+    }
+
+    .brand {
+      font-weight:800;
+      font-size:20px;
+      letter-spacing:0.4px;
+      background: linear-gradient(90deg,var(--accent1),var(--accent2));
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    @media(max-width:800px){ .form-grid{ grid-template-columns:1fr } }
+
+    .input {
+      width:100%;
+      padding:12px 14px;
+      border-radius:12px;
+      border:1px solid rgba(15,23,42,0.06);
+      background: rgba(255,255,255,0.9);
+      font-size:15px;
+      outline:none;
+      transition: box-shadow .18s, transform .12s;
+    }
+    .input:focus { box-shadow: 0 6px 20px rgba(124,58,237,0.08); transform: translateY(-1px); }
+
+    .primary-btn {
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      padding:12px 16px;
+      border-radius:12px;
+      font-weight:700;
+      cursor:pointer;
+      background: linear-gradient(90deg,var(--accent1),var(--accent2));
+      color:white;
+      border:none;
+      box-shadow: 0 10px 30px rgba(124,58,237,0.16);
+      transition: transform .12s, box-shadow .12s;
+    }
+    .primary-btn:active { transform: translateY(1px); box-shadow: 0 6px 18px rgba(124,58,237,0.12); }
+
+    .muted { color:#475569; font-size:13px; }
+
+    .small {
+      font-size:13px;
+    }
+
+    .eye {
+      cursor:pointer;
+      user-select:none;
+    }
+
+    .divider {
+      height:1px; background:linear-gradient(90deg, transparent, rgba(15,23,42,0.06), transparent);
+      margin:18px 0;
+    }
+
+    /* subtle focus ring for accessibility */
+    .input:focus { box-shadow: 0 0 0 4px rgba(99,102,241,0.06); }
+
+    .legal { font-size:12px; color:#6b7280; }
+
   </style>
 </head>
 <body>
+
   <div class="card">
     <div class="flex items-center justify-between mb-6">
-      <h1 class="text-2xl font-bold">🎯 Target Zone — Signup</h1>
-      <div class="muted">Secure · Fast · Simple</div>
+      <div>
+        <div class="brand">Target Zone</div>
+        <div class="muted">Sign up and join the exam platform</div>
+      </div>
+      <div class="text-right">
+        <div class="muted small">Already have an account?</div>
+        <a href="login.html" class="small text-indigo-600 font-semibold">Login</a>
+      </div>
     </div>
 
-    <form id="signupForm" class="grid grid-cols-1 gap-4">
-      <input id="name" placeholder="Full Name *" class="border rounded px-4 py-2" required />
-      <input id="phone" placeholder="Phone (01XXXXXXXXX) *" inputmode="tel" class="border rounded px-4 py-2" required />
-      <input id="email" type="email" placeholder="Email *" class="border rounded px-4 py-2" required />
-      <input id="dob" placeholder="Date of birth (YYYY-MM-DD) *" class="border rounded px-4 py-2" required />
-      <input id="password" type="password" placeholder="Password * (min 8 chars)" class="border rounded px-4 py-2" required />
-      <div class="flex gap-2">
-        <button id="submitBtn" class="flex-1 bg-indigo-600 text-white rounded px-4 py-2 font-semibold">Sign up</button>
-        <button id="googleBtn" type="button" class="flex-1 border rounded px-4 py-2">Sign up with Google</button>
+    <h2 class="text-2xl font-extrabold mb-1">Create your account</h2>
+    <p class="muted mb-6">Quick sign up — use a valid email. You can verify later to unlock full profile.</p>
+
+    <form id="signupForm" class="space-y-4">
+
+      <div class="form-grid">
+        <div>
+          <label class="small muted">Full name</label>
+          <input id="name" class="input" type="text" placeholder="আপনার নাম লিখুন" required>
+        </div>
+
+        <div>
+          <label class="small muted">Phone</label>
+          <input id="phone" class="input" type="tel" placeholder="01xxxxxxxxx" required>
+        </div>
+
+        <div>
+          <label class="small muted">Birthdate (YYYY-MM-DD)</label>
+          <input id="dob" class="input" type="text" placeholder="1998-08-31" required>
+        </div>
+
+        <div>
+          <label class="small muted">Father's name (optional)</label>
+          <input id="father" class="input" type="text" placeholder="পিতার নাম">
+        </div>
+
+        <div>
+          <label class="small muted">Email</label>
+          <input id="email" class="input" type="email" placeholder="example@mail.com" required>
+        </div>
+
+        <div>
+          <label class="small muted">Password</label>
+          <div class="relative">
+            <input id="password" class="input pr-12" type="password" placeholder="কমপক্ষে 6 অক্ষর" required>
+            <span id="togglePass" class="absolute right-3 top-3 eye muted">👁️</span>
+          </div>
+        </div>
       </div>
+
+      <div class="divider"></div>
+
+      <div class="flex items-center justify-between">
+        <div class="legal">
+          By creating an account you agree to our <a href="#" class="text-indigo-600">Terms</a>
+        </div>
+        <button id="btnSignup" type="button" class="primary-btn">Create account</button>
+      </div>
+
     </form>
 
-    <p class="mt-4 muted text-sm">Already have an account? <a href="login.html" class="text-indigo-600 underline">Login</a></p>
+    <p class="muted small mt-4">Pro tip: Ensure your phone & DOB match the student records to allow instant linking during verify.</p>
   </div>
 
+  <!-- FIREBASE + LOGIC -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import {
+      getAuth,
+      createUserWithEmailAndPassword,
+      updateProfile
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+      serverTimestamp,
+      query,
+      where,
+      getDocs
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCR5rqthBh0vX0yLOcOG3b9xJiKbYtzdxU",
@@ -56,82 +226,106 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    const form = document.getElementById("signupForm");
-    const submitBtn = document.getElementById("submitBtn");
-    const googleBtn = document.getElementById("googleBtn");
+    // UI elements
+    const btnSignup = document.getElementById("btnSignup");
+    const togglePass = document.getElementById("togglePass");
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      submitBtn.disabled = true;
-      submitBtn.textContent = "Processing...";
+    togglePass.onclick = () => {
+      const p = document.getElementById("password");
+      p.type = p.type === "password" ? "text" : "password";
+    };
 
+    // basic validators
+    function validateEmail(e){
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+    }
+    function validatePhone(p){
+      return /^[0-9]{11}$/.test(p); // Bangladesh style 11 digits (e.g., 01xxxxxxxxx)
+    }
+    function validateDob(d){
+      return /^\d{4}-\d{2}-\d{2}$/.test(d);
+    }
+
+    btnSignup.onclick = async () => {
       const name = document.getElementById("name").value.trim();
       const phone = document.getElementById("phone").value.trim();
-      const email = document.getElementById("email").value.trim();
       const dob = document.getElementById("dob").value.trim();
+      const father = document.getElementById("father").value.trim();
+      const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value;
 
-      if (!name || !phone || !email || !dob || password.length < 8) {
-        Swal.fire({icon:'error',title:'Invalid input',text:'অনুগ্রহ করে সব ফিল্ড সঠিকভাবে পূরণ করুন (password >= 8)'}); 
-        submitBtn.disabled = false; submitBtn.textContent = "Sign up";
+      // UI feedback
+      btnSignup.disabled = true;
+      btnSignup.innerText = "Processing...";
+
+      // validation
+      if (!name || !phone || !dob || !email || !password) {
+        Swal.fire("Missing fields","সব ফিল্ড পূরণ করুন (father optional)।","error");
+        btnSignup.disabled = false; btnSignup.innerText = "Create account";
+        return;
+      }
+      if (!validatePhone(phone)) {
+        Swal.fire("Invalid phone","ফোন নম্বর সঠিক ফরম্যাটে দিন (11 সংখ্যা)।","error");
+        btnSignup.disabled = false; btnSignup.innerText = "Create account";
+        return;
+      }
+      if (!validateDob(dob)) {
+        Swal.fire("Invalid DOB","DOB ফরম্যাট : YYYY-MM-DD","error");
+        btnSignup.disabled = false; btnSignup.innerText = "Create account";
+        return;
+      }
+      if (!validateEmail(email)) {
+        Swal.fire("Invalid email","সঠিক ইমেইল দিন।","error");
+        btnSignup.disabled = false; btnSignup.innerText = "Create account";
+        return;
+      }
+      if (password.length < 6) {
+        Swal.fire("Weak password","পাসওয়ার্ড ন্যুনতম 6 অক্ষর হতে হবে।","error");
+        btnSignup.disabled = false; btnSignup.innerText = "Create account";
         return;
       }
 
       try {
-        // 1) Create auth user
-        const cred = await createUserWithEmailAndPassword(auth, email, password);
-        const user = cred.user;
+        // ১) Create auth user
+        const res = await createUserWithEmailAndPassword(auth, email, password);
 
-        // 2) Create student record and link email & uid
-        const docRef = await addDoc(collection(db, "students"), {
-          name,
-          phone,
-          email,
-          uid: user.uid,
-          dob,
+        // Optionally set displayName
+        try { await updateProfile(res.user, { displayName: name }); } catch(e){ /* ignore */ }
+
+        // ২) Create a student doc (if you want auto-create) OR link after verify
+        // Here we'll create the doc now so signup doesn't lead to 404.
+        const studentRef = await addDoc(collection(db, "students"), {
+          name: name,
+          phone: phone,
+          dob: dob,
+          father: father || "",
+          email: email,
+          uid: res.user.uid,
           createdAt: serverTimestamp()
         });
 
-        Swal.fire({icon:'success',title:'Signup complete',text:'আপনার একাউন্ট তৈরি হয়েছে।',timer:1500,showConfirmButton:false});
-        // 3) Redirect to dashboard with sid (prevents 404)
-        setTimeout(()=> {
-          location.href = `student-dashboard.html?sid=${docRef.id}`;
-        }, 1200);
+        const sid = studentRef.id;
 
-      } catch (err) {
-        Swal.fire({icon:'error',title:'Signup failed',text:err.message || String(err)});
-        submitBtn.disabled = false; submitBtn.textContent = "Sign up";
-      }
-    });
-
-    // Google signup button — will create / link student doc too
-    googleBtn.addEventListener("click", async () => {
-      googleBtn.disabled = true;
-      googleBtn.textContent = "Processing...";
-      try {
-        const provider = new GoogleAuthProvider();
-        const res = await signInWithPopup(auth, provider);
-        const user = res.user;
-
-        // Create a student doc linked to this google user (if you want deduplication,
-        // you can first query students by email — left simple here)
-        const docRef = await addDoc(collection(db, "students"), {
-          name: user.displayName || "",
-          phone: user.phoneNumber || "",
-          email: user.email || "",
-          uid: user.uid,
-          createdAt: serverTimestamp(),
-          google: true
+        // Success
+        Swal.fire({
+          icon: "success",
+          title: "Signup complete",
+          html: `Account created. Redirecting to dashboard...`
         });
 
-        Swal.fire({icon:'success',title:'Signup complete',timer:1200,showConfirmButton:false});
-        setTimeout(()=> location.href = `student-dashboard.html?sid=${docRef.id}`, 900);
+        // Redirect to dashboard with sid so no 404
+        setTimeout(() => {
+          location.href = `student-dashboard.html?sid=${sid}`;
+        }, 900);
 
       } catch (err) {
-        Swal.fire({icon:'error',title:'Google signup failed',text: err.message || String(err)});
-        googleBtn.disabled = false; googleBtn.textContent = "Sign up with Google";
+        // If auth created but doc creation failed, show error and recommend steps
+        console.error(err);
+        Swal.fire("Signup error", err.message || String(err), "error");
+        btnSignup.disabled = false; btnSignup.innerText = "Create account";
       }
-    });
+    };
   </script>
+
 </body>
 </html>
