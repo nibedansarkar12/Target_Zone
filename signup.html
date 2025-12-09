@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Target Zone – Signup</title>
+
+  <!-- Tailwind + SweetAlert -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <style>
+    :root {
+      --sky-top:#87cefa; --sky-bottom:#e0f7fa;
+      --glass: rgba(255,255,255,.68); --glass-hover: rgba(255,255,255,.92);
+      --focus: rgba(79,172,254,.28); --card-shadow:0 20px 50px rgba(0,0,0,.2);
+    }
+    body {
+      font-family:'Segoe UI',system-ui,Arial;
+      min-height:100vh; margin:0; padding:24px 12px;
+      background:linear-gradient(to bottom,var(--sky-top),var(--sky-bottom));
+      background-attachment:fixed; overflow-x:hidden; position:relative;
+      transition: background .3s ease;
+    }
+    body.dark { background:linear-gradient(to bottom,#0f172a,#1e293b); color:#e2e8f0; }
+
+    /* Sun + Clouds */
+    .sun { position:fixed; top:5%; right:8%; width:130px; height:130px; border-radius:50%;
+      background:radial-gradient(circle at 40% 40%, #ffe27a 0%, #ffc938 55%, #ff9f1a 100%);
+      box-shadow:0 0 60px rgba(255,200,0,.55),0 0 120px rgba(255,180,0,.35);
+      animation:sunPulse 6s ease-in-out infinite alternate; z-index:1; }
+    @keyframes sunPulse{from{transform:scale(1)}to{transform:scale(1.08)}}
+    .cloud{ position:fixed;background:#fff;border-radius:50%;opacity:.7;animation:float linear infinite;box-shadow:40px 20px 60px rgba(0,0,0,.08);z-index:2 }
+    .cloud.one{ width:220px;height:68px;top:18%;left:-260px;animation-duration:75s }
+    .cloud.two{ width:170px;height:56px;top:38%;left:-220px;animation-duration:95s }
+    .cloud.three{ width:280px;height:80px;top:62%;left:-320px;animation-duration:115s }
+    @keyframes float{from{transform:translateX(0)}to{transform:translateX(120vw)}}
+
+    /* Form */
+    .form-card{ background:var(--glass); backdrop-filter:blur(12px); border-radius:1.5rem;
+      box-shadow:var(--card-shadow); transition:all .25s ease; position:relative; z-index:5; }
+    .form-card:hover{ background:var(--glass-hover); transform:translateY(-2px) scale(1.01) }
+
+    /* Inputs */
+    .t-input{ background:rgba(255,255,255,.7); border:1px solid rgba(0,0,0,.12); transition:.25s }
+    .t-input:focus{ background:#fff; border-color:#4facfe; box-shadow:0 0 0 4px var(--focus); outline:none }
+
+    /* Animated placeholder */
+    .t-input::placeholder { animation: pulsePlaceholder 2s infinite; }
+    @keyframes pulsePlaceholder {
+      0%,100% { opacity: .7; } 50% { opacity: 1; }
+    }
+
+    /* Glow button */
+    .btn-glow{ transition:.3s; position:relative; overflow:hidden; }
+    .btn-glow::after{ content:""; position:absolute; inset:0; border-radius:inherit;
+      box-shadow:0 0 15px 3px rgba(79,172,254,.6); opacity:0; transition:.3s; }
+    .btn-glow:hover::after{ opacity:1; }
+
+    /* DOB icon */
+    .dob-wrap{ position:relative }
+    .dob-icon{ position:absolute; right:12px; top:50%; transform:translateY(-50%); cursor:pointer; color:#357edd; }
+
+    /* Password strength */
+    .strength{ height:6px; border-radius:6px; background:#e5e7eb; overflow:hidden }
+    .strength>span{ display:block; height:100%; width:0%; background:#ef4444; transition:width .3s }
+    .strength.ok>span{ background:#f59e0b } .strength.good>span{ background:#10b981 }
+
+    .input-error{ border-color:#f87171 !important; box-shadow:0 0 0 3px rgba(248,113,113,.2) }
+  </style>
+</head>
+<body>
+  <!-- Background -->
+  <div class="sun"></div>
+  <div class="cloud one"></div>
+  <div class="cloud two"></div>
+  <div class="cloud three"></div>
+
+  <!-- Dark mode toggle -->
+  <div class="fixed top-4 right-4 z-50">
+    <button id="themeToggle" class="bg-gray-200 dark:bg-gray-700 p-2 rounded-full">🌙</button>
+  </div>
+
+  <!-- Signup Form -->
+  <div class="flex items-center justify-center min-h-screen">
+    <div class="form-card p-6 md:p-8 w-full max-w-lg mx-auto">
+      <h2 class="text-3xl font-extrabold text-center mb-6 bg-gradient-to-r from-blue-600 to-indigo-500 bg-clip-text text-transparent">
+        🎯 Target Zone – Signup
+      </h2>
+
+      <form id="signupForm" class="grid grid-cols-1 gap-4" novalidate>
+        <input id="name" class="t-input px-4 py-3 rounded-lg shadow-sm" placeholder="👤 Full Name *" required>
+        <input id="whatsapp" class="t-input px-4 py-3 rounded-lg shadow-sm" placeholder="📱 WhatsApp Number *" inputmode="tel" required>
+        <small id="waError" class="text-red-500 hidden">⚠️ Invalid WhatsApp number</small>
+        <input id="email" type="email" class="t-input px-4 py-3 rounded-lg shadow-sm" placeholder="📧 Email *" required>
+
+        <!-- DOB -->
+        <div class="dob-wrap">
+          <input id="dob" class="t-input w-full px-4 py-3 rounded-lg shadow-sm" placeholder="📅 __/__/20__" required>
+          <span class="dob-icon" id="dobIcon">📅</span>
+        </div>
+
+        <!-- Password + show/hide + strength -->
+        <div class="relative">
+          <input id="password" type="password" class="t-input w-full px-4 py-3 rounded-lg shadow-sm pr-10" placeholder="🔐 Password *" required>
+          <span id="togglePw" class="absolute right-3 top-3 cursor-pointer">👁️</span>
+          <div class="strength mt-2" id="pwStrength"><span></span></div>
+        </div>
+
+        <select id="education" class="t-input px-4 py-3 rounded-lg shadow-sm" required>
+          <option value="">🎓 Educational Qualification *</option>
+          <option>Madhyamik</option><option>HS</option><option>Graduate</option><option>Post Graduate</option><option>Other</option>
+        </select>
+        <select id="status" class="t-input px-4 py-3 rounded-lg shadow-sm" required>
+          <option value="">🧑‍🎓 Current Status *</option>
+          <option>Student</option><option>Job Seeker</option><option>Employed</option>
+        </select>
+
+        <input id="uid" class="t-input px-4 py-3 rounded-lg shadow-sm bg-white" placeholder="🆔 UID (Auto Generate)" readonly>
+
+        <label class="flex items-start gap-2">
+          <input type="checkbox" id="subscribe" class="mt-1">
+          <span class="text-sm">🔔 I want to receive updates</span>
+        </label>
+        <label class="flex items-start gap-2">
+          <input type="checkbox" id="terms" required class="mt-1">
+          <span class="text-sm">I agree to <a href="terms.html" class="text-blue-600 underline">Terms</a>.</span>
+        </label>
+
+        <button id="submitBtn" type="submit" class="btn-glow w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-purple-600 hover:to-indigo-600 text-white py-3 rounded-lg font-semibold text-lg">✅ Sign Up</button>
+        <button id="googleBtn" type="button" class="w-full mt-2 bg-red-500 hover:bg-red-600 text-white py-3 rounded-lg font-semibold">🔑 Sign Up with Google</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Firebase logic -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig={apiKey:"AIzaSyCR5rqthBh0vX0yLOcOG3b9xJiKbYtzdxU",authDomain:"target-zone-8fffd.firebaseapp.com",projectId:"target-zone-8fffd",storageBucket:"target-zone-8fffd.appspot.com",messagingSenderId:"667579216123",appId:"1:667579216123:web:37bb1fcc724743073d005e"};
+    const app=initializeApp(firebaseConfig); const auth=getAuth(app); const db=getFirestore(app);
+
+    const form=document.getElementById("signupForm");
+    const uidField=document.getElementById("uid"), nameField=document.getElementById("name");
+    const dobField=document.getElementById("dob"), dobIcon=document.getElementById("dobIcon");
+    const pw=document.getElementById("password"), pwFill=document.querySelector("#pwStrength span");
+    const wa=document.getElementById("whatsapp"), waError=document.getElementById("waError");
+
+    /* UID generate */
+    nameField.addEventListener("input",()=>{ const p=(nameField.value.trim().charAt(0)||"U").toUpperCase(); const s=Math.floor(1000+Math.random()*9000); uidField.value=`${p}${s}` });
+
+    /* DOB picker */
+    dobIcon.addEventListener("click",()=>{ dobField.type="date"; if(typeof dobField.showPicker==="function")dobField.showPicker(); });
+    dobField.addEventListener("blur",()=>{ if(!dobField.value)dobField.type="text"; });
+
+    /* Password strength */
+    pw.addEventListener("input",()=>{ let sc=0; if(pw.value.length>=8)sc++; if(/[A-Z]/.test(pw.value))sc++; if(/[a-z]/.test(pw.value))sc++; if(/\d/.test(pw.value))sc++; if(/[^A-Za-z0-9]/.test(pw.value))sc++; const pct=(sc/5)*100; pwFill.style.width=pct+"%"; pwFill.parentElement.className="strength"+(sc>=4?" good":sc>=2?" ok":""); });
+
+    /* Password show/hide */
+    document.getElementById("togglePw").addEventListener("click",()=>{ pw.type=pw.type==="password"?"text":"password" });
+
+    /* WhatsApp validation */
+    wa.addEventListener("input",()=>{ const ok=/^\d{10}$/.test(wa.value.trim()); waError.classList.toggle("hidden",ok) });
+
+    /* Dark mode */
+    const toggle=document.getElementById("themeToggle"); toggle.addEventListener("click",()=>{ document.body.classList.toggle("dark") });
+
+    /* Form validate + auto-scroll */
+    const validateForm=()=>{ let v=true,f; form.querySelectorAll("input[required],select[required]").forEach(el=>{ const bad=(el.type==="checkbox"? !el.checked:!el.value.trim()); el.classList.toggle("input-error",bad); if(bad&&v)f=el,v=false; }); if(!v)f.scrollIntoView({behavior:"smooth",block:"center"}); return v; };
+
+    form.addEventListener("submit",async e=>{
+      e.preventDefault(); if(!validateForm()){ Swal.fire({icon:'error',title:'Missing Fields'}); return; }
+      const btn=document.getElementById("submitBtn"); btn.disabled=true; btn.textContent="Processing...";
+      const name=nameField.value.trim(),whatsapp=wa.value.trim(),email=document.getElementById("email").value.trim(),password=pw.value,education=document.getElementById("education").value,status=document.getElementById("status").value,uid=uidField.value,subscribe=document.getElementById("subscribe").checked,dob=dobField.value;
+      try{ await createUserWithEmailAndPassword(auth,email,password); await addDoc(collection(db,"users"),{uid,name,whatsapp,email,dob,education,status,subscribe,createdAt:serverTimestamp()});
+        Swal.fire({icon:'success',title:'Signup Successful!',timer:3000,showConfirmButton:false}).then(()=>location.href="exam.html");
+      }catch(err){ Swal.fire({icon:'error',title:'Signup Failed',text:err.message}); }
+      finally{ btn.disabled=false; btn.textContent="✅ Sign Up"; }
+    });
+
+    /* Google Sign-in */
+    document.getElementById("googleBtn").addEventListener("click",async()=>{
+      const provider=new GoogleAuthProvider();
+      try{ const res=await signInWithPopup(auth,provider); const user=res.user;
+        await addDoc(collection(db,"users"),{uid:user.uid,name:user.displayName,email:user.email,createdAt:serverTimestamp(),google:true});
+        Swal.fire({icon:'success',title:'Google Signup Successful!',timer:2000,showConfirmButton:false}).then(()=>location.href="exam.html");
+      }catch(err){ Swal.fire({icon:'error',title:'Google Signup Failed',text:err.message}); }
+    });
+  </script>
+</body>
+</html>
