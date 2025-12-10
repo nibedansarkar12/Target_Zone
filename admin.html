@@ -1553,7 +1553,6 @@ window.showSection = async function(id){
     await populateRegistrationBatches();
   }
 };
-
 async function handleRegistrationSubmit(e){
   e.preventDefault();
 
@@ -1568,12 +1567,11 @@ async function handleRegistrationSubmit(e){
     const dob = document.getElementById("reg-dob").value.trim();
     const batch = document.getElementById("reg-batch-select").value;
 
-    const fb = document.getElementById("reg-feedback");
-
-    // Required Check
     if(!name || !phone || !father || !dob || !batch){
-      fb.textContent="❗ Required fields missing";
-      fb.classList.remove("hidden");
+      Swal.fire({
+        icon: "error",
+        title: "Required fields missing!"
+      });
       return;
     }
 
@@ -1591,41 +1589,51 @@ async function handleRegistrationSubmit(e){
       education: edu,
       dob,
       batch,
-      pin,              // ⬅ PIN SAVE
+      pin,      // ⬅ Auto PIN saved
       createdAt: Date.now()
     });
 
+    // Store studentDocId inside document
     await updateDoc(doc(db,"students",docRef.id),{
       studentDocId: docRef.id
     });
 
-    // 🔥 Success Message
-    fb.innerHTML = `
-      <span class="text-green-600 font-bold">✔ Registration Successful!<br><br>
-      Phone: ${phone}<br>
-      DOB: ${dob}<br>
-      Batch: ${batch}<br>
-      PIN: <span style="color:#e91e63;">${pin}</span></span>
-    `;
-    fb.classList.remove("hidden");
+    // 🔥 SweetAlert Success Popup (ONLY here — no bottom feedback)
+    Swal.fire({
+      icon: "success",
+      title: "Registration Successful!",
+      html: `
+        <div style="text-align:left; font-size:16px; line-height:1.6; margin-top:10px;">
+          <b>Name:</b> ${name}<br>
+          <b>Phone:</b> ${phone}<br>
+          <b>Date of Birth:</b> ${dob}<br>
+          <b>Batch:</b> ${batch}<br>
+          <b style="color:#e91e63; font-size:20px;">Your PIN: ${pin}</b>
+        </div>
+      `,
+      confirmButtonText: "OK"
+    });
 
-    // Reset form
+    // Reset the form after popup
     document.getElementById("registration-form").reset();
 
   }catch(err){
-    const fb=document.getElementById("reg-feedback");
-    fb.textContent="Error: "+err.message;
-    fb.classList.remove("hidden");
+    Swal.fire({
+      icon: "error",
+      title: "Error Occurred!",
+      text: err.message
+    });
   }
 }
 
-// Attach submit listener
+// Attach Listener
 document.addEventListener("DOMContentLoaded", ()=>{
   const form = document.getElementById("registration-form");
   if(form){
     form.addEventListener("submit", handleRegistrationSubmit);
   }
 });
+
 /* === END FIX === */
 </script>
 <script>
