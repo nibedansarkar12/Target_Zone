@@ -4,39 +4,40 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Admin Login - Target Zone</title>
+
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: linear-gradient(to right, #6dd5fa, #2980b9);
+      background: linear-gradient(to right, #74ebd5, #ACB6E5);
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
       margin: 0;
     }
+
     .login-box {
       background: white;
       padding: 30px;
       border-radius: 15px;
       box-shadow: 0 0 10px rgba(0,0,0,0.3);
-      width: 300px;
+      width: 320px;
     }
+
     .login-box h2 {
       text-align: center;
       margin-bottom: 20px;
-      color: #2980b9;
+      color: #333;
     }
+
     .login-box input {
       width: 100%;
       padding: 10px;
       margin: 10px 0;
       border-radius: 8px;
       border: 1px solid #ccc;
-      transition: 0.3s;
     }
-    .login-box input:hover {
-      border-color: #2980b9;
-    }
+
     .login-box button {
       width: 100%;
       padding: 10px;
@@ -45,9 +46,24 @@
       border: none;
       border-radius: 8px;
       cursor: pointer;
+      transition: .3s;
     }
+
     .login-box button:hover {
       background-color: #1f6393;
+    }
+
+    .error {
+      color: red;
+      font-size: 14px;
+      margin-top: 5px;
+      text-align: center;
+    }
+
+    .success {
+      color: green;
+      font-size: 14px;
+      text-align: center;
     }
   </style>
 </head>
@@ -55,48 +71,101 @@
 
   <div class="login-box">
     <h2>Admin Login</h2>
+
     <input type="email" id="adminEmail" placeholder="Email" required />
     <input type="password" id="adminPassword" placeholder="Password" required />
-    <button onclick="adminLogin()">Login</button>
+
+    <p id="message"></p>
+
+    <button id="loginBtn" onclick="adminLogin()">Login</button>
   </div>
 
   <script type="module">
-    // Firebase imports
+
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    // Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyCR5rqthBh0vX0yLOcOG3b9xJiKbYtzdxU",
       authDomain: "target-zone-8fffd.firebaseapp.com",
-      databaseURL: "https://target-zone-8fffd-default-rtdb.firebaseio.com",
       projectId: "target-zone-8fffd",
       storageBucket: "target-zone-8fffd.appspot.com",
       messagingSenderId: "667579216123",
       appId: "1:667579216123:web:37bb1fcc724743073d005e",
-      measurementId: "G-436XDYLGVX"
     };
 
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getFirestore(app);
 
-    window.adminLogin = function() {
-      const email = document.getElementById('adminEmail').value;
-      const password = document.getElementById('adminPassword').value;
+    let failedAttempts = 0;
+    let lockUntil = null;
 
-      signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-          const user = userCredential.user;
-          if (user.email === "nibedansarkar12@gmail.com") {
-            window.location.href = "admin.html";
-          } else {
-            alert("You are not authorized as Admin!");
-          }
-        })
-        .catch((error) => {
-          alert("Login failed: " + error.message);
-        });
+    function setMessage(text, type="error") {
+      const msg = document.getElementById("message");
+      msg.className = type;
+      msg.textContent = text;
+    }
+
+    window.adminLogin = async function () {
+      const email = adminEmail.value.trim();
+      const password = adminPassword.value.trim();
+
+      const now = Date.now();
+      if (lockUntil && now < lockUntil) {
+        setMessage(`Too many attempts! Try again in ${Math.ceil((lockUntil - now)/1000)} sec`);
+        return;
+      }
+
+      if (!email || !password) {
+        setMessage("Please fill all fields.");
+        return;
+      }
+
+      if (!email.includes("@") || !email.includes(".")) {
+        setMessage("Invalid email format.");
+        return;
+      }
+
+      setMessage("Logging in...", "success");
+
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+
+        if (!userDoc.exists()) {
+          setMessage("No user record found.");
+          return;
+        }
+
+        const data = userDoc.data();
+
+        if (data.role !== "admin") {
+          setMessage("You are not authorized as Admin!");
+          return;
+        }
+
+        sessionStorage.setItem("adminAuth", "true");
+
+        setMessage("Login successful!", "success");
+
+        setTimeout(() => {
+          window.location.href = "admin.html";
+        }, 800);
+
+      } catch (error) {
+        failedAttempts++;
+
+        if (failedAttempts >= 3) {
+          lockUntil = Date.now() + 30000;
+          setMessage("Too many failed attempts! Locked for 30 seconds.");
+        } else {
+          setMessage("Login failed. Check your credentials.");
+        }
+      }
     };
   </script>
 
