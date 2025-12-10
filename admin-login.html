@@ -134,20 +134,15 @@
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
-        const userDoc = await getDoc(doc(db, "users", user.uid));
+        // 🔥 CHECK FROM ADMINS COLLECTION (correct)
+        const adminDoc = await getDoc(doc(db, "admins", user.uid));
 
-        if (!userDoc.exists()) {
-          setMessage("No user record found.");
-          return;
-        }
-
-        const data = userDoc.data();
-
-        if (data.role !== "admin") {
+        if (!adminDoc.exists()) {
           setMessage("You are not authorized as Admin!");
           return;
         }
 
+        // Save login session
         sessionStorage.setItem("adminAuth", "true");
 
         setMessage("Login successful!", "success");
