@@ -21,7 +21,6 @@
 
   body {
     margin: 0;
-    padding: 0;
     font-family: "Poppins", sans-serif;
     height: 100vh;
     display: flex;
@@ -41,7 +40,7 @@
     color: var(--dark-text);
   }
 
-  /* glowing floating blobs */
+  /* FLOATING GLOW BLOBS */
   .blob {
     position: absolute;
     width: 320px;
@@ -60,7 +59,7 @@
     100% { transform: translateY(0); opacity: 0.6; }
   }
 
-  /* login card */
+  /* LOGIN CARD */
   .login-card {
     width: 360px;
     padding: 32px;
@@ -74,9 +73,9 @@
   }
 
   h2 {
-    margin-bottom: 15px;
     font-size: 26px;
     font-weight: 600;
+    margin-bottom: 15px;
   }
 
   input {
@@ -85,119 +84,133 @@
     border-radius: 10px;
     margin-bottom: 14px;
     border: none;
+    background: rgba(255,255,255,0.25);
     font-size: 15px;
     outline: none;
-    background: rgba(255,255,255,0.2);
     color: white;
   }
 
-  input::placeholder { color: #f8d8ff; }
+  input::placeholder { color: #ffe2ff; }
 
-  /* Toggle */
+  /* MODE TOGGLE */
   .toggle-mode {
     position: absolute;
-    top: 18px;
-    right: 18px;
-    padding: 8px 20px;
-    border-radius: 25px;
+    top: 16px;
+    right: 16px;
     background: rgba(255,255,255,0.25);
+    padding: 8px 18px;
+    border-radius: 20px;
+    color: white;
     cursor: pointer;
     font-size: 14px;
-    color: white;
-    border: 1px solid rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.15);
     backdrop-filter: blur(8px);
   }
 
-  /* Ultra Premium Button */
-.ultraBtn {
-  position: relative;
-  width: 100%;
-  padding: 14px;
-  border: none;
-  border-radius: 14px;
-  cursor: pointer;
-  overflow: hidden;
-  font-size: 17px;
-  font-weight: 600;
-  color: #fff;
-  background: linear-gradient(90deg, #ff6ec7, #b38bff);
-  box-shadow: 
-    0 0 15px rgba(255,110,199,0.6),
-    0 0 35px rgba(179,139,255,0.45),
-    inset 0 0 12px rgba(255,255,255,0.25);
-  transition: 0.25s ease;
-  animation: glowPulse 3s infinite ease-in-out;
-}
+  /* ULTRA BUTTON */
+  .ultraBtn {
+    position: relative;
+    width: 100%;
+    padding: 14px;
+    border-radius: 14px;
+    background: linear-gradient(90deg, #ff6ec7, #b38bff);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 17px;
+    overflow: hidden;
+    transition: 0.25s ease;
+    animation: glowPulse 3s infinite ease-in-out;
+  }
 
-.ultraBtn .shine {
-  position: absolute;
-  top: -50%;
-  left: -80%;
-  width: 60%;
-  height: 200%;
-  background: linear-gradient(120deg, rgba(255,255,255,0.45), rgba(255,255,255,0.05));
-  transform: rotate(25deg);
-  filter: blur(18px);
-  animation: shineMove 3s infinite linear;
-}
+  @keyframes glowPulse {
+    0% { box-shadow: 0 0 12px rgba(255,110,199,0.4); }
+    50% { box-shadow: 0 0 25px rgba(179,139,255,0.65); }
+    100% { box-shadow: 0 0 12px rgba(255,110,199,0.4); }
+  }
 
-@keyframes shineMove {
-  0% { left: -80%; opacity: 0.5; }
-  50% { left: 130%; opacity: 0.2; }
-  100% { left: -80%; opacity: 0.5; }
-}
+  .ultraBtn .shine {
+    position: absolute;
+    top: -50%;
+    left: -80%;
+    width: 60%;
+    height: 200%;
+    background: linear-gradient(120deg, rgba(255,255,255,0.45), rgba(255,255,255,0.05));
+    transform: rotate(25deg);
+    filter: blur(18px);
+    animation: shineMove 3s infinite linear;
+  }
 
-@keyframes glowPulse {
-  0% { box-shadow: 0 0 12px rgba(255,110,199,0.4); }
-  50% { box-shadow: 0 0 25px rgba(179,139,255,0.65); }
-  100% { box-shadow: 0 0 12px rgba(255,110,199,0.4); }
-}
+  @keyframes shineMove {
+    0% { left: -80%; opacity: 0.5; }
+    50% { left: 130%; opacity: 0.2; }
+    100% { left: -80%; opacity: 0.5; }
+  }
 
-.ultraBtn:active {
-  transform: scale(0.97);
-  box-shadow:
-    0 0 10px rgba(255,110,199,0.6),
-    inset 0 0 10px rgba(0,0,0,0.4);
-}
+  /* button press */
+  .ultraBtn:active {
+    transform: scale(0.96);
+  }
 
-/* Ripple */
-.ultraBtn .ripple {
-  position: absolute;
-  width: 12px;
-  height: 12px;
-  background: rgba(255,255,255,0.7);
-  border-radius: 50%;
-  transform: scale(0);
-  animation: rippleAnim 0.6s ease-out forwards;
-}
+  /* RIPPLE */
+  .ripple {
+    position: absolute;
+    width: 10px; height: 10px;
+    background: rgba(255,255,255,0.7);
+    border-radius: 50%;
+    transform: scale(0);
+    animation: rippleAnim .6s ease-out forwards;
+  }
+  @keyframes rippleAnim {
+    0% { transform: scale(0); opacity: .8; }
+    100% { transform: scale(22); opacity: 0; }
+  }
 
-@keyframes rippleAnim {
-  0% { transform: scale(0); opacity: 0.8; }
-  100% { transform: scale(18); opacity: 0; }
-}
+  /* loading overlay */
+  .loading-box {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.65);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 99;
+    backdrop-filter: blur(4px);
+  }
+  .loader {
+    width: 65px;
+    height: 65px;
+    border: 6px solid rgba(255,255,255,0.3);
+    border-top: 6px solid #fff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg);} }
 
-/* loading overlay */
-.loading-box {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.65);
-  display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 99;
-  backdrop-filter: blur(4px);
-}
-
-.loader {
-  width: 65px;
-  height: 65px;
-  border: 6px solid rgba(255,255,255,0.3);
-  border-top: 6px solid white;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-
+  /* MOBILE RESPONSIVE FIX */
+  @media (max-width: 480px) {
+    body {
+      padding: 0 14px;
+      align-items: flex-start;
+      padding-top: 40px;
+      overflow-y: auto;
+    }
+    .login-card {
+      width: 100%;
+      padding: 20px;
+      border-radius: 14px;
+      margin-top: 20px;
+    }
+    h2 { font-size: 22px; }
+    input { padding: 12px; font-size: 14px; }
+    .ultraBtn { padding: 12px; font-size: 15px; }
+    .toggle-mode { top: 12px; right: 12px; padding: 6px 14px; font-size: 12px; }
+    .blob:nth-child(1), .blob:nth-child(2) {
+      width: 200px; height: 200px;
+      filter: blur(40px);
+    }
+  }
 </style>
 </head>
 
@@ -211,12 +224,12 @@
 <div class="login-card">
   <h2>Admin Login</h2>
 
-  <input id="adminEmail" type="email" placeholder="Email">
-  <input id="adminPassword" type="password" placeholder="Password">
+  <input type="email" id="adminEmail" placeholder="Email">
+  <input type="password" id="adminPassword" placeholder="Password">
 
   <button class="ultraBtn" onclick="adminLogin(event)">
     <span class="shine"></span>
-    <span class="label">Login</span>
+    Login
   </button>
 
   <p id="message"></p>
@@ -250,93 +263,81 @@
     loader.style.display = show ? "flex" : "none";
   }
 
-  function showMsg(text, color="yellow") {
-    const msg = document.getElementById("message");
-    msg.style.color = color;
-    msg.textContent = text;
+  function showMsg(text, color="white") {
+    const m = document.getElementById("message");
+    m.style.color = color;
+    m.textContent = text;
   }
 
-  let failedAttempts = 0;
-  let lockUntil = 0;
+  let failed = 0, lock = 0;
 
   window.adminLogin = async function (event) {
 
-    addRippleEffect(event);
+    createRipple(event);
 
     const email = adminEmail.value.trim();
-    const password = adminPassword.value.trim();
+    const pass = adminPassword.value.trim();
 
-    if (!email || !password) {
-      showMsg("Please fill all fields!", "white");
-      return;
-    }
+    if (!email || !pass) return showMsg("Fill all fields!", "yellow");
 
-    const now = Date.now();
-    if (lockUntil > now) {
-      showMsg("Try again later!", "orange");
-      return;
-    }
+    if (Date.now() < lock) return showMsg("Try again later!", "red");
 
     showLoading(true);
 
     try {
-      const userCred = await signInWithEmailAndPassword(auth, email, password);
+      const userCred = await signInWithEmailAndPassword(auth, email, pass);
       const user = userCred.user;
 
       const adminDoc = await getDoc(doc(db, "admins", user.uid));
 
       if (!adminDoc.exists()) {
         showLoading(false);
-        showMsg("Not authorized as Admin!", "red");
-        return;
+        return showMsg("Not an Admin!", "red");
       }
 
       sessionStorage.setItem("adminAuth", "true");
       showMsg("Login Successful!", "lightgreen");
 
-      setTimeout(() => window.location.href = "admin.html", 700);
+      setTimeout(()=> location.href="admin.html", 700);
 
-    } catch (err) {
-      failedAttempts++;
+    } catch(e) {
+      failed++;
       showLoading(false);
 
-      if (failedAttempts >= 3) {
-        lockUntil = Date.now() + 30000;
-        showMsg("Locked for 30 seconds!", "red");
-      } else {
-        showMsg("Login failed!", "red");
+      if (failed >= 3) {
+        lock = Date.now() + 30000;
+        return showMsg("Locked 30s!", "red");
       }
+
+      showMsg("Login Failed!", "orange");
     }
   };
 
   /* Ripple Effect */
-  function addRippleEffect(event) {
-    const button = event.currentTarget;
-    const ripple = document.createElement("span");
-    ripple.classList.add("ripple");
+  function createRipple(event) {
+    const btn = event.currentTarget;
+    const circle = document.createElement("span");
+    const rect = btn.getBoundingClientRect();
 
-    const rect = button.getBoundingClientRect();
-    ripple.style.left = `${event.clientX - rect.left}px`;
-    ripple.style.top = `${event.clientY - rect.top}px`;
+    circle.classList.add("ripple");
+    circle.style.left = `${event.clientX - rect.left}px`;
+    circle.style.top = `${event.clientY - rect.top}px`;
 
-    button.appendChild(ripple);
-
-    setTimeout(() => ripple.remove(), 600);
+    btn.appendChild(circle);
+    setTimeout(()=> circle.remove(), 600);
   }
 
-  /* Toggle Mode */
+  /* MODE SWITCH */
   function toggleMode() {
     const body = document.body;
-    const button = document.querySelector(".toggle-mode");
+    const t = document.querySelector(".toggle-mode");
 
     if (body.classList.contains("dark")) {
-      body.classList.remove("dark");
-      body.classList.add("light");
-      button.textContent = "☀ Light Mode";
+      body.classList.replace("dark", "light");
+      t.textContent = "☀ Light Mode";
     } else {
-      body.classList.remove("light");
-      body.classList.add("dark");
-      button.textContent = "🌙 Dark Mode";
+      body.classList.replace("light", "dark");
+      t.textContent = "🌙 Dark Mode";
     }
   }
 </script>
