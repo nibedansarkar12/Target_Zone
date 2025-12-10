@@ -334,7 +334,10 @@ function safeAddListener(idOrEl, event, fn){
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
     import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
     import { getDatabase, ref as dbRef, get } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
-
+// 🔥 Auto 6-digit PIN generator
+function generatePin() {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+  }
     const firebaseConfig = {
       apiKey: "AIzaSyCR5rqthBh0vX0yLOcOG3b9xJiKbYtzdxU",
       authDomain: "target-zone-8fffd.firebaseapp.com",
@@ -1556,6 +1559,7 @@ window.showSection = async function(id){
 
 async function handleRegistrationSubmit(e){
   e.preventDefault();
+
   try{
     const name = document.getElementById("reg-name").value.trim();
     const phone = document.getElementById("reg-phone").value.trim();
@@ -1569,37 +1573,71 @@ async function handleRegistrationSubmit(e){
 
     const fb = document.getElementById("reg-feedback");
 
-    if(!name||!phone||!father){
-      fb.textContent="❗ Required fields missing";
+    // Required field check
+    if(!name || !phone || !father){
+      fb.textContent = "❗ Required fields missing";
       fb.classList.remove("hidden");
+      fb.classList.add("text-red-400");
       return;
     }
 
-    const docRef = await addDoc(collection(db,"students"),{
-      name,phone,father,whatsapp:wp,email,address:addr,education:edu,dob,batch,createdAt:Date.now()
+    // 🔥 Auto Generate 6 Digit PIN (Step 1 function already exists)
+    const pin = generatePin();
+
+    // Save data to Firestore
+    const docRef = await addDoc(collection(db, "students"), {
+      name,
+      phone,
+      father,
+      whatsapp: wp,
+      email,
+      address: addr,
+      education: edu,
+      dob,
+      batch,
+      pin,             // 🔥 Save PIN in DB
+      createdAt: Date.now()
     });
 
-    await updateDoc(doc(db,"students",docRef.id),{studentDocId:docRef.id});
+    // Save doc ID inside the document
+    await updateDoc(doc(db, "students", docRef.id), {
+      studentDocId: docRef.id
+    });
 
-    fb.textContent="✔ Registration Successful!";
+    // Show success output
+    fb.innerHTML = `
+      ✔ Registration Successful!<br>
+      <b>নাম:</b> ${name} <br>
+      <b>ফোন:</b> ${phone} <br>
+      <b>DOB:</b> ${dob} <br>
+      <b>৬ Digit PIN:</b> <span style="font-size:18px; color:#00ff44;">${pin}</span>
+    `;
     fb.classList.remove("hidden");
+    fb.classList.remove("text-red-400");
     fb.classList.add("text-green-400");
+
+    // Reset form
     document.getElementById("registration-form").reset();
 
-  }catch(err){
-    const fb=document.getElementById("reg-feedback");
-    fb.textContent="Error: "+err.message;
+  } catch (err) {
+    const fb = document.getElementById("reg-feedback");
+    fb.textContent = "Error: " + err.message;
     fb.classList.remove("hidden");
+    fb.classList.remove("text-green-400");
+    fb.classList.add("text-red-400");
   }
 }
 
-document.addEventListener("DOMContentLoaded", ()=>{
-  const form=document.getElementById("registration-form");
+// Attach event listener
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("registration-form");
   if(form){
     form.addEventListener("submit", handleRegistrationSubmit);
   }
 });
+
 /* === END FIX === */
+
 </script>
 <script>
     // Sidebar toggle
