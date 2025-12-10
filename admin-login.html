@@ -1,168 +1,345 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin Login - Target Zone</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Admin Login - Target Zone</title>
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(to right, #74ebd5, #ACB6E5);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-    }
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
-    .login-box {
-      background: white;
-      padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.3);
-      width: 320px;
-    }
+<style>
+  :root {
+    --pink: #ff6ec7;
+    --purple: #8b6bff;
+    --light-bg: #ffffff;
+    --dark-bg: #0d0d15;
+    --light-card: rgba(255,255,255,0.15);
+    --dark-card: rgba(255,255,255,0.07);
+    --light-text: #222;
+    --dark-text: #fff;
+  }
 
-    .login-box h2 {
-      text-align: center;
-      margin-bottom: 20px;
-      color: #333;
-    }
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: "Poppins", sans-serif;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background 0.3s, color 0.3s;
+    overflow: hidden;
+  }
 
-    .login-box input {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-    }
+  body.light {
+    background: linear-gradient(135deg, #ffd3f2, #ceb9ff);
+    color: var(--light-text);
+  }
 
-    .login-box button {
-      width: 100%;
-      padding: 10px;
-      background-color: #2980b9;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: .3s;
-    }
+  body.dark {
+    background: linear-gradient(135deg, #ff6ec7, #8b6bff);
+    color: var(--dark-text);
+  }
 
-    .login-box button:hover {
-      background-color: #1f6393;
-    }
+  /* glowing floating blobs */
+  .blob {
+    position: absolute;
+    width: 320px;
+    height: 320px;
+    border-radius: 50%;
+    filter: blur(60px);
+    animation: float 9s infinite ease-in-out;
+    z-index: 0;
+  }
+  .blob:nth-child(1) { background: rgba(255,110,199,0.45); top: -80px; left: -40px; }
+  .blob:nth-child(2) { background: rgba(139,107,255,0.45); bottom: -80px; right: -40px; }
 
-    .error {
-      color: red;
-      font-size: 14px;
-      margin-top: 5px;
-      text-align: center;
-    }
+  @keyframes float {
+    0% { transform: translateY(0); opacity: 0.6; }
+    50% { transform: translateY(-25px); opacity: 1; }
+    100% { transform: translateY(0); opacity: 0.6; }
+  }
 
-    .success {
-      color: green;
-      font-size: 14px;
-      text-align: center;
-    }
-  </style>
+  /* login card */
+  .login-card {
+    width: 360px;
+    padding: 32px;
+    border-radius: 18px;
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255,255,255,0.18);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.25), 0 0 30px rgba(255,110,199,0.28);
+    text-align: center;
+    position: relative;
+    z-index: 2;
+  }
+
+  h2 {
+    margin-bottom: 15px;
+    font-size: 26px;
+    font-weight: 600;
+  }
+
+  input {
+    width: 100%;
+    padding: 14px;
+    border-radius: 10px;
+    margin-bottom: 14px;
+    border: none;
+    font-size: 15px;
+    outline: none;
+    background: rgba(255,255,255,0.2);
+    color: white;
+  }
+
+  input::placeholder { color: #f8d8ff; }
+
+  /* Toggle */
+  .toggle-mode {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    padding: 8px 20px;
+    border-radius: 25px;
+    background: rgba(255,255,255,0.25);
+    cursor: pointer;
+    font-size: 14px;
+    color: white;
+    border: 1px solid rgba(255,255,255,0.2);
+    backdrop-filter: blur(8px);
+  }
+
+  /* Ultra Premium Button */
+.ultraBtn {
+  position: relative;
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  overflow: hidden;
+  font-size: 17px;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(90deg, #ff6ec7, #b38bff);
+  box-shadow: 
+    0 0 15px rgba(255,110,199,0.6),
+    0 0 35px rgba(179,139,255,0.45),
+    inset 0 0 12px rgba(255,255,255,0.25);
+  transition: 0.25s ease;
+  animation: glowPulse 3s infinite ease-in-out;
+}
+
+.ultraBtn .shine {
+  position: absolute;
+  top: -50%;
+  left: -80%;
+  width: 60%;
+  height: 200%;
+  background: linear-gradient(120deg, rgba(255,255,255,0.45), rgba(255,255,255,0.05));
+  transform: rotate(25deg);
+  filter: blur(18px);
+  animation: shineMove 3s infinite linear;
+}
+
+@keyframes shineMove {
+  0% { left: -80%; opacity: 0.5; }
+  50% { left: 130%; opacity: 0.2; }
+  100% { left: -80%; opacity: 0.5; }
+}
+
+@keyframes glowPulse {
+  0% { box-shadow: 0 0 12px rgba(255,110,199,0.4); }
+  50% { box-shadow: 0 0 25px rgba(179,139,255,0.65); }
+  100% { box-shadow: 0 0 12px rgba(255,110,199,0.4); }
+}
+
+.ultraBtn:active {
+  transform: scale(0.97);
+  box-shadow:
+    0 0 10px rgba(255,110,199,0.6),
+    inset 0 0 10px rgba(0,0,0,0.4);
+}
+
+/* Ripple */
+.ultraBtn .ripple {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: rgba(255,255,255,0.7);
+  border-radius: 50%;
+  transform: scale(0);
+  animation: rippleAnim 0.6s ease-out forwards;
+}
+
+@keyframes rippleAnim {
+  0% { transform: scale(0); opacity: 0.8; }
+  100% { transform: scale(18); opacity: 0; }
+}
+
+/* loading overlay */
+.loading-box {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 99;
+  backdrop-filter: blur(4px);
+}
+
+.loader {
+  width: 65px;
+  height: 65px;
+  border: 6px solid rgba(255,255,255,0.3);
+  border-top: 6px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+</style>
 </head>
-<body>
 
-  <div class="login-box">
-    <h2>Admin Login</h2>
+<body class="dark">
 
-    <input type="email" id="adminEmail" placeholder="Email" required />
-    <input type="password" id="adminPassword" placeholder="Password" required />
+<div class="toggle-mode" onclick="toggleMode()">🌙 Dark Mode</div>
 
-    <p id="message"></p>
+<div class="blob"></div>
+<div class="blob"></div>
 
-    <button id="loginBtn" onclick="adminLogin()">Login</button>
-  </div>
+<div class="login-card">
+  <h2>Admin Login</h2>
 
-  <script type="module">
+  <input id="adminEmail" type="email" placeholder="Email">
+  <input id="adminPassword" type="password" placeholder="Password">
 
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  <button class="ultraBtn" onclick="adminLogin(event)">
+    <span class="shine"></span>
+    <span class="label">Login</span>
+  </button>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCR5rqthBh0vX0yLOcOG3b9xJiKbYtzdxU",
-      authDomain: "target-zone-8fffd.firebaseapp.com",
-      projectId: "target-zone-8fffd",
-      storageBucket: "target-zone-8fffd.appspot.com",
-      messagingSenderId: "667579216123",
-      appId: "1:667579216123:web:37bb1fcc724743073d005e",
-    };
+  <p id="message"></p>
+</div>
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+<div class="loading-box" id="loadingBox">
+  <div class="loader"></div>
+</div>
 
-    let failedAttempts = 0;
-    let lockUntil = null;
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    function setMessage(text, type="error") {
-      const msg = document.getElementById("message");
-      msg.className = type;
-      msg.textContent = text;
+  const firebaseConfig = {
+    apiKey: "AIzaSyCR5rqthBh0vX0yLOcOG3b9xJiKbYtzdxU",
+    authDomain: "target-zone-8fffd.firebaseapp.com",
+    projectId: "target-zone-8fffd",
+    storageBucket: "target-zone-8fffd.appspot.com",
+    messagingSenderId: "667579216123",
+    appId: "1:667579216123:web:37bb1fcc724743073d005e",
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  const loader = document.getElementById("loadingBox");
+
+  function showLoading(show) {
+    loader.style.display = show ? "flex" : "none";
+  }
+
+  function showMsg(text, color="yellow") {
+    const msg = document.getElementById("message");
+    msg.style.color = color;
+    msg.textContent = text;
+  }
+
+  let failedAttempts = 0;
+  let lockUntil = 0;
+
+  window.adminLogin = async function (event) {
+
+    addRippleEffect(event);
+
+    const email = adminEmail.value.trim();
+    const password = adminPassword.value.trim();
+
+    if (!email || !password) {
+      showMsg("Please fill all fields!", "white");
+      return;
     }
 
-    window.adminLogin = async function () {
-      const email = adminEmail.value.trim();
-      const password = adminPassword.value.trim();
+    const now = Date.now();
+    if (lockUntil > now) {
+      showMsg("Try again later!", "orange");
+      return;
+    }
 
-      const now = Date.now();
-      if (lockUntil && now < lockUntil) {
-        setMessage(`Too many attempts! Try again in ${Math.ceil((lockUntil - now)/1000)} sec`);
+    showLoading(true);
+
+    try {
+      const userCred = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCred.user;
+
+      const adminDoc = await getDoc(doc(db, "admins", user.uid));
+
+      if (!adminDoc.exists()) {
+        showLoading(false);
+        showMsg("Not authorized as Admin!", "red");
         return;
       }
 
-      if (!email || !password) {
-        setMessage("Please fill all fields.");
-        return;
+      sessionStorage.setItem("adminAuth", "true");
+      showMsg("Login Successful!", "lightgreen");
+
+      setTimeout(() => window.location.href = "admin.html", 700);
+
+    } catch (err) {
+      failedAttempts++;
+      showLoading(false);
+
+      if (failedAttempts >= 3) {
+        lockUntil = Date.now() + 30000;
+        showMsg("Locked for 30 seconds!", "red");
+      } else {
+        showMsg("Login failed!", "red");
       }
+    }
+  };
 
-      if (!email.includes("@") || !email.includes(".")) {
-        setMessage("Invalid email format.");
-        return;
-      }
+  /* Ripple Effect */
+  function addRippleEffect(event) {
+    const button = event.currentTarget;
+    const ripple = document.createElement("span");
+    ripple.classList.add("ripple");
 
-      setMessage("Logging in...", "success");
+    const rect = button.getBoundingClientRect();
+    ripple.style.left = `${event.clientX - rect.left}px`;
+    ripple.style.top = `${event.clientY - rect.top}px`;
 
-      try {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
+    button.appendChild(ripple);
 
-        // 🔥 CHECK FROM ADMINS COLLECTION (correct)
-        const adminDoc = await getDoc(doc(db, "admins", user.uid));
+    setTimeout(() => ripple.remove(), 600);
+  }
 
-        if (!adminDoc.exists()) {
-          setMessage("You are not authorized as Admin!");
-          return;
-        }
+  /* Toggle Mode */
+  function toggleMode() {
+    const body = document.body;
+    const button = document.querySelector(".toggle-mode");
 
-        // Save login session
-        sessionStorage.setItem("adminAuth", "true");
-
-        setMessage("Login successful!", "success");
-
-        setTimeout(() => {
-          window.location.href = "admin.html";
-        }, 800);
-
-      } catch (error) {
-        failedAttempts++;
-
-        if (failedAttempts >= 3) {
-          lockUntil = Date.now() + 30000;
-          setMessage("Too many failed attempts! Locked for 30 seconds.");
-        } else {
-          setMessage("Login failed. Check your credentials.");
-        }
-      }
-    };
-  </script>
+    if (body.classList.contains("dark")) {
+      body.classList.remove("dark");
+      body.classList.add("light");
+      button.textContent = "☀ Light Mode";
+    } else {
+      body.classList.remove("light");
+      body.classList.add("dark");
+      button.textContent = "🌙 Dark Mode";
+    }
+  }
+</script>
 
 </body>
 </html>
