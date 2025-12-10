@@ -1556,6 +1556,7 @@ window.showSection = async function(id){
 
 async function handleRegistrationSubmit(e){
   e.preventDefault();
+
   try{
     const name = document.getElementById("reg-name").value.trim();
     const phone = document.getElementById("reg-phone").value.trim();
@@ -1564,26 +1565,51 @@ async function handleRegistrationSubmit(e){
     const email = document.getElementById("reg-email").value.trim();
     const addr = document.getElementById("reg-address").value.trim();
     const edu = document.getElementById("reg-education").value.trim();
-    const dob = document.getElementById("reg-dob").value;
+    const dob = document.getElementById("reg-dob").value.trim();
     const batch = document.getElementById("reg-batch-select").value;
 
     const fb = document.getElementById("reg-feedback");
 
-    if(!name||!phone||!father){
+    // Required Check
+    if(!name || !phone || !father || !dob || !batch){
       fb.textContent="❗ Required fields missing";
       fb.classList.remove("hidden");
       return;
     }
 
+    // 🔥 Auto Generate 6-digit PIN
+    const pin = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // 🔥 Save to Firestore
     const docRef = await addDoc(collection(db,"students"),{
-      name,phone,father,whatsapp:wp,email,address:addr,education:edu,dob,batch,createdAt:Date.now()
+      name,
+      phone,
+      father,
+      whatsapp: wp,
+      email,
+      address: addr,
+      education: edu,
+      dob,
+      batch,
+      pin,              // ⬅ PIN SAVE
+      createdAt: Date.now()
     });
 
-    await updateDoc(doc(db,"students",docRef.id),{studentDocId:docRef.id});
+    await updateDoc(doc(db,"students",docRef.id),{
+      studentDocId: docRef.id
+    });
 
-    fb.textContent="✔ Registration Successful!";
+    // 🔥 Success Message
+    fb.innerHTML = `
+      <span class="text-green-600 font-bold">✔ Registration Successful!<br><br>
+      Phone: ${phone}<br>
+      DOB: ${dob}<br>
+      Batch: ${batch}<br>
+      PIN: <span style="color:#e91e63;">${pin}</span></span>
+    `;
     fb.classList.remove("hidden");
-    fb.classList.add("text-green-400");
+
+    // Reset form
     document.getElementById("registration-form").reset();
 
   }catch(err){
@@ -1593,8 +1619,9 @@ async function handleRegistrationSubmit(e){
   }
 }
 
+// Attach submit listener
 document.addEventListener("DOMContentLoaded", ()=>{
-  const form=document.getElementById("registration-form");
+  const form = document.getElementById("registration-form");
   if(form){
     form.addEventListener("submit", handleRegistrationSubmit);
   }
