@@ -1610,31 +1610,88 @@ async function handleRegistrationSubmit(e){
           <b>Batch:</b> ${batch}<br>
           <b style="color:#e91e63; font-size:20px;">Your PIN: ${pin}</b>
         </div>
+/* === NEW FINAL REGISTRATION SYSTEM === */
+
+async function handleRegistrationSubmit(e){
+  e.preventDefault();
+
+  try{
+    const name = document.getElementById("reg-name").value.trim();
+    const phone = document.getElementById("reg-phone").value.trim();
+    const father = document.getElementById("reg-father").value.trim();
+    const wp = document.getElementById("reg-whatsapp").value.trim();
+    const email = document.getElementById("reg-email").value.trim();
+    const addr = document.getElementById("reg-address").value.trim();
+    const edu = document.getElementById("reg-education").value.trim();
+    const dob = document.getElementById("reg-dob").value.trim();
+    const batch = document.getElementById("reg-batch-select").value;
+
+    if(!name || !phone || !father || !dob || !batch){
+      Swal.fire({
+        icon: "error",
+        title: "Required fields missing!"
+      });
+      return;
+    }
+
+    // 🔥 Auto Generate 6 digit PIN
+    const pin = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // 🔥 SAVE to Firestore
+    const docRef = await addDoc(collection(db,"students"),{
+      name,
+      phone,
+      father,
+      whatsapp: wp,
+      email,
+      address: addr,
+      education: edu,
+      dob,
+      batch,
+      pin,       // <-- SAVE PIN
+      createdAt: Date.now()
+    });
+
+    // Add docId for tracking
+    await updateDoc(doc(db, "students", docRef.id), {
+      studentDocId: docRef.id
+    });
+
+    // 🔥 POPUP SUCCESS MESSAGE
+    Swal.fire({
+      icon: "success",
+      title: "Registration Successful!",
+      html: `
+        <b>Name:</b> ${name}<br>
+        <b>Phone:</b> ${phone}<br>
+        <b>DOB:</b> ${dob}<br>
+        <b>Batch:</b> ${batch}<br>
+        <b style="color:#e91e63; font-size:20px;">PIN: ${pin}</b>
       `,
       confirmButtonText: "OK"
     });
 
-    // Reset the form after popup
+    // Reset form
     document.getElementById("registration-form").reset();
 
   }catch(err){
     Swal.fire({
       icon: "error",
-      title: "Error Occurred!",
+      title: "Error!",
       text: err.message
     });
   }
 }
 
-// Attach Listener
+/* === Attach Submit Listener === */
 document.addEventListener("DOMContentLoaded", ()=>{
-  const form = document.getElementById("registration-form");
+  const form=document.getElementById("registration-form");
   if(form){
     form.addEventListener("submit", handleRegistrationSubmit);
   }
 });
 
-/* === END FIX === */
+/* === END NEW FINAL === */
 </script>
 <script>
     // Sidebar toggle
@@ -2264,47 +2321,7 @@ if(typeof window.showSection === 'function'){
 <!-- END: Consolidated populateRegistrationBatches override -->
 
 
-<!-- === Success Popup Added by ChatGPT === -->
-<div id="successPopup" class="fixed inset-0 bg-black/70 hidden flex justify-center items-center z-50">
-    <div class="bg-white text-black p-6 rounded-xl w-80 text-center">
-        <h3 class="text-xl font-bold mb-3">Registration Successful 🎉</h3>
-        <p id="popup-uid" class="font-semibold"></p>
-        <p id="popup-pass" class="font-semibold mb-4"></p>
-        <button onclick="closePopup()" class="bg-green-600 text-white px-4 py-2 rounded-lg">OK</button>
-    </div>
-</div>
 
-<script>
-// === Auto UID + Password + Popup ===
-document.getElementById("registration-form")?.addEventListener("submit", async (e)=>{
-    e.preventDefault();
-
-    const name = document.getElementById("reg-name").value.trim();
-    const phone = document.getElementById("reg-phone").value.trim();
-    const dob = document.getElementById("reg-dob").value.trim();
-
-    const UID = phone + name.charAt(0).toUpperCase();
-    const PASSWORD = dob; // YYYY-MM-DD
-
-    try {
-        // Insert your Firebase save code here (already exists in your file)
-        showSuccessPopup(UID, PASSWORD);
-    } catch (err) {
-        alert("Registration Failed: " + err.message);
-    }
-});
-
-window.showSuccessPopup = (uid, pass) => {
-    document.getElementById("popup-uid").textContent = "UID: " + uid;
-    document.getElementById("popup-pass").textContent = "Password: " + pass;
-    document.getElementById("successPopup").classList.remove("hidden");
-};
-
-window.closePopup = () => {
-    document.getElementById("successPopup").classList.add("hidden");
-};
-</script>
-<!-- === End Patch === -->
 
 </body>
 </html>
