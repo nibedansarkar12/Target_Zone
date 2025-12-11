@@ -869,60 +869,6 @@ window.loadStudents = async (batchId) => {
 };
 // === end Add Batch & Student ===
 
-// Birthday
-window.openBirthday = async () => {
-  hideFinancePanels();
-  const panel = document.getElementById("birthday-panel");
-  panel.classList.remove("hidden");
-  const today = new Date().toISOString().slice(5,10); // MM-DD
-  // Demo birthday list
-  const students = [
-    {name:"Student One",dob:"08-17",phone:"1234567890"},
-    {name:"Student Two",dob:"12-25",phone:"9876543210"}
-  ];
-  let html = `<h3 class="text-xl font-bold mb-4">🎉 Today’s Birthdays</h3>`;
-  const todays = students.filter(s=>s.dob===today);
-  if(todays.length===0) html += `<p>No birthdays today</p>`;
-  todays.forEach(s=>{
-    const msg = `শুভ জন্মদিন ${s.name}! 🎉 তোমার জীবন আনন্দে ভরে উঠুক।`;
-    html += `
-      <div class="p-4 bg-pink-200 rounded mb-3 text-black">
-        🎂 ${s.name} 
-        <div class="mt-2 flex gap-3">
-          <a href="https://wa.me/${s.phone}?text=${encodeURIComponent(msg)}" target="_blank" class="bg-green-500 text-gray-100 px-3 py-1 rounded">WhatsApp</a>
-          <a href="sms:${s.phone}?body=${encodeURIComponent(msg)}" class="bg-blue-500 text-gray-100 px-3 py-1 rounded">SMS</a>
-        </div>
-      </div>
-    `;
-  });
-  panel.innerHTML = html;
-};
-
-// Attendance
-window.openAttendance = async () => {
-  hideFinancePanels();
-  const panel = document.getElementById("attendance-panel");
-  panel.classList.remove("hidden");
-  panel.innerHTML = `
-    <h3 class="text-xl font-bold mb-4">📅 Attendance</h3>
-    <table class="w-full border">
-      <thead><tr><th>Name</th><th>Status</th></tr></thead>
-      <tbody>
-        <tr><td>Student One</td><td><button class="bg-green-500 px-2 py-1 rounded">Present</button></td></tr>
-        <tr><td>Student Two</td><td><button class="bg-red-500 px-2 py-1 rounded">Absent</button></td></tr>
-      </tbody>
-    </table>
-  `;
-};
-
-// Reports (future)
-window.openReports = async () => {
-  hideFinancePanels();
-  const panel = document.getElementById("reports-panel");
-  panel.classList.remove("hidden");
-  panel.innerHTML = `<h3 class="text-xl">📊 Reports Coming Soon</h3>`;
-};
-
 // Helper to hide all
 function hideFinancePanels(){
   ["salary-panel","birthday-panel","attendance-panel","reports-panel"]
@@ -1444,10 +1390,11 @@ if(__regName || __regPhone){
   alert('Registration Complete!');
 }
 return; }
-      await updateDoc(doc(db,"students",studentId),{[month]:amount});
-      document.getElementById("tz-pay-amount").value='';
-      tz_openStudentFinance(studentId);
-    });
+      await updateDoc(doc(db, "students", studentId), {
+    [month]: { amount: Number(amount), date: new Date() }
+});
+document.getElementById("tz-pay-amount").value = '';
+tz_openStudentFinance(studentId);
     tbody.querySelectorAll('button[data-month]').forEach(btn=>{
       btn.addEventListener('click', async (e)=>{
         const month = e.target.getAttribute('data-month');
@@ -2261,22 +2208,12 @@ document.getElementById("registration-form")?.addEventListener("submit", async (
     const PASSWORD = dob; // YYYY-MM-DD
 
     try {
-        // Insert your Firebase save code here (already exists in your file)
-        showSuccessPopup(UID, PASSWORD);
     } catch (err) {
         alert("Registration Failed: " + err.message);
     }
 });
 
-window.showSuccessPopup = (uid, pass) => {
-    document.getElementById("popup-uid").textContent = "UID: " + uid;
-    document.getElementById("popup-pass").textContent = "Password: " + pass;
-    document.getElementById("successPopup").classList.remove("hidden");
-};
 
-window.closePopup = () => {
-    document.getElementById("successPopup").classList.add("hidden");
-};
 </script>
 <!-- === End Patch === -->
 
