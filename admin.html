@@ -1715,9 +1715,14 @@ if(__regName || __regPhone){
   alert('Registration Complete!');
 }
 return;}
-      await updateDoc(doc(db,"students",studentId),{[month]:amount});
-      tz_openStudentFinance(studentId);
-    });
+      await addDoc(collection(db, "salaries"), {
+    studentId,
+    month,
+    amount,
+    note,
+    paymentDate: new Date(),   // ← 🔥 তারিখ সেভ হবে
+    createdAt: Date.now()
+});
 
     tbody.querySelectorAll('button[data-month]').forEach(btn=>{
       btn.addEventListener('click', async (e)=>{
