@@ -750,7 +750,13 @@ if(__regName || __regPhone){
 }
 return;}
     try{
-      await addDoc(collection(db,"salaries"),{studentId,month,amount,note,createdAt:Date.now()});
+      await updateDoc(doc(db, "students", studentId), {
+    [month]: {
+        amount: amount,
+        note: note,
+        date: new Date().toISOString().split("T")[0]
+    }
+});
       loadFinance(studentId);
       document.getElementById("pay-amount").value="";document.getElementById("pay-note").value="";
     }catch(e){console.error(e);/* Fixed alert: compute UID safely from form fields if available */
