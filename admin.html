@@ -1715,13 +1715,11 @@ if(__regName || __regPhone){
   alert('Registration Complete!');
 }
 return;}
-      await addDoc(collection(db, "salaries"), {
-    studentId,
-    month,
-    amount,
-    note,
-    paymentDate: new Date(),   // ← 🔥 তারিখ সেভ হবে
-    createdAt: Date.now()
+      await updateDoc(doc(db, "students", studentId), {
+    [month]: {
+        amount: amount,
+        date: new Date().toISOString().split("T")[0]
+    }
 });
 
     tbody.querySelectorAll('button[data-month]').forEach(btn=>{
