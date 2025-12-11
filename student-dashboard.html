@@ -54,14 +54,14 @@ style="background:linear-gradient(90deg,#4f46e5,#9333ea);-webkit-background-clip
     🎓 Student Dashboard
 </h1>
 
-<!-- ⚠️ LIMITED DASHBOARD NOTICE -->
+<!-- ⚠️ LIMITED (LOCKED) DASHBOARD NOTICE -->
 <div id="limitedNotice" class="glass-card hidden mb-6 bg-yellow-100 border-l-4 border-yellow-500 p-4">
     <h2 class="text-xl font-bold text-yellow-700">🔒 Verification Needed</h2>
     <p>আপনার ব্যক্তিগত তথ্য আপাতত লুকানো আছে। Verify করে তথ্য Unlock করতে পারেন।</p>
     <a id="verifyBtn" class="text-blue-600 underline cursor-pointer">Verify Now</a>
 </div>
 
-<!-- STUDENT INFO -->
+<!-- FULL STUDENT INFO -->
 <div id="infoSection" class="glass-card hidden mb-6">
     <h2 class="sec-title">📌 ব্যক্তিগত তথ্য</h2>
 
@@ -86,6 +86,7 @@ style="background:linear-gradient(90deg,#4f46e5,#9333ea);-webkit-background-clip
                     <th>তারিখ</th>
                     <th>মাস</th>
                     <th>টাকা</th>
+                    <th>নোট</th>
                 </tr>
             </thead>
             <tbody id="paymentTable"></tbody>
@@ -128,7 +129,7 @@ const auth = getAuth();
 // LOAD DASHBOARD
 window.onload = async () => {
     const url = new URL(window.location.href);
-    const sid = url.searchParams.get("sid");  // Phone login case
+    const sid = url.searchParams.get("sid");
 
     if (sid) {
         loadFullDashboard(sid);
@@ -185,23 +186,57 @@ async function loadFullDashboard(sid) {
     document.getElementById("infoSection").classList.remove("hidden");
     document.getElementById("paymentSection").classList.remove("hidden");
 
-    // Payment Table Loading
+    // ============================
+    // UPDATED PAYMENT TABLE (Admin-like)
+    // ============================
     const table = document.getElementById("paymentTable");
     table.innerHTML = "";
 
-    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    const months = [
+        "Jan","Feb","Mar","Apr","May","Jun",
+        "Jul","Aug","Sep","Oct","Nov","Dec"
+    ];
+
+    let found = false;
 
     months.forEach(m => {
-        if (s[m]) {
+        const entry = s[m];
+
+        if (entry !== undefined && entry !== null) {
+            found = true;
+
+            let amount = "";
+            let note = "";
+            let date = "";
+
+            if (typeof entry === "object") {
+                amount = entry.amount ?? entry.amt ?? entry.value ?? "";
+                note = entry.note ?? entry.remark ?? "";
+
+                date = entry.date ?? entry.createdAt ?? "";
+                if (date && typeof date === "object" && date.seconds) {
+                    date = new Date(date.seconds * 1000).toLocaleDateString();
+                }
+            } else {
+                amount = entry;
+            }
+
             const tr = document.createElement("tr");
             tr.innerHTML = `
-                <td>—</td>
+                <td>${date || "—"}</td>
                 <td>${m}</td>
-                <td>${s[m]}</td>
+                <td>${amount}</td>
+                <td>${note || ""}</td>
             `;
             table.appendChild(tr);
         }
     });
+
+    if (!found) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td colspan="4">কোনো পেমেন্ট রেকর্ড নেই</td>`;
+        table.appendChild(tr);
+    }
 }
 </script>
 
