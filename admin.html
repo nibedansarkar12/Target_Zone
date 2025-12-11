@@ -1444,7 +1444,11 @@ if(__regName || __regPhone){
   alert('Registration Complete!');
 }
 return; }
-      await updateDoc(doc(db,"students",studentId),{[month]:amount});
+      await updateDoc(doc(db, "students", studentId), {
+    [month]: { amount: Number(amount), date: new Date() }
+});
+document.getElementById("tz-pay-amount").value = '';
+tz_openStudentFinance(studentId);
       document.getElementById("tz-pay-amount").value='';
       tz_openStudentFinance(studentId);
     });
