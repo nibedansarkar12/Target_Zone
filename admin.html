@@ -360,7 +360,6 @@ function safeAddListener(idOrEl, event, fn){
     window.logout=async()=>{ await signOut(auth); window.location.href="index.html"; };
 
     // Load Questions
-// --- প্রতিস্থাপন করুন: window.loadQuestions = async (...) {...} ---
 window.loadQuestions = async (categoryOrColl) => {
   if (!categoryOrColl) return;
   const table = document.getElementById("questions-list");
@@ -458,8 +457,6 @@ window.loadQuestions = async (categoryOrColl) => {
         data:{labels:["Correct","Wrong","Unattempted"],datasets:[{data:[correct,wrong,unattempted],backgroundColor:["#4caf50","#f44336","#9e9e9e"]}]}
       });
     }
-
-    // Load Users
 
     // Music Toggle
     const music=document.getElementById("bg-music");
@@ -570,7 +567,6 @@ window.loadQuestions = async (categoryOrColl) => {
         if(admissionsTable) admissionsTable.innerHTML = "<tr><td colspan='6'>Error loading admissions</td></tr>";
       }
     }
-    // === Finance Section Logic ===
 
   // ---------------- Salary Module ----------------
 
@@ -763,18 +759,6 @@ if(__regName || __regPhone){
   alert('Registration Complete!');
 }
 }
-  }
-
-  function exportCurrentViewCSV(){
-    const rows=[["Month","Amount","Note"]];
-    document.querySelectorAll("#finance-rows tr").forEach(tr=>{
-      const cols=Array.from(tr.querySelectorAll("td")).map(td=>td.textContent.trim());
-      if(cols.length>=3)rows.push([cols[0],cols[1],cols[2]]);
-    });
-    const csv=rows.map(r=>r.join(",")).join("\n");
-    const blob=new Blob([csv],{type:"text/csv"});
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement("a");a.href=url;a.download="salary.csv";a.click();URL.revokeObjectURL(url);
   }
 
 // === Add Batch & Student Management ===
@@ -1025,7 +1009,6 @@ if(__regName || __regPhone){
   // 👉 শেষে টেবিল রিফ্রেশ
   loadQuestions(collName);
     }
-    // ---- end additions ----
 // ================= Manage Notes (Drive links) ===================
 window.addNote = async () => {
   try {
@@ -1290,8 +1273,7 @@ document.getElementById("tz-save-student-btn")?.addEventListener("click", async 
   const education = document.getElementById("tz-student-education").value.trim();
   const batch = document.getElementById("tz-student-batch-select").value;
   const dob = document.getElementById("tz-student-dob").value;
-  // photo upload removed
-    // const photoFile = document.getElementById("tz-student-photo").files[0];
+  
   if(!name||!phone||!batch){ /* Fixed alert: compute UID safely from form fields if available */
 var __regName = document.getElementById('reg-name')?.value || document.getElementById('name')?.value || '';
 var __regPhone = document.getElementById('reg-phone')?.value || document.getElementById('phone')?.value || '';
@@ -1408,8 +1390,6 @@ document.querySelectorAll("button[onclick^=\"showSection('\"]").forEach(btn=>{
   }
 });
 
-// initial no-op
-// ===== end tz helpers =====
 // === Custom Deletion Functions ===
 window.deleteBatch = async (id)=>{
   if(!confirm("Delete this batch?")) return;
@@ -1461,8 +1441,6 @@ async function reorderRolls(batchId){
   }catch(e){ console.error("reorderRolls", e); }
 }
 ;
-
-
 /* === FIXED Batch Loader & Registration Submit === */
 window.populateRegistrationBatches = async function () {
   if(window.__POP_REG_LOCKED) return;
@@ -1538,7 +1516,6 @@ document.addEventListener("DOMContentLoaded", ()=>{
     form.addEventListener("submit", handleRegistrationSubmit);
   }
 });
-/* === END FIX === */
 </script>
 <script>
     // Sidebar toggle
