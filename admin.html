@@ -2072,46 +2072,11 @@ if(typeof window.showSection === 'function'){
 
 
 <!-- === Success Popup Added by ChatGPT === -->
-<div id="successPopup" class="fixed inset-0 bg-black/70 hidden flex justify-center items-center z-50">
     <div class="bg-white text-black p-6 rounded-xl w-80 text-center">
         <h3 class="text-xl font-bold mb-3">Registration Successful 🎉</h3>
         <p id="popup-uid" class="font-semibold"></p>
         <p id="popup-pass" class="font-semibold mb-4"></p>
-        <button onclick="closePopup()" class="bg-green-600 text-white px-4 py-2 rounded-lg">OK</button>
     </div>
 </div>
-
-<script>
-// === Auto UID + Password + Popup ===
-document.getElementById("registration-form")?.addEventListener("submit", async (e)=>{
-    e.preventDefault();
-
-    const name = document.getElementById("reg-name").value.trim();
-    const phone = document.getElementById("reg-phone").value.trim();
-    const dob = document.getElementById("reg-dob").value.trim();
-
-    const UID = phone + name.charAt(0).toUpperCase();
-    const PASSWORD = dob; // YYYY-MM-DD
-
-    try {
-        // Insert your Firebase save code here (already exists in your file)
-        showSuccessPopup(UID, PASSWORD);
-    } catch (err) {
-        alert("Registration Failed: " + err.message);
-    }
-});
-
-window.showSuccessPopup = (uid, pass) => {
-    document.getElementById("popup-uid").textContent = "UID: " + uid;
-    document.getElementById("popup-pass").textContent = "Password: " + pass;
-    document.getElementById("successPopup").classList.remove("hidden");
-};
-
-window.closePopup = () => {
-    document.getElementById("successPopup").classList.add("hidden");
-};
-</script>
-<!-- === End Patch === -->
-
 </body>
 </html>
