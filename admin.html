@@ -383,8 +383,6 @@ window.loadQuestions = async (categoryOrColl) => {
       });
     }
 
-    // Load Users
-
     // Music Toggle
     const music=document.getElementById("bg-music");
     const musicBtn=document.getElementById("music-btn");
@@ -494,7 +492,6 @@ window.loadQuestions = async (categoryOrColl) => {
         if(admissionsTable) admissionsTable.innerHTML = "<tr><td colspan='6'>Error loading admissions</td></tr>";
       }
     }
-    // === Finance Section Logic ===
 
   // ---------------- Salary Module ----------------
 
@@ -530,25 +527,6 @@ window.loadQuestions = async (categoryOrColl) => {
           </div>
 
           <div id="student-list" class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-96 overflow-y-auto">Select a batch</div>
-
-          <div id="student-form" class="hidden mt-4 bg-white/10 p-4 rounded">
-            <h5 class="font-semibold mb-2">Add Student</h5>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-              <select id="student-batch-select" class="border rounded px-2 py-2"><option value="">-- Select Batch --</option></select>
-              <input id="student-name" placeholder="নাম" class="border rounded px-2 py-2" />
-              <input id="student-dob" type="date" class="border rounded px-2 py-2" />
-              <input id="student-phone" placeholder="Mobile Number" class="border rounded px-2 py-2" />
-              <input id="student-whatsapp" placeholder="WhatsApp Number" class="border rounded px-2 py-2" />
-              <input id="student-father" placeholder="বাবার নাম" class="border rounded px-2 py-2" />
-              <input id="student-address" placeholder="ঠিকানা" class="border rounded px-2 py-2" />
-              <input id="student-extra" placeholder="অতিরিক্ত তথ্য (optional)" class="border rounded px-2 py-2" />
-            </div>
-            <div class="mt-3 flex gap-2">
-              <button id="save-student-btn" class="bg-blue-600 px-3 py-1 rounded">Save</button>
-              <button onclick="document.getElementById('student-form').classList.add('hidden')" class="bg-gray-600 px-3 py-1 rounded">Cancel</button>
-            </div>
-          </div>
-        </div>
 
         <div id="student-panel" class="col-span-1 bg-white/10 backdrop-blur-xl p-4 rounded-lg">
           <h4 class="font-semibold mb-2">Profile</h4>
@@ -754,9 +732,6 @@ window.loadStudents = async (batchId) => {
   return _oldLoadStudents(batchId);
 };
 // === end Add Batch & Student ===
-
-// Birthday
-
 
 // Helper to hide all
 function hideFinancePanels(){
