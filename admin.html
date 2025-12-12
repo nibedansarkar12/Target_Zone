@@ -863,18 +863,6 @@ window.loadStudents = async (batchId) => {
 };
 // === end Add Batch & Student ===
 
-
-
-
-
-
-// Helper to hide all
-function hideFinancePanels(){
-  ["salary-panel","birthday-panel","attendance-panel","reports-panel"]
-  .forEach(id=>document.getElementById(id).classList.add("hidden"));
-}
-    let currentSubcategory = "";
-
 // সাবক্যাটাগরি লোড
 window.loadSubcategories = async (category) => {
   currentCategory = category;
