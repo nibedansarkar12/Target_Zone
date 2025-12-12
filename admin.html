@@ -121,7 +121,6 @@ function safeAddListener(idOrEl, event, fn){
 <!-- add this inside <nav class="p-4 space-y-3 flex-1">, after Manage Users button -->
 <button class="nav-btn w-full py-2 px-3 rounded" onclick="showSection('notes')">📚 Manage Notes</button>
 <button class="nav-btn w-full py-2 px-3 rounded" onclick="showSection('finance')">💼 Salary &amp; More</button>
-<button class="nav-btn w-full py-2 px-3 rounded" onclick="showSection('submissions')">💰 Payments &amp; Forms</button>
 </nav>
 <div class="p-4 border-t border-white/20">
 <button class="w-full bg-red-600 py-2 rounded" onclick="logout()">🚪 Logout</button>
@@ -190,24 +189,6 @@ function safeAddListener(idOrEl, event, fn){
 <tbody id="users-list"></tbody>
 </table>
 </section>
-<!-- Payments & Forms Section -->
-<section class="glass p-6 rounded-lg shadow-lg hidden" id="section-submissions">
-<h3 class="text-xl font-bold mb-4 flex items-center gap-2">💰 Payment Proofs</h3>
-<table class="w-full text-left border mb-6">
-<thead class="bg-gray-200">
-<tr><th class="p-2">Name</th><th>Phone</th><th>Proof</th><th>Date</th></tr>
-</thead>
-<tbody id="payments-list"></tbody>
-</table>
-<h3 class="text-xl font-bold mb-4 flex items-center gap-2">📄 Admission Forms</h3>
-<table class="w-full text-left border">
-<thead class="bg-gray-200">
-<tr><th class="p-2">Name</th><th>Phone</th><th>Course</th><th>Address</th><th>Message</th><th>Date</th></tr>
-</thead>
-<tbody id="admissions-list"></tbody>
-</table>
-</section>
-<!-- Finance Section -->
 
 <!-- Registration Section (ADDED) -->
 
