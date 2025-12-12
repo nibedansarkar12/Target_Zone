@@ -864,33 +864,7 @@ window.loadStudents = async (batchId) => {
 // === end Add Batch & Student ===
 
 // Birthday
-window.openBirthday = async () => {
-  hideFinancePanels();
-  const panel = document.getElementById("birthday-panel");
-  panel.classList.remove("hidden");
-  const today = new Date().toISOString().slice(5,10); // MM-DD
-  // Demo birthday list
-  const students = [
-    {name:"Student One",dob:"08-17",phone:"1234567890"},
-    {name:"Student Two",dob:"12-25",phone:"9876543210"}
-  ];
-  let html = `<h3 class="text-xl font-bold mb-4">🎉 Today’s Birthdays</h3>`;
-  const todays = students.filter(s=>s.dob===today);
-  if(todays.length===0) html += `<p>No birthdays today</p>`;
-  todays.forEach(s=>{
-    const msg = `শুভ জন্মদিন ${s.name}! 🎉 তোমার জীবন আনন্দে ভরে উঠুক।`;
-    html += `
-      <div class="p-4 bg-pink-200 rounded mb-3 text-black">
-        🎂 ${s.name} 
-        <div class="mt-2 flex gap-3">
-          <a href="https://wa.me/${s.phone}?text=${encodeURIComponent(msg)}" target="_blank" class="bg-green-500 text-gray-100 px-3 py-1 rounded">WhatsApp</a>
-          <a href="sms:${s.phone}?body=${encodeURIComponent(msg)}" class="bg-blue-500 text-gray-100 px-3 py-1 rounded">SMS</a>
-        </div>
-      </div>
-    `;
-  });
-  panel.innerHTML = html;
-};
+
 
 // Attendance
 window.openAttendance = async () => {
@@ -909,13 +883,7 @@ window.openAttendance = async () => {
   `;
 };
 
-// Reports (future)
-window.openReports = async () => {
-  hideFinancePanels();
-  const panel = document.getElementById("reports-panel");
-  panel.classList.remove("hidden");
-  panel.innerHTML = `<h3 class="text-xl">📊 Reports Coming Soon</h3>`;
-};
+
 
 // Helper to hide all
 function hideFinancePanels(){
