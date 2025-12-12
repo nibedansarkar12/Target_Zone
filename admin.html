@@ -863,25 +863,8 @@ window.loadStudents = async (batchId) => {
 };
 // === end Add Batch & Student ===
 
-// Birthday
 
 
-// Attendance
-window.openAttendance = async () => {
-  hideFinancePanels();
-  const panel = document.getElementById("attendance-panel");
-  panel.classList.remove("hidden");
-  panel.innerHTML = `
-    <h3 class="text-xl font-bold mb-4">📅 Attendance</h3>
-    <table class="w-full border">
-      <thead><tr><th>Name</th><th>Status</th></tr></thead>
-      <tbody>
-        <tr><td>Student One</td><td><button class="bg-green-500 px-2 py-1 rounded">Present</button></td></tr>
-        <tr><td>Student Two</td><td><button class="bg-red-500 px-2 py-1 rounded">Absent</button></td></tr>
-      </tbody>
-    </table>
-  `;
-};
 
 
 
