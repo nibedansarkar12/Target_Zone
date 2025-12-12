@@ -156,7 +156,7 @@ function safeAddListener(idOrEl, event, fn){
 <button class="bg-green-500 text-gray-100 px-3 rounded" onclick="addSubcategory()" type="button">Add</button>
 </div>
 <textarea class="w-full border rounded px-3 py-2 mb-3" id="question" placeholder="প্রশ্ন লিখুন..." rows="3"></textarea>
-<input accept="image/*" class="w-full mb-3" id="photo" type="file"/>
+
 <div class="grid grid-cols-2 gap-3">
 <label><input name="correct" type="radio" value="0"/> <input class="w-full border rounded px-3 py-2" id="option1" placeholder="Option A"/></label>
 <label><input name="correct" type="radio" value="1"/> <input class="w-full border rounded px-3 py-2" id="option2" placeholder="Option B"/></label>
@@ -932,8 +932,7 @@ if(__regName || __regPhone){
   });
   const correctRadio = document.querySelector('input[name="correct"]:checked');
   const correctIndex = correctRadio ? parseInt(correctRadio.value, 10) : NaN;
-  const photoFile = document.getElementById("photo")?.files[0];
-
+  
   if (!ques || opts.some(o => !o) || Number.isNaN(correctIndex)) {
     return /* Fixed alert: compute UID safely from form fields if available */
 var __regName = document.getElementById('reg-name')?.value || document.getElementById('name')?.value || '';
@@ -946,13 +945,7 @@ if(__regName || __regPhone){
 }
 }
 
-  let photoURL = "";
-  try {
-    if (photoFile) {
-      const storageRef = ref(storage, `questions/${Date.now()}-${photoFile.name}`);
-      await uploadBytes(storageRef, photoFile);
-      photoURL = await getDownloadURL(storageRef);
-    }
+  
 
     const docRef = await addDoc(collection(db, collName), {
       id: Date.now(),
@@ -961,7 +954,6 @@ if(__regName || __regPhone){
       question: ques,
       options: opts,
       answer: opts[correctIndex],
-      photo: photoURL || "",
       createdAt: new Date()
     });
 
@@ -991,8 +983,6 @@ if(__regName || __regPhone){
       if (el) el.value = '';
     });
     document.querySelectorAll('input[name="correct"]').forEach(r => r.checked = false);
-    const photoInput = document.getElementById('photo');
-    if (photoInput) photoInput.value = '';
   }
 
   // 👉 শেষে টেবিল রিফ্রেশ
