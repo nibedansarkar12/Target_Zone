@@ -638,39 +638,7 @@ window.loadQuestions = async (categoryOrColl) => {
     await populateStudentBatchSelect();
   };
 
-  async function loadBatches() {
-    try {
-      const q = query(collection(db, "batches"), orderBy("name"));
-      const snap = await getDocs(q);
-      const container = document.getElementById("batch-list");
-      container.innerHTML = "";
-      if (snap.empty) { container.innerHTML = "No batches found"; return; }
-      snap.forEach(docSnap => {
-        const b = docSnap.data();
-        const btn = document.createElement("button");
-        btn.className = "w-full text-left px-3 py-2 bg-white/10 backdrop-blur-xl rounded hover:bg-white/10 flex justify-between";
-        btn.innerHTML = `<span>${b.name || docSnap.id}</span>`;
-        btn.onclick = () => loadStudents(docSnap.id);
-        container.appendChild(btn);
-      });
-    } catch (e) { console.error(e); }
-  }
-
-  async function populateStudentBatchSelect() {
-    try {
-      const q = query(collection(db, "batches"), orderBy("name"));
-      const snap = await getDocs(q);
-      const sel = document.getElementById("student-batch-select");
-      sel.innerHTML = '<option value="">-- Select Batch --</option>';
-      snap.forEach(docSnap => {
-        const d = docSnap.data();
-        const opt = document.createElement("option");
-        opt.value = docSnap.id;
-        opt.textContent = d.name || docSnap.id;
-        sel.appendChild(opt);
-      });
-    } catch (e) { console.error(e); }
-  }
+  
 
   window.loadStudents = async (batchId) => {
     const list = document.getElementById("student-list");
