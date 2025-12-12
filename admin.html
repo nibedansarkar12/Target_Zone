@@ -632,14 +632,7 @@ window.loadQuestions = async (categoryOrColl) => {
     const month=document.getElementById("pay-month").value;
     const amount=Number(document.getElementById("pay-amount").value);
     const note=document.getElementById("pay-note").value;
-    if(!month||!amount){/* Fixed alert: compute UID safely from form fields if available */
-var __regName = document.getElementById('reg-name')?.value || document.getElementById('name')?.value || '';
-var __regPhone = document.getElementById('reg-phone')?.value || document.getElementById('phone')?.value || '';
-if(__regName || __regPhone){
-  var __uid = (__regPhone? __regPhone : 'UID') + ( __regName? ('-' + __regName.charAt(0).toUpperCase()) : '');
-  alert('Registration Complete! UID: ' + __uid);
-} else {
-  alert('Registration Complete!');
+    if(!month||!amount)
 }
 return;}
     try{
