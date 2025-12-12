@@ -1,12 +1,8 @@
 <!DOCTYPE html>
-
 <html lang="bn">
 <head>
 <script>window.__POP_REG_LOCKED = window.__POP_REG_LOCKED || false;</script>
-
-
 <script>
-/* Helper: use safeAddListener(id, event, fn) to avoid errors if element is missing */
 function safeAddListener(idOrEl, event, fn){
   try{
     const el = (typeof idOrEl === 'string') ? document.getElementById(idOrEl) : idOrEl;
@@ -16,7 +12,6 @@ function safeAddListener(idOrEl, event, fn){
   }
 }
 </script>
-
 <meta charset="utf-8"/>
 <title>Target Zone - Admin Panel</title>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
@@ -41,7 +36,6 @@ function safeAddListener(idOrEl, event, fn){
   50%{background-position:100% 50%;}
   100%{background-position:0% 50%;}
 }
-    /* ---------- Salary & More Text Fix ---------- */
 #section-finance .glass {
   color: black !important;
 }
@@ -50,14 +44,11 @@ function safeAddListener(idOrEl, event, fn){
 #section-finance textarea {
   color: black !important;
 }
-/* === Finance Section Text Color Fix === */
 #section-finance, 
 #section-finance * {
   color: black !important;
 }
-
 </style>
-
 <style>
 #section-registration input,
 #section-registration select,
@@ -66,7 +57,6 @@ function safeAddListener(idOrEl, event, fn){
 }
 </style>
 <style>
-/* Ensure registration inputs are readable */
 #section-registration input,
 #section-registration select,
 #section-registration textarea,
@@ -81,29 +71,23 @@ function safeAddListener(idOrEl, event, fn){
   color: #eef2f7 !important;
 }
 </style>
-
 <style>
 #section-registration input,
 #section-registration select,
 #section-registration textarea {
     color: #ffffff !important;
 }
-
 #section-registration input::placeholder,
 #section-registration select::placeholder {
     color: rgba(255,255,255,0.85) !important;
 }
-
 #section-registration label {
     color: #ffffff !important;
 }
 </style>
-
 </head>
 <body class="h-screen flex overflow-hidden">
-<!-- Background Animation -->
 <canvas class="fixed top-0 left-0 w-full h-full -z-10" id="bg-canvas"></canvas>
-<!-- Sidebar -->
 <aside class="sidebar fixed md:static w-64 h-full text-gray-100 z-50 hidden md:flex flex-col" id="sidebar">
 <div class="p-5 flex justify-between items-center border-b border-white/20">
 <div>
@@ -117,8 +101,6 @@ function safeAddListener(idOrEl, event, fn){
 <button class="nav-btn w-full py-2 px-3 rounded" onclick="showSection('results')">📊 View Results</button>
 <button class="nav-btn w-full py-2 px-3 rounded" onclick="showSection('users')">👥 Manage Users</button>
 <button class="nav-btn w-full py-2 px-3 rounded" onclick="showSection('registration')">📋 Registration</button>
-
-<!-- add this inside <nav class="p-4 space-y-3 flex-1">, after Manage Users button -->
 <button class="nav-btn w-full py-2 px-3 rounded" onclick="showSection('notes')">📚 Manage Notes</button>
 <button class="nav-btn w-full py-2 px-3 rounded" onclick="showSection('finance')">💼 Salary &amp; More</button>
 </nav>
@@ -126,7 +108,6 @@ function safeAddListener(idOrEl, event, fn){
 <button class="w-full bg-red-600 py-2 rounded" onclick="logout()">🚪 Logout</button>
 </div>
 </aside>
-<!-- Main -->
 <main class="flex-1 p-6 overflow-y-auto">
 <div class="flex justify-between items-center mb-6">
 <button class="md:hidden bg-yellow-400 px-3 py-2 rounded" id="menu-btn">☰</button>
@@ -148,7 +129,6 @@ function safeAddListener(idOrEl, event, fn){
 <option value="railways">Railways</option>
 <option value="tet">TET</option>
 </select>
-<!-- নতুন Subcategory dropdown -->
 <div class="flex gap-2 mb-3">
 <select class="w-full border rounded px-3 py-2" id="subcategory"></select>
 <input class="border rounded px-3 py-2" id="new-subcat" placeholder="➕ New Subcategory" type="text"/>
@@ -188,13 +168,11 @@ function safeAddListener(idOrEl, event, fn){
 <tbody id="users-list"></tbody>
 </table>
 </section>
-
 <!-- Registration Section (ADDED) -->
-
 <section id="section-registration" class=" glass p-5 md:p-8 rounded-3xl shadow-2xl hidden backdrop-blur-lg bg-black/40 backdrop-blur-2xl shadow-2xl" aria-label="registration-section">
   <div class="max-w-xl mx-auto">
     <h3 class="text-2xl font-extrabold mb-4" style="background:linear-gradient(90deg,#ff7e5f,#6a11cb);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">📋 Student Registration</h3>
-    <p class="text-sm mb-4 text-gray-300">Complete the form below to register a student. Mobile-first, responsive layout.</p>
+    <p class="text-sm mb-4 text-gray-300">Complete the form below to register a student.</p>
     <form id="registration-form" class="space-y-3">
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <input id="reg-name" name="name" type="text" autocomplete="name" required placeholder="নাম (Required)" class="w-full rounded-xl px-4 py-3 bg-white/10 backdrop-blur-xl placeholder-gray-300 text-gray-100"/>
@@ -225,9 +203,6 @@ function safeAddListener(idOrEl, event, fn){
     <p id="reg-feedback" class="mt-3 text-sm text-green-400 hidden"></p>
   </div>
 </section>
-
-<!-- End Registration Section -->
-
 <section aria-label="finance-section" class="glass p-6 rounded-lg shadow-lg hidden" id="section-finance">
 <h3 class="text-2xl font-bold rainbow mb-6">💼 Salary &amp; More</h3>
 <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
