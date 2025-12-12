@@ -15,9 +15,6 @@ function safeAddListener(idOrEl, event, fn){
     console.warn('safeAddListener error for', idOrEl, e);
   }
 }
-/* Optional global replacement for some common direct calls:
-   Replace patterns in code where document.getElementById('x').addEventListener(...) is used
-   — but we cannot safely replace arbitrary inline code reliably. Use safeAddListener in your scripts where needed. */
 </script>
 
 <meta charset="utf-8"/>
