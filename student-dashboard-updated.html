@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Student Dashboard - Target Zone</title>
+
+<!-- Tailwind -->
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+<!-- SweetAlert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<style>
+body {
+    margin: 0;
+    padding: 20px;
+    background: radial-gradient(circle at top, #dbeafe, #e0f2fe, #ffffff);
+    font-family: "Inter", sans-serif;
+}
+.glass-card {
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+.sec-title {
+    font-size: 26px;
+    font-weight: 800;
+    margin-bottom: 12px;
+    background: linear-gradient(90deg, #4f46e5, #9333ea);
+    -webkit-background-clip: text;
+    color: transparent;
+}
+.table-box { overflow-x: auto; }
+th { background: #4f46e5; color: white; padding: 10px; }
+td { padding: 10px; border-bottom: 1px solid #e5e7eb; }
+.examBtn {
+    background: linear-gradient(90deg, #4f46e5, #9333ea);
+    color: white; padding: 12px; width: 100%;
+    font-size: 18px; border-radius: 14px; font-weight: 700;
+    box-shadow: 0 8px 18px rgba(99, 102, 241, 0.3);
+}
+</style>
+</head>
+
+<body>
+
+<div class="max-w-5xl mx-auto">
+
+<h1 class="text-4xl font-extrabold text-center mb-6"
+style="background:linear-gradient(90deg,#4f46e5,#9333ea);-webkit-background-clip:text;color:transparent;">
+    🎓 Student Dashboard
+</h1>
+
+<!-- ⚠️ LIMITED DASHBOARD NOTICE -->
+<div id="limitedNotice" class="glass-card hidden mb-6 bg-yellow-100 border-l-4 border-yellow-500 p-4">
+    <h2 class="text-xl font-bold text-yellow-700">🔒 Verification Needed</h2>
+    <p>আপনার ব্যক্তিগত তথ্য আপাতত লুকানো আছে। Verify করে তথ্য Unlock করতে পারেন।</p>
+    <a id="verifyBtn" class="text-blue-600 underline cursor-pointer">Verify Now</a>
+</div>
+
+<!-- STUDENT INFO -->
+<div id="infoSection" class="glass-card hidden mb-6">
+    <h2 class="sec-title">📌 ব্যক্তিগত তথ্য</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <p><strong>নাম:</strong> <span id="name"></span></p>
+        <p><strong>ফোন:</strong> <span id="phone"></span></p>
+        <p><strong>জন্মতারিখ:</strong> <span id="dob"></span></p>
+        <p><strong>পিতার নাম:</strong> <span id="father"></span></p>
+        <p><strong>ব্যাচ:</strong> <span id="batch"></span></p>
+        <p><strong>হোয়াটসঅ্যাপ:</strong> <span id="whatsapp"></span></p>
+    </div>
+</div>
+
+<!-- PAYMENTS -->
+<div id="paymentSection" class="glass-card hidden mb-6">
+    <h2 class="sec-title">💰 পেমেন্ট হিস্ট্রি</h2>
+
+    <div class="table-box">
+        <table class="w-full">
+            <thead>
+                <tr>
+                    <th>তারিখ</th>
+                    <th>মাস</th>
+                    <th>টাকা</th>
+                </tr>
+            </thead>
+            <tbody id="paymentTable"></tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Exam -->
+<div id="examSection" class="glass-card mb-6">
+    <h2 class="sec-title">📝 Exam</h2>
+    <a href="quiz.html">
+        <button class="examBtn">Go to Exam Page</button>
+    </a>
+</div>
+
+</div>
+
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { 
+    getFirestore, collection, query, where, getDocs,
+    doc, getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {
+    getAuth, onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+// FIREBASE CONFIG
+const firebaseConfig = {
+  apiKey: "AIzaSyCR5rqthBh0vX0yLOcOG3b9xJiKbYtzdxU",
+  authDomain: "target-zone-8fffd.firebaseapp.com",
+  projectId: "target-zone-8fffd"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth();
+
+// LOAD DASHBOARD
+window.onload = async () => {
+    const url = new URL(window.location.href);
+    const sid = url.searchParams.get("sid");  // Phone login case
+
+    if (sid) {
+        loadFullDashboard(sid);
+        return;
+    }
+
+    onAuthStateChanged(auth, async (user) => {
+        if (!user) return;
+
+        const q = query(
+            collection(db, "students"),
+            where("email", "==", user.email)
+        );
+        const snap = await getDocs(q);
+
+        if (snap.empty) {
+            showLimitedDashboard(user);
+        } else {
+            loadFullDashboard(snap.docs[0].id);
+        }
+    });
+};
+
+// LIMITED MODE
+function showLimitedDashboard(user) {
+    document.getElementById("limitedNotice").classList.remove("hidden");
+
+    const email = user.email;
+    const uid = user.uid;
+
+    document.getElementById("verifyBtn").href =
+        `verify.html?email=${email}&uid=${uid}`;
+}
+
+// FULL MODE
+async function loadFullDashboard(sid) {
+    const snap = await getDoc(doc(db, "students", sid));
+
+    if (!snap.exists()) {
+        Swal.fire("Error", "Student not found!");
+        return;
+    }
+
+    const s = snap.data();
+
+    // Personal Info
+    document.getElementById("name").innerText = s.name || "N/A";
+    document.getElementById("phone").innerText = s.phone || "N/A";
+    document.getElementById("dob").innerText = s.dob || "N/A";
+    document.getElementById("father").innerText = s.father || "N/A";
+    
+    // Batch name resolve (safe, no option removed)
+    let batchName = "N/A";
+    if (s.batch) {
+        try {
+            const batchSnap = await getDoc(doc(db, "batches", s.batch));
+            if (batchSnap.exists()) {
+                batchName = batchSnap.data().name || s.batch;
+            } else {
+                batchName = s.batch;
+            }
+        } catch (e) {
+            batchName = s.batch;
+        }
+    }
+    document.getElementById("batch").innerText = batchName;
+
+    document.getElementById("whatsapp").innerText = s.whatsapp || "N/A";
+
+    document.getElementById("infoSection").classList.remove("hidden");
+    document.getElementById("paymentSection").classList.remove("hidden");
+
+    // Payment Table Loading
+    const table = document.getElementById("paymentTable");
+    table.innerHTML = "";
+
+    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+    months.forEach(m => {
+        if (s[m]) {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>—</td>
+                <td>${m}</td>
+                <td>${s[m]}</td>
+            `;
+            table.appendChild(tr);
+        }
+    });
+}
+</script>
+
+</body>
+</html>
