@@ -423,8 +423,6 @@ window.loadQuestions = async (categoryOrColl) => {
       });
     }
 
-    // Load Users
-
     // Music Toggle
     const music=document.getElementById("bg-music");
     const musicBtn=document.getElementById("music-btn");
@@ -570,90 +568,6 @@ window.loadQuestions = async (categoryOrColl) => {
       });
     } catch (e) { console.error(e); list.innerHTML="Error"; }
   };
-
-  window.openStudentFinance = async (studentId) => {
-    const area = document.getElementById("profile-area");
-    area.innerHTML = "Loading...";
-    try {
-      const docRef = doc(db, "students", studentId);
-      const sDoc = await getDoc(docRef);
-      if (!sDoc.exists()) { area.innerHTML="Not found"; return; }
-      const s = sDoc.data();
-      area.innerHTML = `
-        <div>
-          <div class="font-semibold text-lg">${s.name||"(No name)"}</div>
-          <div class="text-sm">${s.phone||""} ${s.whatsapp?("• "+s.whatsapp):""}</div>
-          <div class="text-xs">${s.address||""}</div>
-          <hr class="my-2"/>
-          <h5 class="font-semibold">Monthly Account</h5>
-          <table class="w-full text-sm border mt-2"><thead><tr><th>Month</th><th>Amount</th><th>Note</th><th>Action</th></tr></thead><tbody id="finance-rows"><tr><td colspan="4">Loading...</td></tr></tbody></table>
-          <div class="mt-2 flex gap-2">
-            <select id="pay-month" class="border px-2 py-1">${generateLast12MonthsOptions()}</select>
-            <input id="pay-amount" type="number" placeholder="Amount (₹)" class="border px-2 py-1"/>
-            <input id="pay-note" placeholder="Note" class="border px-2 py-1"/>
-            <button onclick="addPayment('${studentId}')" class="bg-blue-600 px-3 py-1 rounded">Add</button>
-          </div>
-        </div>`;
-      loadFinance(studentId);
-    } catch (e) { console.error(e); area.innerHTML="Error"; }
-  };
-
-  async function loadFinance(studentId) {
-    const tbody=document.getElementById("finance-rows");
-    tbody.innerHTML="<tr><td colspan='4'>Loading...</td></tr>";
-    try {
-      const q=query(collection(db,"salaries"),where("studentId","==",studentId),orderBy("month","desc"));
-      const snap=await getDocs(q);
-      tbody.innerHTML="";
-      if(snap.empty){tbody.innerHTML="<tr><td colspan='4'>No records</td></tr>";return;}
-      snap.forEach(docSnap=>{
-        const d=docSnap.data();
-        tbody.innerHTML+=`<tr><td>${d.month}</td><td>${d.amount}</td><td>${d.note||""}</td><td><button class="bg-red-600 px-2 py-1 rounded text-sm" onclick="deleteSalary('${docSnap.id}','${studentId}')">Del</button></td></tr>`;
-      });
-    } catch(e){console.error(e);tbody.innerHTML="<tr><td colspan='4'>Error</td></tr>";}
-  }
-
-  async function addPayment(studentId){
-    const month=document.getElementById("pay-month").value;
-    const amount=Number(document.getElementById("pay-amount").value);
-    const note=document.getElementById("pay-note").value;
-    if(!month||!amount){/* Fixed alert: compute UID safely from form fields if available */
-var __regName = document.getElementById('reg-name')?.value || document.getElementById('name')?.value || '';
-var __regPhone = document.getElementById('reg-phone')?.value || document.getElementById('phone')?.value || '';
-if(__regName || __regPhone){
-  var __uid = (__regPhone? __regPhone : 'UID') + ( __regName? ('-' + __regName.charAt(0).toUpperCase()) : '');
-  alert('Registration Complete! UID: ' + __uid);
-} else {
-  alert('Registration Complete!');
-}
-return;}
-    try{
-      await addDoc(collection(db,"salaries"),{studentId,month,amount,note,createdAt:Date.now()});
-      loadFinance(studentId);
-      document.getElementById("pay-amount").value="";document.getElementById("pay-note").value="";
-    }catch(e){console.error(e);/* Fixed alert: compute UID safely from form fields if available */
-var __regName = document.getElementById('reg-name')?.value || document.getElementById('name')?.value || '';
-var __regPhone = document.getElementById('reg-phone')?.value || document.getElementById('phone')?.value || '';
-if(__regName || __regPhone){
-  var __uid = (__regPhone? __regPhone : 'UID') + ( __regName? ('-' + __regName.charAt(0).toUpperCase()) : '');
-  alert('Registration Complete! UID: ' + __uid);
-} else {
-  alert('Registration Complete!');
-}
-}
-  }
-
-  function exportCurrentViewCSV(){
-    const rows=[["Month","Amount","Note"]];
-    document.querySelectorAll("#finance-rows tr").forEach(tr=>{
-      const cols=Array.from(tr.querySelectorAll("td")).map(td=>td.textContent.trim());
-      if(cols.length>=3)rows.push([cols[0],cols[1],cols[2]]);
-    });
-    const csv=rows.map(r=>r.join(",")).join("\n");
-    const blob=new Blob([csv],{type:"text/csv"});
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement("a");a.href=url;a.download="salary.csv";a.click();URL.revokeObjectURL(url);
-  }
 
 // === Add Batch & Student Management ===
 
