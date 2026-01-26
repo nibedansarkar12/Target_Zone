@@ -482,60 +482,6 @@ window.loadQuestions = async (categoryOrColl) => {
       }
     }
 
-    async function loadSubmissions(){
-      const paymentsTable = document.getElementById("payments-list");
-      const admissionsTable = document.getElementById("admissions-list");
-      if(paymentsTable) paymentsTable.innerHTML = "<tr><td colspan='4'>Loading...</td></tr>";
-      if(admissionsTable) admissionsTable.innerHTML = "<tr><td colspan='6'>Loading...</td></tr>";
-
-      try{
-        const paySnap = await get(dbRef(rtdb, "paymentProofs"));
-        let payRows = "";
-        if(paySnap.exists && paySnap.exists()){
-          paySnap.forEach(item=>{
-            const d = item.val() || {};
-            payRows += `<tr>
-              <td>${d.name || ""}</td>
-              <td>${d.phone || ""}</td>
-              <td><img src="${d.url || ""}" class="w-16 h-16 object-cover cursor-pointer" onclick="openModal('${d.url || ""}')"></td>
-              <td>${formatTimestamp(d.createdAt)}</td>
-            </tr>`;
-          });
-        } else {
-          payRows = "<tr><td colspan='4'>No Data</td></tr>";
-        }
-        if(paymentsTable) paymentsTable.innerHTML = payRows;
-      }catch(e){
-        console.error("Error loading payments:", e);
-        if(paymentsTable) paymentsTable.innerHTML = "<tr><td colspan='4'>Error loading payments</td></tr>";
-      }
-
-      try{
-        const admSnap = await get(dbRef(rtdb, "admissions"));
-        let admRows = "";
-        if(admSnap.exists && admSnap.exists()){
-          admSnap.forEach(item=>{
-            const d = item.val() || {};
-            admRows += `<tr>
-              <td>${d.name || ""}</td>
-              <td>${d.phone || ""}</td>
-              <td>${d.course || ""}</td>
-              <td>${d.address||""}</td>
-              <td>${d.message||""}</td>
-              <td>${formatTimestamp(d.createdAt)}</td>
-            </tr>`;
-          });
-        } else {
-          admRows = "<tr><td colspan='6'>No Data</td></tr>";
-        }
-        if(admissionsTable) admissionsTable.innerHTML = admRows;
-      }catch(e){
-        console.error("Error loading admissions:", e);
-        if(admissionsTable) admissionsTable.innerHTML = "<tr><td colspan='6'>Error loading admissions</td></tr>";
-      }
-    }
-    // === Finance Section Logic ===
-
   // ---------------- Salary Module ----------------
 
   window.openSalary = async () => {
