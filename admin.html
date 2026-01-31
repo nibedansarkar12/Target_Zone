@@ -1,16 +1,6 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-<script>
-function safeAddListener(idOrEl, event, fn){
-  try{
-    const el = (typeof idOrEl === 'string') ? document.getElementById(idOrEl) : idOrEl;
-    if(el) el.addEventListener(event, fn);
-  }catch(e){
-    console.warn('safeAddListener error for', idOrEl, e);
-  }
-}
-</script>
 <meta charset="utf-8"/>
 <title>Target Zone - Admin Panel</title>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
