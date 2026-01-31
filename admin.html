@@ -449,77 +449,7 @@ window.loadQuestions = async (categoryOrColl) => {
         return "";
       }
     }
-  // ---------------- Salary Module ----------------
-
-  window.openSalary = async () => {
-    hideFinancePanels();
-    const panel = document.getElementById("salary-panel");
-    panel.classList.remove("hidden");
-    panel.innerHTML = `
-      <div class="flex justify-between items-center">
-        <h3 class="text-2xl font-bold">🪙 Student & Salary Management</h3>
-        <div class="flex gap-2">
-          <button id="export-csv" class="bg-indigo-600 px-3 py-1 rounded">Export CSV</button>
-          <button id="add-student-top" class="bg-green-600 px-3 py-1 rounded">+ New Student</button>
-        </div>
-      </div>
-
-      <div class="mt-6 grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div class="col-span-1 bg-white/10 backdrop-blur-xl p-4 rounded-lg">
-          <h4 class="font-semibold mb-3">Batches</h4>
-          <div id="batch-list" class="space-y-2 max-h-64 overflow-y-auto">Loading...</div>
-          <div class="mt-3">
-            <button onclick="showAddBatchForm()" class="w-full bg-blue-600 py-2 rounded">➕ Add Batch</button>
-          </div>
-        </div>
-
-        <div class="col-span-2 bg-white/10 backdrop-blur-xl p-4 rounded-lg">
-          <div class="flex justify-between items-center mb-3">
-            <h4 class="font-semibold">Students</h4>
-            <div class="flex gap-2">
-              <input id="student-search" placeholder="Search by name or phone" class="border rounded px-3 py-2" />
-              <button id="show-add-student" class="bg-green-600 px-3 py-1 rounded">+ Add</button>
-            </div>
-          </div>
-
-          <div id="student-list" class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-96 overflow-y-auto">Select a batch</div>
-
-          <div id="student-form" class="hidden mt-4 bg-white/10 p-4 rounded">
-            <h5 class="font-semibold mb-2">Add Student</h5>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-              <select id="student-batch-select" class="border rounded px-2 py-2"><option value="">-- Select Batch --</option></select>
-              <input id="student-name" placeholder="নাম" class="border rounded px-2 py-2" />
-              <input id="student-dob" type="date" class="border rounded px-2 py-2" />
-              <input id="student-phone" placeholder="Mobile Number" class="border rounded px-2 py-2" />
-              <input id="student-whatsapp" placeholder="WhatsApp Number" class="border rounded px-2 py-2" />
-              <input id="student-father" placeholder="বাবার নাম" class="border rounded px-2 py-2" />
-              <input id="student-address" placeholder="ঠিকানা" class="border rounded px-2 py-2" />
-              <input id="student-extra" placeholder="অতিরিক্ত তথ্য (optional)" class="border rounded px-2 py-2" />
-            </div>
-            <div class="mt-3 flex gap-2">
-              <button id="save-student-btn" class="bg-blue-600 px-3 py-1 rounded">Save</button>
-              <button onclick="document.getElementById('student-form').classList.add('hidden')" class="bg-gray-600 px-3 py-1 rounded">Cancel</button>
-            </div>
-          </div>
-        </div>
-
-        <div id="student-panel" class="col-span-1 bg-white/10 backdrop-blur-xl p-4 rounded-lg">
-          <h4 class="font-semibold mb-2">Profile</h4>
-          <div id="profile-area" class="text-sm">Select a student to view profile</div>
-        </div>
-      </div>
-    `;
-
-    document.getElementById("export-csv").addEventListener("click", exportCurrentViewCSV);
-    document.getElementById("show-add-student").addEventListener("click", ()=> document.getElementById("student-form").classList.toggle("hidden"));
-    document.getElementById("add-student-top").addEventListener("click", ()=> document.getElementById("student-form").classList.remove("hidden"));
-
-    loadBatches();
-    await populateStudentBatchSelect();
-  };
-
-  
-
+  // ---------------- Salary Module ---------------
   window.loadStudents = async (batchId) => {
     const list = document.getElementById("student-list");
     list.innerHTML = "Loading...";
