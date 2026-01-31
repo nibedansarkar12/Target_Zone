@@ -637,10 +637,6 @@ window.loadStudents = async (batchId) => {
   return _oldLoadStudents(batchId);
 };
 // === end Add Batch & Student ===
-
-// Birthday
-
-
 // Helper to hide all
 function hideFinancePanels(){
   ["salary-panel","birthday-panel","attendance-panel","reports-panel"]
@@ -744,8 +740,6 @@ if(__regName || __regPhone){
   });
   const correctRadio = document.querySelector('input[name="correct"]:checked');
   const correctIndex = correctRadio ? parseInt(correctRadio.value, 10) : NaN;
-  const photoFile = document.getElementById("photo")?.files[0];
-
   if (!ques || opts.some(o => !o) || Number.isNaN(correctIndex)) {
     return /* Fixed alert: compute UID safely from form fields if available */
 var __regName = document.getElementById('reg-name')?.value || document.getElementById('name')?.value || '';
@@ -758,14 +752,6 @@ if(__regName || __regPhone){
 }
 }
 
-  let photoURL = "";
-  try {
-    if (photoFile) {
-      const storageRef = ref(storage, `questions/${Date.now()}-${photoFile.name}`);
-      await uploadBytes(storageRef, photoFile);
-      photoURL = await getDownloadURL(storageRef);
-    }
-
     const docRef = await addDoc(collection(db, collName), {
       id: Date.now(),
       category: currentCategory,
@@ -773,7 +759,6 @@ if(__regName || __regPhone){
       question: ques,
       options: opts,
       answer: opts[correctIndex],
-      photo: photoURL || "",
       createdAt: new Date()
     });
 
@@ -803,8 +788,6 @@ if(__regName || __regPhone){
       if (el) el.value = '';
     });
     document.querySelectorAll('input[name="correct"]').forEach(r => r.checked = false);
-    const photoInput = document.getElementById('photo');
-    if (photoInput) photoInput.value = '';
   }
 
   // 👉 শেষে টেবিল রিফ্রেশ
