@@ -622,8 +622,6 @@ window.loadStudents = async (batchId) => {
 };
 // === end Add Batch & Student ===
 
-// Birthday
-
 
 // Helper to hide all
 function hideFinancePanels(){
@@ -2032,18 +2030,6 @@ if(typeof window.showSection === 'function'){
 
 })();
 </script>
-<!-- END: Consolidated populateRegistrationBatches override -->
-
-
-<!-- === Success Popup Added by ChatGPT === -->
-<div id="successPopup" class="fixed inset-0 bg-black/70 hidden flex justify-center items-center z-50">
-    <div class="bg-white text-black p-6 rounded-xl w-80 text-center">
-        <h3 class="text-xl font-bold mb-3">Registration Successful 🎉</h3>
-        <p id="popup-uid" class="font-semibold"></p>
-        <p id="popup-pass" class="font-semibold mb-4"></p>
-        <button onclick="closePopup()" class="bg-green-600 text-white px-4 py-2 rounded-lg">OK</button>
-    </div>
-</div>
 <!-- === End Patch === -->
 
 
