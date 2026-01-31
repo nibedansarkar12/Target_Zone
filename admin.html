@@ -486,62 +486,6 @@ window.showAddStudentForm = () => {
   document.getElementById("student-form").classList.toggle("hidden");
 };
 
-window.addStudent = async () => {
-  if (!currentBatchId) return /* Fixed alert: compute UID safely from form fields if available */
-var __regName = document.getElementById('reg-name')?.value || document.getElementById('name')?.value || '';
-var __regPhone = document.getElementById('reg-phone')?.value || document.getElementById('phone')?.value || '';
-if(__regName || __regPhone){
-  var __uid = (__regPhone? __regPhone : 'UID') + ( __regName? ('-' + __regName.charAt(0).toUpperCase()) : '');
-  alert('Registration Complete! UID: ' + __uid);
-} else {
-  alert('Registration Complete!');
-}
-const name = document.getElementById("student-name").value.trim();
-  const phone = document.getElementById("student-phone").value.trim();
-  if (!name || !phone) return /* Fixed alert: compute UID safely from form fields if available */
-var __regName = document.getElementById('reg-name')?.value || document.getElementById('name')?.value || '';
-var __regPhone = document.getElementById('reg-phone')?.value || document.getElementById('phone')?.value || '';
-if(__regName || __regPhone){
-  var __uid = (__regPhone? __regPhone : 'UID') + ( __regName? ('-' + __regName.charAt(0).toUpperCase()) : '');
-  alert('Registration Complete! UID: ' + __uid);
-} else {
-  alert('Registration Complete!');
-}
-await addDoc(collection(db, "students"), {
-    name, phone, batch: currentBatchId, createdAt: Date.now()
-  });
-
-  document.getElementById("student-name").value = "";
-  document.getElementById("student-phone").value = "";
-  document.getElementById("student-form").classList.add("hidden");
-  loadStudents(currentBatchId);
-  /* Fixed alert: compute UID safely from form fields if available */
-var __regName = document.getElementById('reg-name')?.value || document.getElementById('name')?.value || '';
-var __regPhone = document.getElementById('reg-phone')?.value || document.getElementById('phone')?.value || '';
-if(__regName || __regPhone){
-  var __uid = (__regPhone? __regPhone : 'UID') + ( __regName? ('-' + __regName.charAt(0).toUpperCase()) : '');
-  alert('Registration Complete! UID: ' + __uid);
-} else {
-  alert('Registration Complete!');
-}
-};
-
-// patch loadStudents to remember batchId
-const _oldLoadStudents = window.loadStudents;
-window.loadStudents = async (batchId) => {
-  currentBatchId = batchId;
-  return _oldLoadStudents(batchId);
-};
-// === end Add Batch & Student ===
-
-
-// Helper to hide all
-function hideFinancePanels(){
-  ["salary-panel","birthday-panel","attendance-panel","reports-panel"]
-  .forEach(id=>document.getElementById(id).classList.add("hidden"));
-}
-    let currentSubcategory = "";
-
 // সাবক্যাটাগরি লোড
 window.loadSubcategories = async (category) => {
   currentCategory = category;
